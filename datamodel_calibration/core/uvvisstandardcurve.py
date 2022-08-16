@@ -17,5 +17,5 @@ class UVVisStandardCurve(StandardCurve):
         default="git://github.com/FAIRChemistry/datamodel_calibration.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="bcda9e942219a777f10c72aeeb7acf53f1971bc5"
+        default="d5ba3342e3c7543a3198fed6da032ae0c1f5e4aa"
     )

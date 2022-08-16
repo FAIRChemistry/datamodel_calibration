@@ -12,7 +12,7 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
   - Description: Unique indentifier of the calibrated reactant.
 - __mixture_id__
   - Type: string
-  - Description: Unique indentifier of the calibrated mixture
+  - Description: Unique indentifier of the calibrated mixture.
 - __solvent_name__
   - Type: string
   - Description: Name of the used solvent.

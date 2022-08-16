@@ -29,5 +29,5 @@ class Device(sdRDM.DataModel):
         default="git://github.com/FAIRChemistry/calibration_data.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="f6208fad433fc2ea4f2c2f4c333d1195160ac62e"
+        default="7312a912fab1c07bab997d662a89c754327007b3"
     )

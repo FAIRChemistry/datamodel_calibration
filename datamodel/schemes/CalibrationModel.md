@@ -8,14 +8,14 @@ classDiagram
     
     class Calibration {
         +string calibration_id
-        +string reactant_id
+        +string reactant_id*
         +string mixture_id
         +string solvent_name
         +float solvent_pH
         +PositiveFloat solvent_concentration
         +string solvent_concentration_unit
-        +PositiveFloat temperature*
-        +string temperature_unit*
+        +PositiveFloat temperature
+        +string temperature_unit
         +Device device
         +StandardCurve standard_curve
         +UVVisSpectrum uvvis_spectrum

@@ -14,23 +14,13 @@ from .uvvisspectrum import UVVisSpectrum
 
 class Calibration(sdRDM.DataModel):
 
-    temperature: PositiveFloat = Field(
+    reactant_id: str = Field(
         ...,
-        description="Temperature during calibration.",
-    )
-
-    temperature_unit: str = Field(
-        ...,
-        description="Temperature unit.",
+        description="Unique indentifier of the calibrated reactant.",
     )
 
     calibration_id: Optional[str] = Field(
         description="Unique identifier for the calibration.",
-        default=None,
-    )
-
-    reactant_id: Optional[str] = Field(
-        description="Unique indentifier of the calibrated reactant.",
         default=None,
     )
 
@@ -61,6 +51,16 @@ class Calibration(sdRDM.DataModel):
         default=None,
     )
 
+    temperature: Optional[PositiveFloat] = Field(
+        description="Temperature during calibration.",
+        default=None,
+    )
+
+    temperature_unit: Optional[str] = Field(
+        description="Temperature unit.",
+        default=None,
+    )
+
     device: Optional[Device] = Field(
         description="Device object, containing information about the analytic device.",
         default=None,
@@ -80,5 +80,5 @@ class Calibration(sdRDM.DataModel):
         default="git://github.com/FAIRChemistry/calibration_data.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="5eb9cee58bd93d2ea3497ccdc3151d7059d4dd14"
+        default="7416b5cc37e9c9d3abadee4e0e7da9c7f4498648"
     )

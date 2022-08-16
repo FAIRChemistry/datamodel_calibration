@@ -2,7 +2,7 @@ import setuptools
 from setuptools import setup
 
 setup(
-    name="calibration_data",
+    name="datamodel_calibration",
     version="0.0.1",
     description="Datamodel, handling calibration data from UV-Vis and HPLC measurements",
     url="https://github.com/FAIRChemistry/calibration_data",

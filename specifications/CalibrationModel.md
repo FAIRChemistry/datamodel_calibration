@@ -1,4 +1,4 @@
-# CalibrationModel
+# CalibrationDatamodel
 
 Data model describing calibration procedures for HPLC and UV-Vis photospectrometry.
 
@@ -7,7 +7,7 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 - __calibration_id__
   - Type: string
   - Description: Unique identifier for the calibration.
-- __reactant_id*__
+- __reactant_id__
   - Type: string
   - Description: Unique indentifier of the calibrated reactant.
 - __mixture_id__

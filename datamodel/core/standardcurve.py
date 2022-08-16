@@ -29,5 +29,5 @@ class StandardCurve(sdRDM.DataModel):
         default="git://github.com/FAIRChemistry/calibration_data.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="7312a912fab1c07bab997d662a89c754327007b3"
+        default="7f890d3ea61d95a300cd17bbcef9ff3730c49a0e"
     )

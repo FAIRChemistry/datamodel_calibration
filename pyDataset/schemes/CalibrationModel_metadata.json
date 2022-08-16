@@ -1,0 +1,113 @@
+{
+  "docstring": "Data model describing calibration procedures for HPLC and UV-Vis photospectrometry.",
+  "Calibration": {
+    "attributes": {
+      "calibration_id": {
+        "description": "Unique identifier for the calibration."
+      },
+      "reactant_id": {
+        "description": "Unique indentifier of the calibrated reactant."
+      },
+      "mixture_id": {
+        "description": "Unique indentifier of the calibrated mixture"
+      },
+      "solvent_name": {
+        "description": "Name of the used solvent."
+      },
+      "solvent_pH": {
+        "inclusiveminimum": "0",
+        "inclusivemaximum": "14",
+        "description": "pH of the solvent."
+      },
+      "solvent_concentration": {
+        "description": "Concentration of the solvent."
+      },
+      "solvent_concentration_unit": {
+        "description": "Solvent concentration unit."
+      },
+      "temperature": {
+        "description": "Temperature during calibration."
+      },
+      "temperature_unit": {
+        "description": "Temperature unit."
+      },
+      "device": {
+        "description": "Device object, containing information about the analytic device."
+      },
+      "standard_curve": {
+        "description": "Standard curve object, containing calibration data."
+      },
+      "uvvis_spectrum": {
+        "description": "UVVisSpectrum object, containing spectrum data"
+      }
+    },
+    "docstring": null
+  },
+  "Device": {
+    "attributes": {
+      "device_manufacturer": {
+        "description": "Device manufacturer."
+      },
+      "device_model": {
+        "description": "Model name of the device."
+      },
+      "device_software_version": {
+        "description": "Software version of the device."
+      }
+    },
+    "docstring": null
+  },
+  "StandardCurve": {
+    "attributes": {
+      "wavelength": {
+        "description": "Detection wavelength."
+      },
+      "concentration": {
+        "multiple": "True",
+        "description": "Concentration of the analyt."
+      },
+      "concentration_unit": {
+        "description": "Concentration unit."
+      }
+    },
+    "docstring": null
+  },
+  "UVVisStandardCurve": {
+    "attributes": {
+      "absorption": {
+        "multiple": "True",
+        "description": "Measured absorption, corresponding to the applied concentration."
+      }
+    },
+    "docstring": null
+  },
+  "HPLCStandardCurve": {
+    "attributes": {
+      "peak_area": {
+        "multiple": "True",
+        "description": "Measured peak area, corresponding to the applied concentration."
+      }
+    },
+    "docstring": null
+  },
+  "UVVisSpectrum": {
+    "attributes": {
+      "concentration": {
+        "multiple": "True",
+        "description": "Concentration at which spectrum is recorded."
+      },
+      "wavelength": {
+        "multiple": "True",
+        "description": "Wavelengths used for detection."
+      },
+      "concentration_unit": {
+        "description": "Concentration unit."
+      },
+      "absorption": {
+        "multiple": "True",
+        "description": "Measured absorption, corresponding to detection wavelengths"
+      }
+    },
+    "docstring": null
+  }
+}

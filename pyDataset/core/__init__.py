@@ -1,11 +1,17 @@
-from .author import Author
-from .parameter import Parameter
-from .root import Root
+from .calibration import Calibration
+from .device import Device
+from .hplcstandardcurve import HPLCStandardCurve
+from .standardcurve import StandardCurve
+from .uvvisspectrum import UVVisSpectrum
+from .uvvisstandardcurve import UVVisStandardCurve
 
-__doc__ = "This is the place where you can describe the complete moduledataset and give information about all the details. Markdown offers a convenient way to enable as much space as needed to elucidate purpose and capabilities of your data model."
+__doc__ = "Data model describing calibration procedures for HPLC and UV-Vis photospectrometry."
 
 __all__ = [
-    "Author",
-    "Parameter",
-    "Root",
+    "Calibration",
+    "Device",
+    "HPLCStandardCurve",
+    "StandardCurve",
+    "UVVisSpectrum",
+    "UVVisStandardCurve",
 ]

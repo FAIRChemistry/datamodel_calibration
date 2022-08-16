@@ -7,7 +7,7 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 - __calibration_id__
   - Type: string
   - Description: Unique identifier for the calibration.
-- __reactant_id__
+- __reactant_id*__
   - Type: string
   - Description: Unique indentifier of the calibrated reactant.
 - __mixture_id__
@@ -27,10 +27,10 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 - __solvent_concentration_unit__
   - Type: string
   - Description: Solvent concentration unit.
-- __temperature*__
+- __temperature__
   - Type: PositiveFloat
   - Description: Temperature during calibration.
-- __temperature_unit*__
+- __temperature_unit__
   - Type: string
   - Description: Temperature unit.
 - __device__

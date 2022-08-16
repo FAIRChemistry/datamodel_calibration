@@ -98,4 +98,4 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 - __absorption*__
   - Type: float
   - Multiple: True
-  - Description: Measured absorption, corresponding to detection wavelengths
+  - Description: Measured absorption, corresponding to detection wavelengths.

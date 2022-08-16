@@ -10,6 +10,6 @@ setup(
     author_email="st171427@stud.uni-stuttgart.de",
     packages=setuptools.find_packages(),
     install_requires=[
-    "sdrdm @ git+https://github.com/JR-1991/software-driven-rdm.git",
+    "sdRDM @ git+https://github.com/JR-1991/software-driven-rdm.git",
     ]
 )

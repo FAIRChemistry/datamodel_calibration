@@ -80,5 +80,5 @@ class Calibration(sdRDM.DataModel):
         default="git://github.com/FAIRChemistry/datamodel_calibration.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="789d5828c81656f3d5269c5cfe1b8b83d5a8ed08"
+        default="c50b12ad7a7ac164d1be2c126d6e05557fb647f2"
     )

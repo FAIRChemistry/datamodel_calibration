@@ -75,17 +75,10 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
   - Multiple: True
   - Description: Measured absorption, corresponding to the applied concentration.
 
-### Series
-
-- __values*__
-  - Type: float
-  - Multiple: True
-  - Description: Series representing an array of values
-
 ### HPLCStandardCurve [_StandardCurve_]
 
 - __peak_area*__
-  - Type: float
+  - Type: Series
   - Multiple: True
   - Description: Measured peak area, corresponding to the applied concentration.
 
@@ -103,6 +96,13 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
   - Type: string
   - Description: Concentration unit.
 - __absorption*__
-  - Type: float
+  - Type: Series
   - Multiple: True
   - Description: Measured absorption, corresponding to detection wavelengths.
+
+### Series
+
+- __values*__
+  - Type: float
+  - Multiple: True
+  - Description: Series representing an array of values

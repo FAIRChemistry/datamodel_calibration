@@ -6,6 +6,8 @@ classDiagram
     Calibration *-- StandardCurve
     Calibration *-- UVVisSpectrum
     UVVisStandardCurve *-- Series
+    HPLCStandardCurve *-- Series
+    UVVisSpectrum *-- Series
     
     class Calibration {
         +string calibration_id
@@ -38,19 +40,19 @@ classDiagram
         +Series[0..*] absorption*
     }
     
-    class Series {
-        +float[0..*] values*
-    }
-    
     class HPLCStandardCurve {
-        +float[0..*] peak_area*
+        +Series[0..*] peak_area*
     }
     
     class UVVisSpectrum {
         +float[0..*] concentration*
         +float[0..*] wavelength*
         +string concentration_unit*
-        +float[0..*] absorption*
+        +Series[0..*] absorption*
+    }
+    
+    class Series {
+        +float[0..*] values*
     }
     
 ```

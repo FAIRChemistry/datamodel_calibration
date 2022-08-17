@@ -6,6 +6,7 @@ from pydantic import PrivateAttr
 from sdRDM.base.listplus import ListPlus
 from pydantic import Field
 from typing import List
+from .series import Series
 
 
 class UVVisSpectrum(sdRDM.DataModel):
@@ -25,7 +26,7 @@ class UVVisSpectrum(sdRDM.DataModel):
         default_factory=ListPlus,
     )
 
-    absorption: List[float] = Field(
+    absorption: List[Series] = Field(
         description="Measured absorption, corresponding to detection wavelengths.",
         default_factory=ListPlus,
     )
@@ -34,5 +35,22 @@ class UVVisSpectrum(sdRDM.DataModel):
         default="git://github.com/FAIRChemistry/datamodel_calibration.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="c50b12ad7a7ac164d1be2c126d6e05557fb647f2"
+        default="f49b0dbafc2cf39fe26e15542bf10465e01cadca"
     )
+
+    def add_to_absorption(
+        self,
+        values: List[float] = ListPlus(),
+    ) -> None:
+        """
+        Adds an instance of 'Series' to the attribute 'absorption'.
+
+        Args:
+            values (List[float]): Series representing an array of values.
+        """
+
+        self.absorption.append(
+            Series(
+                values=values,
+            )
+        )

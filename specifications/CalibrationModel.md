@@ -103,6 +103,6 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 ### Series
 
 - __values*__
-  - Type: float | NoneType
+  - Type: float
   - Multiple: True
   - Description: Series representing an array of values

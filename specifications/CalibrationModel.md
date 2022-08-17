@@ -71,8 +71,16 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 ### UVVisStandardCurve [_StandardCurve_]
 
 - __absorption*__
-  - Type: List[List[float]]
+  - Type: Series
+  - Multiple: True
   - Description: Measured absorption, corresponding to the applied concentration.
+
+### Series
+
+- __values*__
+  - Type: float
+  - Multiple: True
+  - Description: Series representing an array of values
 
 ### HPLCStandardCurve [_StandardCurve_]
 

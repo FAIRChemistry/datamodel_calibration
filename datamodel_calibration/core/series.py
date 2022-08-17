@@ -8,20 +8,10 @@ from pydantic import Field
 from typing import List
 
 
-class StandardCurve(sdRDM.DataModel):
+class Series(sdRDM.DataModel):
 
-    wavelength: float = Field(
-        ...,
-        description="Detection wavelength.",
-    )
-
-    concentration_unit: str = Field(
-        ...,
-        description="Concentration unit.",
-    )
-
-    concentration: List[float] = Field(
-        description="Concentration of the analyt.",
+    values: List[float] = Field(
+        description="Series representing an array of values",
         default_factory=ListPlus,
     )
 

@@ -81,6 +81,15 @@
     },
     "docstring": null
   },
+  "Series": {
+    "attributes": {
+      "values": {
+        "multiple": "True",
+        "description": "Series representing an array of values"
+      }
+    },
+    "docstring": null
+  },
   "HPLCStandardCurve": {
     "attributes": {
       "peak_area": {

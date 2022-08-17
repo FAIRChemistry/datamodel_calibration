@@ -17,5 +17,5 @@ class HPLCStandardCurve(StandardCurve):
         default="git://github.com/FAIRChemistry/datamodel_calibration.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="d49538a533c384bd14730854f81866c3ea9d9d49"
+        default="789d5828c81656f3d5269c5cfe1b8b83d5a8ed08"
     )

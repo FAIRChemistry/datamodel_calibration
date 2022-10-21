@@ -70,13 +70,19 @@ class Calibration(sdRDM.DataModel):
         absorptions = []
         for replicate in values:
             absorptions.append(Series(values=list(replicate)))
+
+        standard_curve=StandardCurve(
+                temperature=temperature, temperature_unit="C"
+                )
+        for replicate in values:
+            standard_curve.add_to_absorption(list(replicate))
+
         instance = cls(
             device=Device(
                 device_manufacturer="Molecular Devices",
                 device_model="Spectra Max 190 Microplate Reader",
             ),
-            standard_curve=StandardCurve(
-                temperature=temperature, temperature_unit="C", absorption=absorptions
+            
             ),
         )
         return instance

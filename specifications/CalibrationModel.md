@@ -4,29 +4,12 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 
 ### Calibration
 
-- __calibration_id__
-  - Type: string
-  - Description: Unique identifier for the calibration.
 - __reactant_id__
   - Type: string
   - Description: Unique indentifier of the calibrated reactant.
-- __mixture_id__
-  - Type: string
-  - Description: Unique indentifier of the calibrated mixture.
 - __solvent_name__
   - Type: string
   - Description: Name of the used solvent.
-- __solvent_pH__
-  - Type: float
-  - inclusiveMinimum: 0
-  - inclusiveMaximum: 14
-  - Description: pH of the solvent.
-- __solvent_concentration__
-  - Type: PositiveFloat
-  - Description: Concentration of the solvent.
-- __solvent_concentration_unit__
-  - Type: string
-  - Description: Solvent concentration unit.
 - __temperature__
   - Type: PositiveFloat
   - Description: Temperature during calibration.
@@ -67,20 +50,10 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 - __concentration_unit*__
   - Type: string
   - Description: Concentration unit.
-
-### UVVisStandardCurve [_StandardCurve_]
-
 - __absorption*__
   - Type: Series
   - Multiple: True
   - Description: Measured absorption, corresponding to the applied concentration.
-
-### HPLCStandardCurve [_StandardCurve_]
-
-- __peak_area*__
-  - Type: Series
-  - Multiple: True
-  - Description: Measured peak area, corresponding to the applied concentration.
 
 ### UVVisSpectrum
 

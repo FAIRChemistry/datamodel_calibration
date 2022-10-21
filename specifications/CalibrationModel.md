@@ -14,7 +14,7 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
   - Type: StandardCurve
   - Description: Standard curve object, containing calibration data.
 - __spectrum__
-  - Type: UVVisSpectrum
+  - Type: Spectrum
   - Description: UVVisSpectrum object, containing spectrum data
 
 ### Device
@@ -38,14 +38,14 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
   - Type: PositiveFloat
   - Description: Temperature during calibration.
 - __temperature_unit__
-  - Type: string
+  - Type: TemperatureUnits
   - Description: Temperature unit.
 - __concentration*__
   - Type: float
   - Multiple: True
   - Description: Concentration of the analyt.
 - __concentration_unit*__
-  - Type: string
+  - Type: ConcentrationUnits
   - Description: Concentration unit.
 - __absorption*__
   - Type: Series
@@ -63,7 +63,7 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
   - Multiple: True
   - Description: Wavelengths used for detection.
 - __concentration_unit*__
-  - Type: string
+  - Type: ConcentrationUnits
   - Description: Concentration unit.
 - __absorption*__
   - Type: Series
@@ -75,4 +75,23 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 - __values*__
   - Type: float
   - Multiple: True
-  - Description: Series representing an array of values
+  - Description: Series representing an array of value
+
+#### TemperatureUnits
+
+These values are used to determine the temperature unit.
+
+```python
+CELSIUS = "C"
+KELVIN = "K"
+```
+#### ConcentrationUnits
+
+These values are used to determine the concentration unit.
+
+```python
+MOLAR = "M"
+MILLIMOLAR = "mM"
+MICROMOLAR = "uM"
+NANOMOLAR = "nM"
+```

@@ -1,27 +1,19 @@
 ```mermaid
 classDiagram
-    StandardCurve <-- UVVisStandardCurve
-    StandardCurve <-- HPLCStandardCurve
     Calibration *-- Device
     Calibration *-- StandardCurve
-    Calibration *-- UVVisSpectrum
-    UVVisStandardCurve *-- Series
-    HPLCStandardCurve *-- Series
-    UVVisSpectrum *-- Series
+    Calibration *-- Spectrum
+    StandardCurve *-- TemperatureUnits
+    StandardCurve *-- ConcentrationUnits
+    StandardCurve *-- Series
+    Spectrum *-- ConcentrationUnits
+    Spectrum *-- Series
     
     class Calibration {
-        +string calibration_id
         +string reactant_id
-        +string mixture_id
-        +string solvent_name
-        +float solvent_pH
-        +PositiveFloat solvent_concentration
-        +string solvent_concentration_unit
-        +PositiveFloat temperature
-        +string temperature_unit
         +Device device
         +StandardCurve standard_curve
-        +UVVisSpectrum uvvis_spectrum
+        +Spectrum spectrum
     }
     
     class Device {
@@ -32,27 +24,36 @@ classDiagram
     
     class StandardCurve {
         +float wavelength*
+        +PositiveFloat temperature
+        +TemperatureUnits temperature_unit
         +float[0..*] concentration*
-        +string concentration_unit*
-    }
-    
-    class UVVisStandardCurve {
+        +ConcentrationUnits concentration_unit*
         +Series[0..*] absorption*
     }
     
-    class HPLCStandardCurve {
-        +Series[0..*] peak_area*
-    }
-    
-    class UVVisSpectrum {
+    class Spectrum {
         +float[0..*] concentration*
         +float[0..*] wavelength*
-        +string concentration_unit*
+        +ConcentrationUnits concentration_unit*
         +Series[0..*] absorption*
     }
     
     class Series {
         +float[0..*] values*
+    }
+    
+    class TemperatureUnits {
+        << Enumeration >>
+        +CELSIUS = "C"
+        +KELVIN = "K"
+    }
+    
+    class ConcentrationUnits {
+        << Enumeration >>
+        +MOLAR = "M"
+        +MILLIMOLAR = "mM"
+        +MICROMOLAR = "uM"
+        +NANOMOLAR = "nM"
     }
     
 ```

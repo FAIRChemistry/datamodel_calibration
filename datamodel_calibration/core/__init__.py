@@ -1,19 +1,19 @@
 from .calibration import Calibration
+from .concentrationunits import ConcentrationUnits
 from .device import Device
-from .hplcstandardcurve import HPLCStandardCurve
 from .series import Series
+from .spectrum import Spectrum
 from .standardcurve import StandardCurve
-from .uvvisspectrum import UVVisSpectrum
-from .uvvisstandardcurve import UVVisStandardCurve
+from .temperatureunits import TemperatureUnits
 
 __doc__ = "Data model describing calibration procedures for HPLC and UV-Vis photospectrometry."
 
 __all__ = [
     "Calibration",
+    "ConcentrationUnits",
     "Device",
-    "HPLCStandardCurve",
     "Series",
+    "Spectrum",
     "StandardCurve",
-    "UVVisSpectrum",
-    "UVVisStandardCurve",
+    "TemperatureUnits",
 ]

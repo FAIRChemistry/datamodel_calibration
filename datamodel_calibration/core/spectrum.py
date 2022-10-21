@@ -1,52 +1,49 @@
 import sdRDM
 
-from typing import Optional
-from typing import List
 from typing import Optional, Union
 from pydantic import PrivateAttr
-from pydantic import Field
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
-from pydantic.types import PositiveFloat
 
+from pydantic import Field
+from typing import List
+
+from .concentrationunits import ConcentrationUnits
 from .series import Series
-from .temperatureunits import TemperatureUnits
 
 
-class StandardCurve(sdRDM.DataModel):
-    wavelength: float = Field(..., description="Detection wavelength.")
-
-    concentration_unit: str = Field(..., description="Concentration unit.")
-
-    concentration: List[float] = Field(
-        description="Concentration of the analyt.", default_factory=ListPlus
-    )
-
+@forge_signature
+class Spectrum(sdRDM.DataModel):
     id: str = Field(
         description="Unique identifier of the given object.",
-        default_factory=IDGenerator("standardcurveINDEX"),
+        default_factory=IDGenerator("spectrumINDEX"),
         xml="@id",
     )
-
-    temperature: Optional[PositiveFloat] = Field(
-        description="Temperature during calibration.", default=None
+    concentration_unit: ConcentrationUnits = Field(
+        ...,
+        description="Concentration unit.",
     )
 
-    temperature_unit: Optional[TemperatureUnits] = Field(
-        description="Temperature unit.", default=None
+    concentration: List[float] = Field(
+        description="Concentration at which spectrum is recorded.",
+        default_factory=ListPlus,
+    )
+
+    wavelength: List[float] = Field(
+        description="Wavelengths used for detection.",
+        default_factory=ListPlus,
     )
 
     absorption: List[Series] = Field(
-        description="Measured absorption, corresponding to the applied concentration.",
+        description="Measured absorption, corresponding to detection wavelengths.",
         default_factory=ListPlus,
     )
 
     __repo__: Optional[str] = PrivateAttr(
         default="git://github.com/FAIRChemistry/datamodel_calibration.git"
     )
-
     __commit__: Optional[str] = PrivateAttr(
-        default="f6d13a0ec49b8e54167c7cf0705ac1ca2f68b325"
+        default="fa7a9865e6c5d7599c7b37e3b3b00660f2071196"
     )
 
     def add_to_absorption(self, values: List[float], id: Optional[str] = None) -> None:
@@ -54,16 +51,17 @@ class StandardCurve(sdRDM.DataModel):
         Adds an instance of 'Series' to the attribute 'absorption'.
 
         Args:
-
-
             id (str): Unique identifier of the 'Series' object. Defaults to 'None'.
-
-
             values (List[float]): Series representing an array of value.
         """
 
-        params = {"values": values}
+        params = {
+            "values": values,
+        }
+
         if id is not None:
             params["id"] = id
+
         absorption = [Series(**params)]
+
         self.absorption = self.absorption + absorption

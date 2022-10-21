@@ -1,14 +1,12 @@
 import sdRDM
 
 from typing import Optional, Union
+from typing import List
 from pydantic import PrivateAttr
+from pydantic import Field
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 
-from pydantic import Field
-from typing import List
-
-from .concentrationunits import ConcentrationUnits
 from .series import Series
 
 
@@ -19,9 +17,9 @@ class Spectrum(sdRDM.DataModel):
         default_factory=IDGenerator("spectrumINDEX"),
         xml="@id",
     )
+
     concentration_unit: ConcentrationUnits = Field(
-        ...,
-        description="Concentration unit.",
+        ..., description="Concentration unit."
     )
 
     concentration: List[float] = Field(
@@ -30,8 +28,7 @@ class Spectrum(sdRDM.DataModel):
     )
 
     wavelength: List[float] = Field(
-        description="Wavelengths used for detection.",
-        default_factory=ListPlus,
+        description="Wavelengths used for detection.", default_factory=ListPlus
     )
 
     absorption: List[Series] = Field(
@@ -42,6 +39,7 @@ class Spectrum(sdRDM.DataModel):
     __repo__: Optional[str] = PrivateAttr(
         default="git://github.com/FAIRChemistry/datamodel_calibration.git"
     )
+
     __commit__: Optional[str] = PrivateAttr(
         default="fa7a9865e6c5d7599c7b37e3b3b00660f2071196"
     )
@@ -51,17 +49,16 @@ class Spectrum(sdRDM.DataModel):
         Adds an instance of 'Series' to the attribute 'absorption'.
 
         Args:
+
+
             id (str): Unique identifier of the 'Series' object. Defaults to 'None'.
+
+
             values (List[float]): Series representing an array of value.
         """
 
-        params = {
-            "values": values,
-        }
-
+        params = {"values": values}
         if id is not None:
             params["id"] = id
-
         absorption = [Series(**params)]
-
         self.absorption = self.absorption + absorption

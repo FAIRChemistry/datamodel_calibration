@@ -12,6 +12,7 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
   - Description: Device object, containing information about the analytic device.
 - __standard_curve__
   - Type: StandardCurve
+  - Multiple: True
   - Description: Standard curve object, containing calibration data.
 - __spectrum__
   - Type: Spectrum

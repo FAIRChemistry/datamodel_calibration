@@ -14,6 +14,7 @@
         "description": "Device object, containing information about the analytic device."
       },
       "standard_curve": {
+        "multiple": "True",
         "description": "Standard curve object, containing calibration data."
       },
       "spectrum": {

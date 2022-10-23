@@ -5,6 +5,7 @@ import pandas as pd
 from typing import Optional
 from typing import Optional, Union, Dict
 from typing import Optional, Union
+from typing import List
 from pydantic import PrivateAttr
 from pydantic import Field
 from sdRDM.base.listplus import ListPlus
@@ -14,6 +15,9 @@ from sdRDM.base.utils import forge_signature, IDGenerator
 from .device import Device
 from .standardcurve import StandardCurve
 from .spectrum import Spectrum
+from .concentrationunits import ConcentrationUnits
+from .series import Series
+from .temperatureunits import TemperatureUnits
 
 
 class Calibration(sdRDM.DataModel):
@@ -81,3 +85,53 @@ class Calibration(sdRDM.DataModel):
             standard_curve=standard_curve,
         )
         return instance
+
+    def add_to_standard_curve(
+        self,
+        wavelength: float,
+        concentration: List[float],
+        concentration_unit: ConcentrationUnits,
+        absorption: List[Series],
+        temperature: Optional[PositiveFloat] = None,
+        temperature_unit: Optional[TemperatureUnits] = None,
+        id: Optional[str] = None,
+    ) -> None:
+        """
+        Adds an instance of 'StandardCurve' to the attribute 'standard_curve'.
+
+        Args:
+
+
+            id (str): Unique identifier of the 'StandardCurve' object. Defaults to 'None'.
+
+
+            wavelength (float): Detection wavelength.
+
+
+            concentration (List[float]): Concentration of the analyt.
+
+
+            concentration_unit (ConcentrationUnits): Concentration unit.
+
+
+            absorption (List[Series]): Measured absorption, corresponding to the applied concentration.
+
+
+            temperature (Optional[PositiveFloat]): Temperature during calibration. Defaults to None
+
+
+            temperature_unit (Optional[TemperatureUnits]): Temperature unit. Defaults to None
+        """
+
+        params = {
+            "wavelength": wavelength,
+            "concentration": concentration,
+            "concentration_unit": concentration_unit,
+            "absorption": absorption,
+            "temperature": temperature,
+            "temperature_unit": temperature_unit,
+        }
+        if id is not None:
+            params["id"] = id
+        standard_curve = [StandardCurve(**params)]
+        self.standard_curve = self.standard_curve + standard_curve

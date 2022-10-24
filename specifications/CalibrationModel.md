@@ -7,6 +7,9 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 - __reactant_id__
   - Type: string
   - Description: Unique indentifier of the calibrated reactant.
+- __date__
+  - Type: string
+  - Description: Date when the calibration data was meeasured
 - __device__
   - Type: Device
   - Description: Device object, containing information about the analytic device.

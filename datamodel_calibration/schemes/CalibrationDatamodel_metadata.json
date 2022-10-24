@@ -10,6 +10,9 @@
       "reactant_id": {
         "description": "Unique indentifier of the calibrated reactant."
       },
+      "date": {
+        "description": "Date when the calibration data was meeasured"
+      },
       "device": {
         "description": "Device object, containing information about the analytic device."
       },

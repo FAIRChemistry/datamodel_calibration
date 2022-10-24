@@ -11,6 +11,7 @@ classDiagram
     
     class Calibration {
         +string reactant_id
+        +string date
         +Device device
         +StandardCurve[0..*] standard_curve
         +Spectrum spectrum

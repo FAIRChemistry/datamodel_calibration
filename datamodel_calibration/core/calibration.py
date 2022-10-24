@@ -44,6 +44,10 @@ class Calibration(sdRDM.DataModel):
         description="UVVisSpectrum object, containing spectrum data", default=None
     )
 
+    date: Optional[str] = Field(
+        description="Date when the calibration data was meeasured", default=None
+    )
+
     __repo__: Optional[str] = PrivateAttr(
         default="git://github.com/FAIRChemistry/datamodel_calibration.git"
     )
@@ -52,7 +56,6 @@ class Calibration(sdRDM.DataModel):
         default="f6d13a0ec49b8e54167c7cf0705ac1ca2f68b325"
     )
 
-    #@classmethod
     def SpectraMax190_StandardCurve(
         cls, path: str, species_wavelengths: Dict, replicates: int
     ):

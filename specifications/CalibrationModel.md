@@ -1,6 +1,6 @@
 # CalibrationDatamodel
 
-Data model describing calibration procedures for HPLC and UV-Vis photospectrometry.
+Data model describing standard-curve and spectrum data of UV-Vis photospectrometry.
 
 ### Calibration
 

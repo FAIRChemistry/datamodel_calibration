@@ -35,11 +35,11 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 
 ### Data
 
-- __standard_curve*__
+- __standard_curve__
   - Type: StandardCurve
   - Multiple: True
   - Description: Standard curve object, containing calibration data.
-- __spectrum*__
+- __spectrum__
   - Type: Spectrum
   - Description: UVVisSpectrum object, containing spectrum data
 - __temperature*__

@@ -10,6 +10,15 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 - __date__
   - Type: string
   - Description: Date when the calibration data was meeasured
+- __temperature*__
+  - Type: PositiveFloat
+  - Description: Temperature during calibration.
+- __pH*__
+  - Type: PositiveFloat
+  - Description: pH of solution.
+- __temperature_unit*__
+  - Type: TemperatureUnits
+  - Description: Temperature unit.
 - __device__
   - Type: Device
   - Description: Device object, containing information about the analytic device.
@@ -38,12 +47,6 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 - __wavelength*__
   - Type: float
   - Description: Detection wavelength.
-- __temperature__
-  - Type: PositiveFloat
-  - Description: Temperature during calibration.
-- __temperature_unit__
-  - Type: TemperatureUnits
-  - Description: Temperature unit.
 - __concentration*__
   - Type: float
   - Multiple: True

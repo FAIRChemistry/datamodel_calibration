@@ -87,6 +87,7 @@ These values are used to determine the temperature unit.
 
 ```python
 CELSIUS = "C"
+KELVIN = "K"
 ```
 #### ConcentrationUnits
 

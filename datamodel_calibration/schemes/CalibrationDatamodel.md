@@ -25,8 +25,8 @@ classDiagram
     }
     
     class Data {
-        +StandardCurve[0..*] standard_curve*
-        +Spectrum spectrum*
+        +StandardCurve[0..*] standard_curve
+        +Spectrum spectrum
         +PositiveFloat temperature*
         +TemperatureUnits temperature_unit*
     }

@@ -90,9 +90,9 @@ class Calibration(sdRDM.DataModel):
     def add_to_data(
         self,
         standard_curve: List[StandardCurve],
-        spectrum: Spectrum,
         temperature: PositiveFloat,
         temperature_unit: TemperatureUnits,
+        spectrum: Optional[Spectrum] = None,
         id: Optional[str] = None,
     ) -> None:
         """
@@ -107,20 +107,20 @@ class Calibration(sdRDM.DataModel):
             standard_curve (List[StandardCurve]): Standard curve object, containing calibration data.
 
 
-            spectrum (Spectrum): UVVisSpectrum object, containing spectrum data.
-
-
             temperature (PositiveFloat): Temperature during calibration.
 
 
             temperature_unit (TemperatureUnits): Temperature unit.
+
+
+            spectrum (Optional[Spectrum]): UVVisSpectrum object, containing spectrum data. Defaults to None
         """
 
         params = {
             "standard_curve": standard_curve,
-            "spectrum": spectrum,
             "temperature": temperature,
             "temperature_unit": temperature_unit,
+            "spectrum": spectrum,
         }
         if id is not None:
             params["id"] = id

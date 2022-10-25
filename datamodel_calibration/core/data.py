@@ -1,19 +1,18 @@
 import sdRDM
 
 from typing import Optional, Union
+from typing import List
+from typing import Optional
 from pydantic import PrivateAttr
+from pydantic import Field
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
-
-from pydantic import Field
 from pydantic.types import PositiveFloat
-from typing import List
 
 from .concentrationunits import ConcentrationUnits
 from .series import Series
 from .spectrum import Spectrum
 from .standardcurve import StandardCurve
-from .temperatureunits import TemperatureUnits
 
 
 @forge_signature
@@ -23,15 +22,12 @@ class Data(sdRDM.DataModel):
         default_factory=IDGenerator("dataINDEX"),
         xml="@id",
     )
+
     temperature: PositiveFloat = Field(
-        ...,
-        description="Temperature during calibration.",
+        ..., description="Temperature during calibration."
     )
 
-    temperature_unit: TemperatureUnits = Field(
-        ...,
-        description="Temperature unit.",
-    )
+    temperature_unit: TemperatureUnits = Field(..., description="Temperature unit.")
 
     standard_curve: List[StandardCurve] = Field(
         description="Standard curve object, containing calibration data.",
@@ -39,13 +35,13 @@ class Data(sdRDM.DataModel):
     )
 
     spectrum: Spectrum = Field(
-        description="UVVisSpectrum object, containing spectrum data",
-        default=None,
+        description="UVVisSpectrum object, containing spectrum data", default=None
     )
 
     __repo__: Optional[str] = PrivateAttr(
         default="git://github.com/FAIRChemistry/datamodel_calibration.git"
     )
+
     __commit__: Optional[str] = PrivateAttr(
         default="e1718b19020aa2c22565f1ef7eca350362ab53b8"
     )
@@ -62,10 +58,20 @@ class Data(sdRDM.DataModel):
         Adds an instance of 'StandardCurve' to the attribute 'standard_curve'.
 
         Args:
+
+
             id (str): Unique identifier of the 'StandardCurve' object. Defaults to 'None'.
+
+
             wavelength (float): Detection wavelength.
+
+
             concentration (List[float]): Concentration of the analyt.
+
+
             concentration_unit (ConcentrationUnits): Concentration unit.
+
+
             absorption (List[Series]): Measured absorption, corresponding to the applied concentration.
         """
 
@@ -75,10 +81,7 @@ class Data(sdRDM.DataModel):
             "concentration_unit": concentration_unit,
             "absorption": absorption,
         }
-
         if id is not None:
             params["id"] = id
-
         standard_curve = [StandardCurve(**params)]
-
         self.standard_curve = self.standard_curve + standard_curve

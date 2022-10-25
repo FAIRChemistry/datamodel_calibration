@@ -1,29 +1,34 @@
 ```mermaid
 classDiagram
-    Calibration *-- TemperatureUnits
     Calibration *-- Device
-    Calibration *-- StandardCurve
-    Calibration *-- Spectrum
+    Calibration *-- Data
+    Data *-- StandardCurve
+    Data *-- Spectrum
+    Data *-- TemperatureUnits
     StandardCurve *-- ConcentrationUnits
     StandardCurve *-- Series
     Spectrum *-- ConcentrationUnits
     Spectrum *-- Series
     
     class Calibration {
-        +string reactant_id
-        +string date
-        +PositiveFloat temperature*
+        +string reactant_id*
+        +string date*
         +PositiveFloat pH*
-        +TemperatureUnits temperature_unit*
         +Device device
-        +StandardCurve[0..*] standard_curve
-        +Spectrum spectrum
+        +Data[0..*] data
     }
     
     class Device {
         +string device_manufacturer
         +string device_model
         +string device_software_version
+    }
+    
+    class Data {
+        +StandardCurve[0..*] standard_curve*
+        +Spectrum spectrum*
+        +PositiveFloat temperature*
+        +TemperatureUnits temperature_unit*
     }
     
     class StandardCurve {

@@ -1,5 +1,6 @@
 from .calibration import Calibration
 from .concentrationunits import ConcentrationUnits
+from .data import Data
 from .device import Device
 from .series import Series
 from .spectrum import Spectrum
@@ -11,6 +12,7 @@ __doc__ = "Data model describing calibration procedures for HPLC and UV-Vis phot
 __all__ = [
     "Calibration",
     "ConcentrationUnits",
+    "Data",
     "Device",
     "Series",
     "Spectrum",

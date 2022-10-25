@@ -15,8 +15,8 @@ from sdRDM.base.utils import forge_signature, IDGenerator
 from .device import Device
 from .standardcurve import StandardCurve
 from .spectrum import Spectrum
-from .concentrationunits import ConcentrationUnits
-from .series import Series
+from .data import Data
+from .temperatureunits import TemperatureUnits
 
 
 class Calibration(sdRDM.DataModel):
@@ -29,31 +29,22 @@ class Calibration(sdRDM.DataModel):
         default=None,
     )
 
-    standard_curve: Optional[StandardCurve] = Field(
-        description="Standard curve object, containing calibration data.", default=None
-    )
-
     id: str = Field(
         description="Unique identifier of the given object.",
         default_factory=IDGenerator("calibrationINDEX"),
         xml="@id",
     )
 
-    spectrum: Optional[Spectrum] = Field(
-        description="UVVisSpectrum object, containing spectrum data", default=None
-    )
-
     date: Optional[str] = Field(
         description="Date when the calibration data was meeasured", default=None
     )
 
-    temperature: PositiveFloat = Field(
-        ..., description="Temperature during calibration."
-    )
-
     pH: PositiveFloat = Field(..., description="pH of solution.")
 
-    temperature_unit: TemperatureUnits = Field(..., description="Temperature unit.")
+    data: List[Data] = Field(
+        description="Contains standard-curve and absorption-spectrum.",
+        default_factory=ListPlus,
+    )
 
     __repo__: Optional[str] = PrivateAttr(
         default="git://github.com/FAIRChemistry/datamodel_calibration.git"
@@ -96,42 +87,42 @@ class Calibration(sdRDM.DataModel):
         )
         return instance
 
-    def add_to_standard_curve(
+    def add_to_data(
         self,
-        wavelength: float,
-        concentration: List[float],
-        concentration_unit: ConcentrationUnits,
-        absorption: List[Series],
+        standard_curve: List[StandardCurve],
+        spectrum: Spectrum,
+        temperature: PositiveFloat,
+        temperature_unit: TemperatureUnits,
         id: Optional[str] = None,
     ) -> None:
         """
-        Adds an instance of 'StandardCurve' to the attribute 'standard_curve'.
+        Adds an instance of 'Data' to the attribute 'data'.
 
         Args:
 
 
-            id (str): Unique identifier of the 'StandardCurve' object. Defaults to 'None'.
+            id (str): Unique identifier of the 'Data' object. Defaults to 'None'.
 
 
-            wavelength (float): Detection wavelength.
+            standard_curve (List[StandardCurve]): Standard curve object, containing calibration data.
 
 
-            concentration (List[float]): Concentration of the analyt.
+            spectrum (Spectrum): UVVisSpectrum object, containing spectrum data.
 
 
-            concentration_unit (ConcentrationUnits): Concentration unit.
+            temperature (PositiveFloat): Temperature during calibration.
 
 
-            absorption (List[Series]): Measured absorption, corresponding to the applied concentration.
+            temperature_unit (TemperatureUnits): Temperature unit.
         """
 
         params = {
-            "wavelength": wavelength,
-            "concentration": concentration,
-            "concentration_unit": concentration_unit,
-            "absorption": absorption,
+            "standard_curve": standard_curve,
+            "spectrum": spectrum,
+            "temperature": temperature,
+            "temperature_unit": temperature_unit,
         }
         if id is not None:
             params["id"] = id
-        standard_curve = [StandardCurve(**params)]
-        self.standard_curve = self.standard_curve + standard_curve
+        data = [Data(**params)]
+        self.data = self.data + data

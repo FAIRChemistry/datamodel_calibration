@@ -13,6 +13,15 @@
       "date": {
         "description": "Date when the calibration data was meeasured"
       },
+      "temperature": {
+        "description": "Temperature during calibration."
+      },
+      "pH": {
+        "description": "pH of solution."
+      },
+      "temperature_unit": {
+        "description": "Temperature unit."
+      },
       "device": {
         "description": "Device object, containing information about the analytic device."
       },
@@ -44,12 +53,6 @@
     "attributes": {
       "wavelength": {
         "description": "Detection wavelength."
-      },
-      "temperature": {
-        "description": "Temperature during calibration."
-      },
-      "temperature_unit": {
-        "description": "Temperature unit."
       },
       "concentration": {
         "multiple": "True",

@@ -10,7 +10,6 @@ from sdRDM.base.utils import forge_signature, IDGenerator
 from pydantic.types import PositiveFloat
 
 from .series import Series
-from .temperatureunits import TemperatureUnits
 
 
 class StandardCurve(sdRDM.DataModel):
@@ -26,14 +25,6 @@ class StandardCurve(sdRDM.DataModel):
         description="Unique identifier of the given object.",
         default_factory=IDGenerator("standardcurveINDEX"),
         xml="@id",
-    )
-
-    temperature: Optional[PositiveFloat] = Field(
-        description="Temperature during calibration.", default=None
-    )
-
-    temperature_unit: Optional[TemperatureUnits] = Field(
-        description="Temperature unit.", default=None
     )
 
     absorption: List[Series] = Field(

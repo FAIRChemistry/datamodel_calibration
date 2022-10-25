@@ -17,7 +17,6 @@ from .standardcurve import StandardCurve
 from .spectrum import Spectrum
 from .concentrationunits import ConcentrationUnits
 from .series import Series
-from .temperatureunits import TemperatureUnits
 
 
 class Calibration(sdRDM.DataModel):
@@ -47,6 +46,14 @@ class Calibration(sdRDM.DataModel):
     date: Optional[str] = Field(
         description="Date when the calibration data was meeasured", default=None
     )
+
+    temperature: PositiveFloat = Field(
+        ..., description="Temperature during calibration."
+    )
+
+    pH: PositiveFloat = Field(..., description="pH of solution.")
+
+    temperature_unit: TemperatureUnits = Field(..., description="Temperature unit.")
 
     __repo__: Optional[str] = PrivateAttr(
         default="git://github.com/FAIRChemistry/datamodel_calibration.git"
@@ -95,8 +102,6 @@ class Calibration(sdRDM.DataModel):
         concentration: List[float],
         concentration_unit: ConcentrationUnits,
         absorption: List[Series],
-        temperature: Optional[PositiveFloat] = None,
-        temperature_unit: Optional[TemperatureUnits] = None,
         id: Optional[str] = None,
     ) -> None:
         """
@@ -118,12 +123,6 @@ class Calibration(sdRDM.DataModel):
 
 
             absorption (List[Series]): Measured absorption, corresponding to the applied concentration.
-
-
-            temperature (Optional[PositiveFloat]): Temperature during calibration. Defaults to None
-
-
-            temperature_unit (Optional[TemperatureUnits]): Temperature unit. Defaults to None
         """
 
         params = {
@@ -131,8 +130,6 @@ class Calibration(sdRDM.DataModel):
             "concentration": concentration,
             "concentration_unit": concentration_unit,
             "absorption": absorption,
-            "temperature": temperature,
-            "temperature_unit": temperature_unit,
         }
         if id is not None:
             params["id"] = id

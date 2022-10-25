@@ -4,31 +4,22 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 
 ### Calibration
 
-- __reactant_id__
+- __reactant_id*__
   - Type: string
   - Description: Unique indentifier of the calibrated reactant.
-- __date__
+- __date*__
   - Type: string
   - Description: Date when the calibration data was meeasured
-- __temperature*__
-  - Type: PositiveFloat
-  - Description: Temperature during calibration.
 - __pH*__
   - Type: PositiveFloat
   - Description: pH of solution.
-- __temperature_unit*__
-  - Type: TemperatureUnits
-  - Description: Temperature unit.
 - __device__
   - Type: Device
   - Description: Device object, containing information about the analytic device.
-- __standard_curve__
-  - Type: StandardCurve
+- __data__
+  - Type: Data
   - Multiple: True
-  - Description: Standard curve object, containing calibration data.
-- __spectrum__
-  - Type: Spectrum
-  - Description: UVVisSpectrum object, containing spectrum data
+  - Description: Contains standard-curve and absorption-spectrum.
 
 ### Device
 
@@ -41,6 +32,22 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 - __device_software_version__
   - Type: string
   - Description: Software version of the device.
+
+### Data
+
+- __standard_curve*__
+  - Type: StandardCurve
+  - Multiple: True
+  - Description: Standard curve object, containing calibration data.
+- __spectrum*__
+  - Type: Spectrum
+  - Description: UVVisSpectrum object, containing spectrum data
+- __temperature*__
+  - Type: PositiveFloat
+  - Description: Temperature during calibration.
+- __temperature_unit*__
+  - Type: TemperatureUnits
+  - Description: Temperature unit.
 
 ### StandardCurve
 

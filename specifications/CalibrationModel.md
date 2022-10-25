@@ -1,6 +1,6 @@
 # CalibrationDatamodel
 
-Data model describing standard-curve and spectrum data of UV-Vis photospectrometry.
+Data model describing calibration procedures for HPLC and UV-Vis photospectrometry.
 
 ### Calibration
 
@@ -38,13 +38,10 @@ Data model describing standard-curve and spectrum data of UV-Vis photospectromet
 - __wavelength*__
   - Type: float
   - Description: Detection wavelength.
-- __temperature*__
+- __temperature__
   - Type: PositiveFloat
   - Description: Temperature during calibration.
-- __pH*__
-  - Type: PositiveFloat
-  - Description: pH of the solution.
-- __temperature_unit*__
+- __temperature_unit__
   - Type: TemperatureUnits
   - Description: Temperature unit.
 - __concentration*__
@@ -69,9 +66,6 @@ Data model describing standard-curve and spectrum data of UV-Vis photospectromet
   - Type: float
   - Multiple: True
   - Description: Wavelengths used for detection.
-- __pH*__
-  - Type: PositiveFloat
-  - Description: pH of the solution.
 - __concentration_unit*__
   - Type: ConcentrationUnits
   - Description: Concentration unit.

@@ -38,10 +38,13 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 - __wavelength*__
   - Type: float
   - Description: Detection wavelength.
-- __temperature__
+- __temperature*__
   - Type: PositiveFloat
   - Description: Temperature during calibration.
-- __temperature_unit__
+- __pH*__
+  - Type: PositiveFloat
+  - Description: pH of the solution.
+- __temperature_unit*__
   - Type: TemperatureUnits
   - Description: Temperature unit.
 - __concentration*__
@@ -66,6 +69,9 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
   - Type: float
   - Multiple: True
   - Description: Wavelengths used for detection.
+- __pH*__
+  - Type: PositiveFloat
+  - Description: pH of the solution.
 - __concentration_unit*__
   - Type: ConcentrationUnits
   - Description: Concentration unit.
@@ -87,7 +93,6 @@ These values are used to determine the temperature unit.
 
 ```python
 CELSIUS = "C"
-KELVIN = "K"
 ```
 #### ConcentrationUnits
 

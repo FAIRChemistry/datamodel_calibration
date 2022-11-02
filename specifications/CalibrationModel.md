@@ -1,6 +1,6 @@
 # CalibrationDatamodel
 
-Data model describing calibration procedures for HPLC and UV-Vis photospectrometry.
+Data model handling reactant-standard data for UV-Vis photospectrometry.
 
 ### Calibration
 
@@ -13,23 +13,28 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 - __pH*__
   - Type: PositiveFloat
   - Description: pH of solution.
+- __temperature*__
+  - Type: PositiveFloat
+  - Description: Temperature during calibration.
+- __temperature_unit*__
+  - Type: TemperatureUnits
+  - Description: Temperature unit.
 - __device__
   - Type: Device
   - Description: Device object, containing information about the analytic device.
 - __data__
   - Type: Data
-  - Multiple: True
-  - Description: Contains standard-curve and absorption-spectrum.
+  - Description: Contains standard-curve and absorption-spectrum of a single reactant.
 
 ### Device
 
-- __device_manufacturer__
+- __manufacturer__
   - Type: string
   - Description: Device manufacturer.
-- __device_model__
+- __model__
   - Type: string
   - Description: Model name of the device.
-- __device_software_version__
+- __software_version__
   - Type: string
   - Description: Software version of the device.
 
@@ -41,13 +46,7 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
   - Description: Standard curve object, containing calibration data.
 - __spectrum__
   - Type: Spectrum
-  - Description: UVVisSpectrum object, containing spectrum data
-- __temperature*__
-  - Type: PositiveFloat
-  - Description: Temperature during calibration.
-- __temperature_unit*__
-  - Type: TemperatureUnits
-  - Description: Temperature unit.
+  - Description: UVVisSpectrum object, containing spectrum data.
 
 ### StandardCurve
 
@@ -57,21 +56,20 @@ Data model describing calibration procedures for HPLC and UV-Vis photospectromet
 - __concentration*__
   - Type: float
   - Multiple: True
-  - Description: Concentration of the analyt.
+  - Description: Concentration of the reactant.
 - __concentration_unit*__
   - Type: ConcentrationUnits
   - Description: Concentration unit.
 - __absorption*__
   - Type: Series
   - Multiple: True
-  - Description: Measured absorption, corresponding to the applied concentration.
+  - Description: Measured absorption, corresponding to the applied concentration of the reactant.
 
 ### Spectrum
 
 - __concentration*__
   - Type: float
-  - Multiple: True
-  - Description: Concentration at which spectrum is recorded.
+  - Description: Concentration of  the reactant at which the spectrum was recorded.
 - __wavelength*__
   - Type: float
   - Multiple: True

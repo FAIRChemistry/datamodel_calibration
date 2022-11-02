@@ -13,10 +13,7 @@ from pydantic.types import PositiveFloat
 from sdRDM.base.utils import forge_signature, IDGenerator
 
 from .device import Device
-from .standardcurve import StandardCurve
-from .spectrum import Spectrum
 from .data import Data
-from .temperatureunits import TemperatureUnits
 
 
 class Calibration(sdRDM.DataModel):
@@ -45,6 +42,12 @@ class Calibration(sdRDM.DataModel):
         description="Contains standard-curve and absorption-spectrum.",
         default_factory=ListPlus,
     )
+
+    temperature: PositiveFloat = Field(
+        ..., description="Temperature during calibration."
+    )
+
+    temperature_unit: TemperatureUnits = Field(..., description="Temperature unit.")
 
     __repo__: Optional[str] = PrivateAttr(
         default="git://github.com/FAIRChemistry/datamodel_calibration.git"
@@ -86,43 +89,3 @@ class Calibration(sdRDM.DataModel):
             standard_curve=standard_curve,
         )
         return instance
-
-    def add_to_data(
-        self,
-        standard_curve: List[StandardCurve],
-        temperature: PositiveFloat,
-        temperature_unit: TemperatureUnits,
-        spectrum: Optional[Spectrum] = None,
-        id: Optional[str] = None,
-    ) -> None:
-        """
-        Adds an instance of 'Data' to the attribute 'data'.
-
-        Args:
-
-
-            id (str): Unique identifier of the 'Data' object. Defaults to 'None'.
-
-
-            standard_curve (List[StandardCurve]): Standard curve object, containing calibration data.
-
-
-            temperature (PositiveFloat): Temperature during calibration.
-
-
-            temperature_unit (TemperatureUnits): Temperature unit.
-
-
-            spectrum (Optional[Spectrum]): UVVisSpectrum object, containing spectrum data. Defaults to None
-        """
-
-        params = {
-            "standard_curve": standard_curve,
-            "temperature": temperature,
-            "temperature_unit": temperature_unit,
-            "spectrum": spectrum,
-        }
-        if id is not None:
-            params["id"] = id
-        data = [Data(**params)]
-        self.data = self.data + data

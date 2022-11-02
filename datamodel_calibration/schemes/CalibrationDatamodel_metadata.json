@@ -1,5 +1,5 @@
 {
-  "docstring": "Data model describing calibration procedures for HPLC and UV-Vis photospectrometry.",
+  "docstring": "Data model handling reactant-standard data for UV-Vis photospectrometry.",
   "enums": [
     "TemperatureUnits",
     "ConcentrationUnits"
@@ -16,25 +16,30 @@
       "pH": {
         "description": "pH of solution."
       },
+      "temperature": {
+        "description": "Temperature during calibration."
+      },
+      "temperature_unit": {
+        "description": "Temperature unit."
+      },
       "device": {
         "description": "Device object, containing information about the analytic device."
       },
       "data": {
-        "multiple": "True",
-        "description": "Contains standard-curve and absorption-spectrum."
+        "description": "Contains standard-curve and absorption-spectrum of a single reactant."
       }
     },
     "docstring": null
   },
   "Device": {
     "attributes": {
-      "device_manufacturer": {
+      "manufacturer": {
         "description": "Device manufacturer."
       },
-      "device_model": {
+      "model": {
         "description": "Model name of the device."
       },
-      "device_software_version": {
+      "software_version": {
         "description": "Software version of the device."
       }
     },
@@ -47,13 +52,7 @@
         "description": "Standard curve object, containing calibration data."
       },
       "spectrum": {
-        "description": "UVVisSpectrum object, containing spectrum data"
-      },
-      "temperature": {
-        "description": "Temperature during calibration."
-      },
-      "temperature_unit": {
-        "description": "Temperature unit."
+        "description": "UVVisSpectrum object, containing spectrum data."
       }
     },
     "docstring": null
@@ -65,14 +64,14 @@
       },
       "concentration": {
         "multiple": "True",
-        "description": "Concentration of the analyt."
+        "description": "Concentration of the reactant."
       },
       "concentration_unit": {
         "description": "Concentration unit."
       },
       "absorption": {
         "multiple": "True",
-        "description": "Measured absorption, corresponding to the applied concentration."
+        "description": "Measured absorption, corresponding to the applied concentration of the reactant."
       }
     },
     "docstring": null
@@ -80,8 +79,7 @@
   "Spectrum": {
     "attributes": {
       "concentration": {
-        "multiple": "True",
-        "description": "Concentration at which spectrum is recorded."
+        "description": "Concentration of  the reactant at which the spectrum was recorded."
       },
       "wavelength": {
         "multiple": "True",

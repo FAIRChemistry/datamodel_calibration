@@ -1,10 +1,10 @@
 ```mermaid
 classDiagram
+    Calibration *-- TemperatureUnits
     Calibration *-- Device
     Calibration *-- Data
     Data *-- StandardCurve
     Data *-- Spectrum
-    Data *-- TemperatureUnits
     StandardCurve *-- ConcentrationUnits
     StandardCurve *-- Series
     Spectrum *-- ConcentrationUnits
@@ -14,21 +14,21 @@ classDiagram
         +string reactant_id*
         +string date*
         +PositiveFloat pH*
+        +PositiveFloat temperature*
+        +TemperatureUnits temperature_unit*
         +Device device
-        +Data[0..*] data
+        +Data data
     }
     
     class Device {
-        +string device_manufacturer
-        +string device_model
-        +string device_software_version
+        +string manufacturer
+        +string model
+        +string software_version
     }
     
     class Data {
         +StandardCurve[0..*] standard_curve
         +Spectrum spectrum
-        +PositiveFloat temperature*
-        +TemperatureUnits temperature_unit*
     }
     
     class StandardCurve {
@@ -39,7 +39,7 @@ classDiagram
     }
     
     class Spectrum {
-        +float[0..*] concentration*
+        +float concentration*
         +float[0..*] wavelength*
         +ConcentrationUnits concentration_unit*
         +Series[0..*] absorption*

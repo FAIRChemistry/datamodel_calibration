@@ -7,7 +7,7 @@ from .spectrum import Spectrum
 from .standardcurve import StandardCurve
 from .temperatureunits import TemperatureUnits
 
-__doc__ = "Data model describing calibration procedures for HPLC and UV-Vis photospectrometry."
+__doc__ = "Data model handling reactant-standard data for UV-Vis photospectrometry."
 
 __all__ = [
     "Calibration",

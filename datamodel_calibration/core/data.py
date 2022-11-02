@@ -23,12 +23,6 @@ class Data(sdRDM.DataModel):
         xml="@id",
     )
 
-    temperature: PositiveFloat = Field(
-        ..., description="Temperature during calibration."
-    )
-
-    temperature_unit: TemperatureUnits = Field(..., description="Temperature unit.")
-
     standard_curve: List[StandardCurve] = Field(
         description="Standard curve object, containing calibration data.",
         default_factory=ListPlus,
@@ -66,13 +60,13 @@ class Data(sdRDM.DataModel):
             wavelength (float): Detection wavelength.
 
 
-            concentration (List[float]): Concentration of the analyt.
+            concentration (List[float]): Concentration of the reactant.
 
 
             concentration_unit (ConcentrationUnits): Concentration unit.
 
 
-            absorption (List[Series]): Measured absorption, corresponding to the applied concentration.
+            absorption (List[Series]): Measured absorption, corresponding to the applied concentration of the reactant.
         """
 
         params = {

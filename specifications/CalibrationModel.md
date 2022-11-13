@@ -1,4 +1,4 @@
-# Calibration Data-model
+# Calibration data-model
 
 Data model handling reactant-standard data for UV-Vis photo-spectrometry.
 

@@ -42,6 +42,7 @@ Data model handling reactant-standard data for UV-Vis photo-spectrometry.
 
 - __standard__
   - Type: Standard
+  - Multiple: False
   - Description: Standard curve object, containing calibration data.
 - __spectrum__
   - Type: Spectrum

@@ -4,87 +4,87 @@ Data model handling reactant-standard data for UV-Vis photo-spectrometry.
 
 ### Calibration
 
-- **reactant_id\***
+- __reactant_id__
   - Type: string
   - Description: Unique identifier of the calibrated reactant.
-- **date\***
+- __date__
   - Type: string
   - Description: Date when the calibration data was measured
-- **pH\***
+- __pH__
   - Type: PositiveFloat
   - Description: pH of solution.
-- **temperature\***
+- __temperature__
   - Type: PositiveFloat
   - Description: Temperature during calibration.
-- **temperature_unit\***
+- __temperature_unit__
   - Type: TemperatureUnits
   - Description: Temperature unit.
-- **device**
+- __device__
   - Type: Device
   - Description: Device object, containing information about the analytic device.
-- **data**
+- __data__
   - Type: Data
   - Description: Contains standard-curve and absorption-spectrum of a single reactant.
 
 ### Device
 
-- **manufacturer**
+- __manufacturer__
   - Type: string
   - Description: Device manufacturer.
-- **model**
+- __model__
   - Type: string
   - Description: Model name of the device.
-- **software_version**
+- __software_version__
   - Type: string
   - Description: Software version of the device.
 
 ### Data
 
-- **standard_curve**
-  - Type: StandardCurve
+- __standard__
+  - Type: Standard
   - Multiple: True
   - Description: Standard curve object, containing calibration data.
-- **spectrum**
+- __spectrum__
   - Type: Spectrum
   - Description: UVVisSpectrum object, containing spectrum data.
 
-### StandardCurve
+### Standard
 
-- **wavelength\***
+- __wavelength__
   - Type: float
   - Description: Detection wavelength.
-- **concentration\***
+- __concentration__
   - Type: float
   - Multiple: True
   - Description: Concentration of the reactant.
-- **concentration_unit\***
+- __concentration_unit__
   - Type: ConcentrationUnits
   - Description: Concentration unit.
-- **absorption\***
+- __absorption__
   - Type: Series
   - Multiple: True
   - Description: Measured absorption, corresponding to the applied concentration of the reactant.
 
 ### Spectrum
 
-- **concentration\***
+- __concentration__
   - Type: float
   - Description: Concentration of the reactant at which the spectrum was recorded.
-- **wavelength\***
+- __wavelength__
   - Type: float
   - Multiple: True
   - Description: Wavelengths used for detection.
-- **concentration_unit\***
+- __concentration_unit__
   - Type: ConcentrationUnits
   - Description: Concentration unit.
-- **absorption\***
+- __absorption__
   - Type: Series
   - Multiple: True
   - Description: Measured absorption, corresponding to detection wavelengths.
 
 ### Series
 
-- **values\***
+- __values__
   - Type: float
   - Multiple: True
   - Description: Series representing an array of value

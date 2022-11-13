@@ -91,7 +91,7 @@ Data model handling reactant-standard data for UV-Vis photo-spectrometry.
 
 #### TemperatureUnits
 
-These values are used to determine the temperature unit.
+Values used to determine the temperature unit.
 
 ```python
 CELSIUS = "C"

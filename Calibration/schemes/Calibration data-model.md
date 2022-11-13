@@ -27,7 +27,7 @@ classDiagram
     }
     
     class Data {
-        +Standard[0..*] standard
+        +Standard standard
         +Spectrum spectrum
     }
     

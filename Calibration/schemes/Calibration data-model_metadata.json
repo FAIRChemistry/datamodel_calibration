@@ -49,7 +49,6 @@
   "Data": {
     "attributes": {
       "standard": {
-        "multiple": "True",
         "description": "Standard curve object, containing calibration data."
       },
       "spectrum": {

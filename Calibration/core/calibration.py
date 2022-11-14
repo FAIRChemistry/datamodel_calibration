@@ -8,9 +8,7 @@ from pydantic import Field
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 from pydantic.types import PositiveFloat
-from .concentrationunits import ConcentrationUnits
 from .device import Device
-from .series import Series
 from .spectrum import Spectrum
 from .standard import Standard
 from .temperatureunits import TemperatureUnits
@@ -62,43 +60,3 @@ class Calibration(sdRDM.DataModel):
     __commit__: Optional[str] = PrivateAttr(
         default="bdadd49e3bc92f57bb84511721888175000cd011"
     )
-
-    def add_to_standard(
-        self,
-        concentration: List[float],
-        absorption: List[Series],
-        wavelength: Optional[float] = None,
-        concentration_unit: Optional[ConcentrationUnits] = None,
-        id: Optional[str] = None,
-    ) -> None:
-        """
-        Adds an instance of 'Standard' to the attribute 'standard'.
-
-        Args:
-
-
-            id (str): Unique identifier of the 'Standard' object. Defaults to 'None'.
-
-
-            concentration (List[float]): Concentration of the reactant.
-
-
-            absorption (List[Series]): Measured absorption, corresponding to the applied concentration of the reactant.
-
-
-            wavelength (Optional[float]): Detection wavelength. Defaults to None
-
-
-            concentration_unit (Optional[ConcentrationUnits]): Concentration unit. Defaults to None
-        """
-
-        params = {
-            "concentration": concentration,
-            "absorption": absorption,
-            "wavelength": wavelength,
-            "concentration_unit": concentration_unit,
-        }
-        if id is not None:
-            params["id"] = id
-        standard = [Standard(**params)]
-        self.standard = self.standard + standard

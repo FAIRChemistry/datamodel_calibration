@@ -16,7 +16,7 @@ classDiagram
         +PositiveFloat temperature
         +TemperatureUnits temperature_unit
         +Device device
-        +Standard[0..*] standard
+        +Standard standard
         +Spectrum spectrum
     }
     

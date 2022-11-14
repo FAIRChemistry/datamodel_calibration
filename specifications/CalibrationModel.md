@@ -22,9 +22,12 @@ Data model handling reactant-standard data for UV-Vis photo-spectrometry.
 - __device__
   - Type: Device
   - Description: Device object, containing information about the analytic device.
-- __data__
-  - Type: Data
-  - Description: Contains standard-curve and absorption-spectrum of a single reactant.
+- __standard__
+  - Type: Standard
+  - Description: Standard data of a substance.
+- __spectrum__
+  - Type: Spectrum
+  - Description: Spectrum data of a substance.
 
 ### Device
 
@@ -37,15 +40,6 @@ Data model handling reactant-standard data for UV-Vis photo-spectrometry.
 - __software_version__
   - Type: string
   - Description: Software version of the device.
-
-### Data
-
-- __standard__
-  - Type: Standard
-  - Description: Standard data of a substance.
-- __spectrum__
-  - Type: Spectrum
-  - Description: Spectrum data of a substance.
 
 ### Standard
 

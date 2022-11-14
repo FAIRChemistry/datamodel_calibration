@@ -44,6 +44,8 @@ Data model handling reactant-standard data for UV-Vis photo-spectrometry.
 
 ### Standard
 
+Description of a standard curve.
+
 - __wavelength__
   - Type: float
   - Description: Detection wavelength.

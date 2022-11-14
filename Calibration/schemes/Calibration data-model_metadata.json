@@ -53,6 +53,9 @@
       },
       "spectrum": {
         "description": "UVVisSpectrum object, containing spectrum data."
+      },
+      "test": {
+        "description": "test field."
       }
     },
     "docstring": null

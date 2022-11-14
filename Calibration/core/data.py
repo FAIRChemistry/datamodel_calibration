@@ -28,6 +28,8 @@ class Data(sdRDM.DataModel):
         description="UVVisSpectrum object, containing spectrum data.", default=None
     )
 
+    test: Optional[str] = Field(description="test field.", default=None)
+
     __repo__: Optional[str] = PrivateAttr(
         default="git://github.com/FAIRChemistry/datamodel_calibration.git"
     )

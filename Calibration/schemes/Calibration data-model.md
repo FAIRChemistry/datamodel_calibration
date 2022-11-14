@@ -29,6 +29,7 @@ classDiagram
     class Data {
         +Standard standard
         +Spectrum spectrum
+        +string test
     }
     
     class Standard {

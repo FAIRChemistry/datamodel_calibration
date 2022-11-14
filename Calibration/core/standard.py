@@ -1,14 +1,12 @@
 import sdRDM
 
 from typing import Optional, Union
-from pydantic import PrivateAttr
-from sdRDM.base.listplus import ListPlus
-from sdRDM.base.utils import forge_signature, IDGenerator
-
-from pydantic import Field
 from typing import List
 from typing import Optional
-
+from pydantic import PrivateAttr
+from pydantic import Field
+from sdRDM.base.listplus import ListPlus
+from sdRDM.base.utils import forge_signature, IDGenerator
 from .concentrationunits import ConcentrationUnits
 from .series import Series
 
@@ -20,19 +18,17 @@ class Standard(sdRDM.DataModel):
         default_factory=IDGenerator("standardINDEX"),
         xml="@id",
     )
+
     wavelength: Optional[float] = Field(
-        description="Detection wavelength.",
-        default=None,
+        description="Detection wavelength.", default=None
     )
 
     concentration: List[float] = Field(
-        description="Concentration of the reactant.",
-        default_factory=ListPlus,
+        description="Concentration of the reactant.", default_factory=ListPlus
     )
 
     concentration_unit: Optional[ConcentrationUnits] = Field(
-        description="Concentration unit.",
-        default=None,
+        description="Concentration unit.", default=None
     )
 
     absorption: List[Series] = Field(
@@ -46,6 +42,7 @@ class Standard(sdRDM.DataModel):
     __repo__: Optional[str] = PrivateAttr(
         default="git://github.com/FAIRChemistry/datamodel_calibration.git"
     )
+
     __commit__: Optional[str] = PrivateAttr(
         default="bdadd49e3bc92f57bb84511721888175000cd011"
     )
@@ -55,17 +52,16 @@ class Standard(sdRDM.DataModel):
         Adds an instance of 'Series' to the attribute 'absorption'.
 
         Args:
+
+
             id (str): Unique identifier of the 'Series' object. Defaults to 'None'.
+
+
             values (List[float]): Series representing an array of value.
         """
 
-        params = {
-            "values": values,
-        }
-
+        params = {"values": values}
         if id is not None:
             params["id"] = id
-
         absorption = [Series(**params)]
-
         self.absorption = self.absorption + absorption

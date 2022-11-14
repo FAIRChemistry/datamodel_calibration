@@ -67,7 +67,7 @@
         "description": "Measured absorption, corresponding to the applied concentration of the reactant."
       }
     },
-    "docstring": null
+    "docstring": "Description of a standard curve.\n"
   },
   "Spectrum": {
     "attributes": {

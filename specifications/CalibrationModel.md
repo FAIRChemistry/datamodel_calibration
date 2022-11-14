@@ -45,7 +45,7 @@ Data model handling reactant-standard data for UV-Vis photo-spectrometry.
   - Description: Standard data of a substance.
 - __spectrum__
   - Type: Spectrum
-  - Description: UVVisSpectrum object, containing spectrum data.
+  - Description: Spectrum data of a substance.
 
 ### Standard
 

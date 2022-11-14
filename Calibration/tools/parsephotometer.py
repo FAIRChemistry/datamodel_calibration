@@ -2,6 +2,7 @@ from Calibration.core.calibration import Calibration
 from Calibration.core.device import Device
 from Calibration.core.spectrum import Spectrum
 from Calibration.core.standard import Standard
+from Calibration.core.series import Series
 
 from typing import List, Dict
 import re
@@ -16,7 +17,10 @@ def parse_CalibrationData(
     species_id,
     wavelengths,
     concentrations: List[float],
-    concentration_unit
+    concentration_unit,
+    device_manufacturer: str,
+    device_model: str,
+    spectrum_reactant_concentration: float,
     ) -> Dict[float, Calibration]:
 
     # Define parameters for parser
@@ -87,10 +91,8 @@ def parse_CalibrationData(
     ### Map data to calibration datamodel instance ### 
     # Define photometer meta-data
     device = Device(
-        manufacturer="Molecular Devices",
-        model="Spectra Max 190 Micro-plate Reader",
-        software_version='1.2.3.4'
-        )
+        manufacturer=device_manufacturer,
+        model=device_model)
 
     # Create instance of calibration data-model
     # Since each instance of the datamodel only deals with one pH, two instances are created in this case.
@@ -106,9 +108,20 @@ def parse_CalibrationData(
             temperature=temperature,
             temperature_unit=temperature_unit)
 
-        # Create instances of StandardCurve for both wavelengths
+        # Create instances of 'Standard' for both wavelengths
         standard_curves = []
-        for wavelength, data in zip(wavelengths, absorbance_data):
+        for i, (wavelength, data) in enumerate(zip(wavelengths, absorbance_data)):
+            
+            absorption_series = []
+            for replicate in absorbance_data[i]:
+                absorption_series.append(Series(
+                    values=list(replicate)))
+            instance.add_to_standard(
+                concentration=concentrations,
+                wavelength=wavelength,
+                concentration_unit=concentration_unit,
+                absorption=absorption_series
+            )
 
             standard_curve = Standard(
                     wavelength=wavelength,
@@ -121,13 +134,15 @@ def parse_CalibrationData(
 
             standard_curves.append(standard_curve)
 
-        # Add absorption spectrum (currently from excel file)
+        # Add absorption spectrum
         spectrum = Spectrum(
-            concentration=1.0, #manual setting the concentration to 1 mM
+            concentration=spectrum_reactant_concentration,
             concentration_unit=concentration_unit,
             wavelength=spectrum_wavelengths.tolist())
 
         spectrum.add_to_absorption(spectrum_data_dict[pH_value].tolist())
+
+        instance.spectrum = spectrum
             
         # Add sub-classes of the datamodel to the corresponding parent attributes of the datamodel
         
@@ -188,7 +203,10 @@ if __name__ == "__main__":
         species_id="s1",
         wavelengths=[340, 420],
         concentrations=[0,5,10,15,25,50,75,100,125,150,175,200],
-        concentration_unit="uM"
+        concentration_unit="uM",
+        device_manufacturer="bla",
+        device_model="gut",
+        spectrum_reactant_concentration=1.3
     )
 
-    print(res)
+    print(res[3.0].spectrum)

@@ -1,7 +1,7 @@
 from typing import Dict
 from Calibration.core.calibration import Calibration
-from calibrationmodel import CalibrationModel
-from calibrationmodel import linear1, quadratic, poly3, poly_e, rational
+from Calibration.tools.calibrationmodel import CalibrationModel
+from Calibration.tools.calibrationmodel import linear1, quadratic, poly3, poly_e, rational
 
 from scipy.optimize import curve_fit
 from lmfit.model import ModelResult

@@ -1,14 +1,12 @@
 import sdRDM
 
 from typing import Optional, Union
+from typing import Optional
 from pydantic import PrivateAttr
+from pydantic import Field
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
-
-from pydantic import Field
 from pydantic.types import PositiveFloat
-from typing import Optional
-
 from .data import Data
 from .device import Device
 from .temperatureunits import TemperatureUnits
@@ -21,29 +19,23 @@ class Calibration(sdRDM.DataModel):
         default_factory=IDGenerator("calibrationINDEX"),
         xml="@id",
     )
+
     reactant_id: Optional[str] = Field(
-        description="Unique identifier of the calibrated reactant.",
-        default=None,
+        description="Unique identifier of the calibrated reactant.", default=None
     )
 
     date: Optional[str] = Field(
-        description="Date when the calibration data was measured",
-        default=None,
+        description="Date when the calibration data was measured", default=None
     )
 
-    pH: Optional[PositiveFloat] = Field(
-        description="pH of solution.",
-        default=None,
-    )
+    pH: Optional[PositiveFloat] = Field(description="pH of solution.", default=None)
 
     temperature: Optional[PositiveFloat] = Field(
-        description="Temperature during calibration.",
-        default=None,
+        description="Temperature during calibration.", default=None
     )
 
     temperature_unit: Optional[TemperatureUnits] = Field(
-        description="Temperature unit.",
-        default=None,
+        description="Temperature unit.", default=None
     )
 
     device: Optional[Device] = Field(
@@ -61,6 +53,7 @@ class Calibration(sdRDM.DataModel):
     __repo__: Optional[str] = PrivateAttr(
         default="git://github.com/FAIRChemistry/datamodel_calibration.git"
     )
+
     __commit__: Optional[str] = PrivateAttr(
         default="d6bf528ff84edff61e1591d29caab6f497ea301a"
     )

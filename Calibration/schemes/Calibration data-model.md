@@ -2,9 +2,8 @@
 classDiagram
     Calibration *-- TemperatureUnits
     Calibration *-- Device
-    Calibration *-- Data
-    Data *-- Standard
-    Data *-- Spectrum
+    Calibration *-- Standard
+    Calibration *-- Spectrum
     Standard *-- ConcentrationUnits
     Standard *-- Series
     Spectrum *-- ConcentrationUnits
@@ -17,18 +16,14 @@ classDiagram
         +PositiveFloat temperature
         +TemperatureUnits temperature_unit
         +Device device
-        +Data data
+        +Standard standard
+        +Spectrum spectrum
     }
     
     class Device {
         +string manufacturer
         +string model
         +string software_version
-    }
-    
-    class Data {
-        +Standard standard
-        +Spectrum spectrum
     }
     
     class Standard {

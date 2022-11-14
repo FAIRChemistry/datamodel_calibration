@@ -7,9 +7,10 @@ from pydantic import Field
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 from pydantic.types import PositiveFloat
-from .data import Data
 from .device import Device
 from .temperatureunits import TemperatureUnits
+from .spectrum import Spectrum
+from .standard import Standard
 
 
 @forge_signature
@@ -43,11 +44,12 @@ class Calibration(sdRDM.DataModel):
         default=None,
     )
 
-    data: Optional[Data] = Field(
-        description=(
-            "Contains standard-curve and absorption-spectrum of a single reactant."
-        ),
-        default=None,
+    standard: Optional[Standard] = Field(
+        description="Standard data of a substance.", default=None
+    )
+
+    spectrum: Optional[Spectrum] = Field(
+        description="Spectrum data of a substance.", default=None
     )
 
     __repo__: Optional[str] = PrivateAttr(

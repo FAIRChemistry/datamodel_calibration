@@ -49,7 +49,7 @@
   "Data": {
     "attributes": {
       "standard": {
-        "description": "Standard curve object, containing calibration data."
+        "description": "Standard data of a substance."
       },
       "spectrum": {
         "description": "UVVisSpectrum object, containing spectrum data."

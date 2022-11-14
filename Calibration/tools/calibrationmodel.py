@@ -1,5 +1,9 @@
 from typing import Dict, Optional, Callable
 from lmfit import Model, Parameters
+from lmfit.model import ModelResult
+from scipy.optimize import curve_fit
+
+from numpy import exp, ndarray
 
 
 class CalibrationModel:
@@ -7,18 +11,26 @@ class CalibrationModel:
         self,
         name: str,
         equation: Callable,
-        parameters: Optional[Dict[str, float]] = None,
-        lmfit_model: Optional[Model] = None,
-        lmfit_params: Optional[Parameters] = None):
-
+        parameters: Dict[str, float]
+        ):
         self.name = name
         self.equation = equation
         self.parameters = parameters
-        self.lmfit_model = lmfit_model
-        self.lmfit_params = lmfit_params
 
-    def set_lmfit_parameters(self) -> Parameters:
-        return self.lmfit_model.make_params(**self.parameters)
+
+    def fit(self, absorption: ndarray, concentration: ndarray) -> ModelResult:
+        # Get parameter estimates
+        result = curve_fit(
+            f=self.equation, xdata=concentration, ydata=absorption)[0]
+        self.parameters = dict(zip(self.parameters.keys(), result))
+
+        # Initialize lmfit
+        lmfit_model = Model(self.equation)
+        lmfit_params = lmfit_model.make_params(**self.parameters)
+
+        # Fit data to model
+        self.result = lmfit_model.fit(
+            data=absorption, x=concentration, params=lmfit_params)
 
 
 def linear1(x, a) -> float:

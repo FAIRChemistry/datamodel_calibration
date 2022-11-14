@@ -27,7 +27,8 @@
         "description": "Device object, containing information about the analytic device."
       },
       "standard": {
-        "description": "Standard data of a substance."
+        "description": "Standard data of a substance.",
+        "multiple": "True"
       },
       "spectrum": {
         "description": "Spectrum data of a substance."

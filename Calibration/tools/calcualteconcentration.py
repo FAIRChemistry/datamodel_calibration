@@ -16,9 +16,14 @@ def calculate_concentration(
     model_name: str = None,
     ) -> EnzymeMLDocument:
 
+    max_absorption_standard_curve = max(standard_curve.absorption)
+
     for id, measurement in enzmldoc.measurement_dict.items():
         for rep, replicates in enumerate(measurement.getReactant(reactant_id).replicates):
-            conc = to_concentration(standard_curve, replicates.data, model_name)
+            data = [x if x < max_absorption_standard_curve else float("nan") for x in replicates.data] # TODO add info if values are removed
+            conc = to_concentration(standard_curve, data, model_name)
+            conc = [float(x) if x != 0 else float("nan") for x in conc] #retrieves nans from 'to_concentration', since fsolve outputs 0 if input is nan
+
             enzmldoc.measurement_dict[id].species_dict["reactants"][reactant_id].replicates[rep].data = conc
             enzmldoc.measurement_dict[id].species_dict["reactants"][reactant_id].replicates[rep].data_unit = standard_curve.concentration_unit
             enzmldoc.measurement_dict[id].species_dict["reactants"][reactant_id].replicates[rep].data_type = "conc"
@@ -90,15 +95,15 @@ if __name__ == "__main__":
     
     standard = Standard(
         wavelength=405,
-        concentration=[0.1, 0.5, 1, 2.5, 5, 10],
-        concentration_unit="mM"
+        concentration=[0.1, 0.5],
+        concentration_unit="mole / l"
     )
     standard.add_to_absorption(
-        values=[0.24, 0.46, 0.68, 1, 1.61, 2.39])
+        values=[0.00004,0.00005])
     standard.add_to_absorption(
-        values=[0.2, 0.4, 0.6, 1, 1.6, 2.3])
+        values=[0.00004,0.00005])
     standard.add_to_absorption(
-        values=[0.27, 0.43, 0.63, 1.9, 1.66, 2.31])
+        values=[0.00004,0.00005])
 
 
 
@@ -111,10 +116,12 @@ if __name__ == "__main__":
         standard=[standard]
         )
     standardcurce = StandardCurve(calibration_data, 405)#.standard.absorption)
+
+    #print(to_concentration(standardcurce, [0.1,0.33,float("nan"),1.3,0.6]))
     
 
     enzmldoc = pe.EnzymeMLDocument.fromFile("/Users/maxhaussler/Dropbox/master_thesis/data/sdRDM_ABTS_oxidation/test_ABTS.omex")
     print(enzmldoc.measurement_dict["m3"].species_dict["reactants"]["s0"].replicates[2].data)
 
     enzmldoc = calculate_concentration(enzmldoc, standardcurce, "s0")
-    print(enzmldoc.measurement_dict["m9"].species_dict["reactants"]["s0"].replicates[2].data)
+    #print(enzmldoc.measurement_dict["m9"].species_dict["reactants"]["s0"].replicates[2].data)

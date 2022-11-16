@@ -2,9 +2,9 @@ from enum import Enum
 
 
 class ConcentrationUnits(Enum):
-    MOLAR = "M"
-    MILLIMOLAR = "mM"
-    MICROMOLAR = "uM"
+    MOLAR = "mole / l"
+    MILLIMOLAR = "mmole / l"
+    MICROMOLAR = "umole / l"
     NANAMOLAR = "nmole / l"
     GRAMLITER = "g / l"
     MILLIGRAMLITER = "mg / l"

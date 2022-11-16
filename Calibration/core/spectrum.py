@@ -42,7 +42,7 @@ class Spectrum(sdRDM.DataModel):
     )
 
     __commit__: Optional[str] = PrivateAttr(
-        default="99c33b318d41d883f459639289e93e3340c94343"
+        default="bc37962ac8d0294e19cccee6bdd79e3472829805"
     )
 
     def add_to_absorption(self, values: List[float], id: Optional[str] = None) -> None:

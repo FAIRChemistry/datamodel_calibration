@@ -44,7 +44,7 @@ class Standard(sdRDM.DataModel):
     )
 
     __commit__: Optional[str] = PrivateAttr(
-        default="5fe9c6638fbd708b14a2e0bb6c7c750b758735b4"
+        default="8fc0894f6a340df3e3439a11854d91622b3dd60f"
     )
 
     def add_to_absorption(self, values: List[float], id: Optional[str] = None) -> None:

@@ -12,21 +12,36 @@ from pandas import DataFrame
 
 
 class StandardCurve:
-    def __init__(self, calibration_data: Calibration):
+    def __init__(self, calibration_data: Calibration, wavelength: int = None):
         self.calibration_data = calibration_data
-        self.concentration_unit = calibration_data.standard.concentration_unit
+        self.wavelength = wavelength
+        self.standard = self._get_Standard()
+        self.concentration_unit = self.standard.concentration_unit
         self.substance_name = calibration_data.reactant_id
-        self.wavelength = calibration_data.standard.wavelength
+        self.wavelength = wavelength
         self._initialize_measurement_arrays()
         self.models = self._initialize_models()
         self._fit_models()
 
     def _initialize_measurement_arrays(self):
-        absorption = [measurement.values for measurement in self.calibration_data.standard.absorption]
+        absorption = [measurement.values for measurement in self.standard.absorption]
         n_replicates = len(absorption)
 
-        self.concentration = np.tile(calibration_data.standard.concentration, n_replicates)
-        self.absorption = np.array([measurement.values for measurement in self.calibration_data.standard.absorption]).flatten()
+        self.concentration = np.tile(self.standard.concentration, n_replicates)
+        self.absorption = np.array([measurement.values for measurement in self.standard.absorption]).flatten()
+
+    def _get_Standard(self):
+        if self.wavelength != None:
+            try:
+                print("try")
+                return next(standard for standard in self.calibration_data.standard if standard.wavelength == self.wavelength)
+            except:
+                raise StopIteration(
+                    f"No calibration data found for calibration at {self.wavelength} nm. Calibration data exists for following wavelengths: {[x.wavelength for x in self.calibration_data.standard]}")
+        else:
+            standard = self.calibration_data.standard[0]
+            print(f"Found calibration data at {int(standard.wavelength)} nm")
+            return standard
 
 
     def _initialize_models(self) -> Dict[str, CalibrationModel]:
@@ -106,7 +121,6 @@ class StandardCurve:
 
 if __name__ == "__main__":
     from Calibration.core.standard import Standard
-    from Calibration.core.standard import Standard
 
     standard = Standard(
         wavelength=405,
@@ -128,11 +142,12 @@ if __name__ == "__main__":
         date="14.11.22",
         temperature=40,
         temperature_unit="C",
-        standard=standard
+        standard=[standard]
         )
 
 
     # Fitter
 
     standardcurce = StandardCurve(calibration_data)#.standard.absorption)
-    standardcurce.visualize()
+    print(standardcurce.__dict__)
+    #standardcurce.visualize()

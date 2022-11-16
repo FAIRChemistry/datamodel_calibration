@@ -12,8 +12,9 @@ from pandas import DataFrame
 
 
 class StandardCurve:
-    def __init__(self, calibration_data: Calibration, wavelength: int = None, blanc_data: bool = True):
+    def __init__(self, calibration_data: Calibration, wavelength: int = None, blanc_data: bool = True, cutoff_absorption: float = None):
         self.blank_data = blanc_data
+        self.cutoff = cutoff_absorption
         self.calibration_data = calibration_data
         self.wavelength = wavelength
         self.standard = self._get_Standard()
@@ -39,6 +40,9 @@ class StandardCurve:
             self.absorption = absorption
         else:
             self.absorption = np.array([measurement.values for measurement in self.standard.absorption]).flatten()
+        
+        if self.cutoff != None:
+            self._cutoff_absorption()
 
     def _get_Standard(self):
         if self.wavelength != None:
@@ -53,6 +57,11 @@ class StandardCurve:
             print(f"Found calibration data at {int(standard.wavelength)} nm")
             self.wavelength = standard.wavelength
             return standard
+
+    def _cutoff_absorption(self):
+        pos = np.where(self.absorption < self.cutoff)
+        self.concentration = self.concentration[pos]
+        self.absorption = self.absorption[pos]
 
 
     def _initialize_models(self) -> Dict[str, CalibrationModel]:
@@ -141,7 +150,7 @@ if __name__ == "__main__":
     standard.add_to_absorption(
         values=[0.11, 0.24, 0.46, 0.68, 1, 1.61, 2.39])
     standard.add_to_absorption(
-        values=[0.11, 0.2, 0.4, 0.6, 1, 1.6, 2.3])
+        values=[0.11, 0.2, 0.4, 0.6, 1, 1.6, 2])
     standard.add_to_absorption(
         values=[0.11, 0.27, 0.43, 0.63, 1.9, 1.66, 2.31])
 
@@ -159,5 +168,5 @@ if __name__ == "__main__":
 
     # Fitter
 
-    standardcurce = StandardCurve(calibration_data)#.standard.absorption)
+    standardcurce = StandardCurve(calibration_data, cutoff_absorption=1.1)#.standard.absorption)
     standardcurce.visualize()

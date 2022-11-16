@@ -23,7 +23,6 @@ def calculate_concentration(
             enzmldoc.measurement_dict[id].species_dict["reactants"][reactant_id].replicates[rep].data_unit = standard_curve.concentration_unit
             enzmldoc.measurement_dict[id].species_dict["reactants"][reactant_id].replicates[rep].data_type = "conc"
 
-
     return enzmldoc
 
 def to_concentration(standard_curve: StandardCurve, array: list, model_name: str = None) -> List[float]:

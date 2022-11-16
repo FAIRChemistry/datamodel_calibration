@@ -12,13 +12,13 @@ from pandas import DataFrame
 
 
 class StandardCurve:
-    def __init__(self, calibration_data: Calibration, wavelength: int = None):
+    def __init__(self, calibration_data: Calibration, wavelength: int = None, blanc_data: bool = True):
+        self.blank_data = blanc_data
         self.calibration_data = calibration_data
         self.wavelength = wavelength
         self.standard = self._get_Standard()
         self.concentration_unit = self.standard.concentration_unit
         self.substance_name = calibration_data.reactant_id
-        self.wavelength = wavelength
         self._initialize_measurement_arrays()
         self.models = self._initialize_models()
         self._fit_models()
@@ -26,9 +26,19 @@ class StandardCurve:
     def _initialize_measurement_arrays(self):
         absorption = [measurement.values for measurement in self.standard.absorption]
         n_replicates = len(absorption)
+        print(self.standard.concentration)
 
         self.concentration = np.tile(self.standard.concentration, n_replicates)
-        self.absorption = np.array([measurement.values for measurement in self.standard.absorption]).flatten()
+        if self.blank_data and np.any(self.concentration == 0):
+            pos = int(np.where(np.array(self.standard.concentration) == 0)[0])
+            print(pos)
+            absorption = np.array([])
+            for repeat in self.standard.absorption:
+                absorption = np.append(absorption, [x - repeat.values[pos] for x in repeat.values])
+            print("Calibration data was automatically blanked.")
+            self.absorption = absorption
+        else:
+            self.absorption = np.array([measurement.values for measurement in self.standard.absorption]).flatten()
 
     def _get_Standard(self):
         if self.wavelength != None:
@@ -41,6 +51,7 @@ class StandardCurve:
         else:
             standard = self.calibration_data.standard[0]
             print(f"Found calibration data at {int(standard.wavelength)} nm")
+            self.wavelength = standard.wavelength
             return standard
 
 
@@ -124,15 +135,15 @@ if __name__ == "__main__":
 
     standard = Standard(
         wavelength=405,
-        concentration=[0.1, 0.5, 1, 2.5, 5, 10],
+        concentration=[0, 0.1, 0.5, 1, 2.5, 5, 10],
         concentration_unit="mM"
     )
     standard.add_to_absorption(
-        values=[0.24, 0.46, 0.68, 1, 1.61, 2.39])
+        values=[0.11, 0.24, 0.46, 0.68, 1, 1.61, 2.39])
     standard.add_to_absorption(
-        values=[0.2, 0.4, 0.6, 1, 1.6, 2.3])
+        values=[0.11, 0.2, 0.4, 0.6, 1, 1.6, 2.3])
     standard.add_to_absorption(
-        values=[0.27, 0.43, 0.63, 1.9, 1.66, 2.31])
+        values=[0.11, 0.27, 0.43, 0.63, 1.9, 1.66, 2.31])
 
 
 
@@ -149,5 +160,4 @@ if __name__ == "__main__":
     # Fitter
 
     standardcurce = StandardCurve(calibration_data)#.standard.absorption)
-    print(standardcurce.__dict__)
-    #standardcurce.visualize()
+    standardcurce.visualize()

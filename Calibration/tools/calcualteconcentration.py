@@ -7,26 +7,43 @@ from pyenzyme import EnzymeMLDocument
 from scipy.optimize import fsolve
 import numpy as np
 
-
-def calculate_concentration(
+# Applies 'StandardCurve' on an 'EnzymeMLDocument'.
+def apply_standard_curve(
     enzmldoc: EnzymeMLDocument,
     standard_curve: StandardCurve,
     reactant_id: str,
     wavelength: int = None,
     model_name: str = None,
+    ommit_nan_measurements: bool = False
     ) -> EnzymeMLDocument:
 
     max_absorption_standard_curve = max(standard_curve.absorption)
 
+    delete_measurements = []
+
     for id, measurement in enzmldoc.measurement_dict.items():
+        del_meas = False
         for rep, replicates in enumerate(measurement.getReactant(reactant_id).replicates):
             data = [x if x < max_absorption_standard_curve else float("nan") for x in replicates.data] # TODO add info if values are removed
-            conc = to_concentration(standard_curve, data, model_name)
-            conc = [float(x) if x != 0 else float("nan") for x in conc] #retrieves nans from 'to_concentration', since fsolve outputs 0 if input is nan
+            
+            # Check if nan values are in measurement data
+            if np.isnan(np.min(data)) and ommit_nan_measurements == True:
+                del_meas = True
+            else:
+                conc = to_concentration(standard_curve, data, model_name)
+                conc = [float(x) if x != 0 else float("nan") for x in conc] #retrieves nans from 'to_concentration', since fsolve outputs 0 if input is nan
 
-            enzmldoc.measurement_dict[id].species_dict["reactants"][reactant_id].replicates[rep].data = conc
-            enzmldoc.measurement_dict[id].species_dict["reactants"][reactant_id].replicates[rep].data_unit = standard_curve.concentration_unit
-            enzmldoc.measurement_dict[id].species_dict["reactants"][reactant_id].replicates[rep].data_type = "conc"
+                enzmldoc.measurement_dict[id].species_dict["reactants"][reactant_id].replicates[rep].data = conc
+                enzmldoc.measurement_dict[id].species_dict["reactants"][reactant_id].replicates[rep].data_unit = standard_curve.concentration_unit
+                enzmldoc.measurement_dict[id].species_dict["reactants"][reactant_id].replicates[rep].data_type = "conc"
+        if del_meas:
+            delete_measurements.append(id)
+    print(enzmldoc.measurement_dict.keys())
+    for id in delete_measurements:
+        del enzmldoc.measurement_dict[id]
+    
+    if len(delete_measurements) != 0:
+        print(f"Measurements '{delete_measurements}' removed from document, since measurement values are out of calibration range, respectively.")
 
     return enzmldoc
 
@@ -121,7 +138,6 @@ if __name__ == "__main__":
     
 
     enzmldoc = pe.EnzymeMLDocument.fromFile("/Users/maxhaussler/Dropbox/master_thesis/data/sdRDM_ABTS_oxidation/test_ABTS.omex")
-    print(enzmldoc.measurement_dict["m3"].species_dict["reactants"]["s0"].replicates[2].data)
 
-    enzmldoc = calculate_concentration(enzmldoc, standardcurce, "s0")
+    enzmldoc = apply_standard_curve(enzmldoc, standardcurce, "s0", ommit_nan_measurements=True)
     #print(enzmldoc.measurement_dict["m9"].species_dict["reactants"]["s0"].replicates[2].data)

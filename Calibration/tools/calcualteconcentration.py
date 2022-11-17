@@ -8,7 +8,7 @@ from scipy.optimize import fsolve
 import numpy as np
 
 # Applies 'StandardCurve' on an 'EnzymeMLDocument'.
-def apply_standard_curve(
+def apply_StandardCurve_to_EnzymeML(
     enzmldoc: EnzymeMLDocument,
     standard_curve: StandardCurve,
     reactant_id: str,

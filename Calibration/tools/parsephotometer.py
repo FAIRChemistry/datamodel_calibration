@@ -152,6 +152,113 @@ def parse_CalibrationData(
 
     return instance_dict
 
+def parse_measurement(path: str) -> Dict:
+
+    # Read raw data, parse metadata
+    df = read_photometer(path)
+    metadata_row = (str(df.iloc[-1].values))
+    date = re.findall(r'\d{4}/\d{2}/\d{2}', metadata_row)[0]
+    pH = float(re.findall(r'\d\.\d', metadata_row)[0])
+    
+    df = df.iloc[13:-9].reset_index().drop(columns="index")
+    df = df.applymap(tab_split)
+    initial_substrates=[0,5,10,15,25,50,75,100,150,200]
+    time = []
+    temperature = []
+    array = []
+
+    # Extract measurement data
+    for index, row in df.iterrows():
+        if index % 6 == 0:
+            time.append(row.values[0][0])
+
+            temperature.append(row.values[0][1])
+            df.loc[index, "##BLOCKS= 2"] = row.values[0][2:]
+    
+        data = row.values[0]
+        array.append([string_to_float(x) for x in data])
+
+    # Cleaning and restructuring of data
+    array = np.array(array)
+    array = array[~np.isnan(array)]
+    array = array.reshape(11,6,20)
+    array = array.swapaxes(0,2)
+
+    #(wavelength, concentration, control, replicates, data)
+    array = array.reshape((2,10,2,3,11))
+    
+    #(wavelength, control, concentration, replicates, data)
+    array = array.swapaxes(1,2)
+
+    substrate = array[0][0]
+    substrate_control = array[0][1]
+    product = array[1][0]
+    product_control = array[1][0]
+
+    measurements_product_control = []
+    for data, init_substrate in zip(product_control, initial_substrates):
+        measurement = {}
+        measurement["initial_substrate"] = 0
+        reps = []
+        for replicate in data:
+            rep_dict = {}
+            rep_dict["replicate"] = replicate.tolist()
+            reps.append(rep_dict)
+        measurement["data"] = reps
+        
+        measurements_product_control.append(measurement)
+
+    measurements_substrate_control = []
+    for data, init_substrate in zip(substrate_control, initial_substrates):
+        measurement = {}
+        measurement["initial_substrate"] = init_substrate
+        reps = []
+        for replicate in data:
+            rep_dict = {}
+            rep_dict["replicate"] = replicate.tolist()
+            reps.append(rep_dict)
+        measurement["data"] = reps
+        
+        measurements_substrate_control.append(measurement)
+
+    measurements_substrate = []
+    for data, init_substrate in zip(substrate, initial_substrates):
+        measurement = {}
+        measurement["initial_substrate"] = init_substrate
+        reps = []
+        for replicate in data:
+            rep_dict = {}
+            rep_dict["replicate"] = replicate.tolist()
+            reps.append(rep_dict)
+        measurement["data"] = reps
+        
+        measurements_substrate.append(measurement)
+
+    measurements_product = []
+    for data in product:
+        measurement = {}
+        measurement["initial_substrate"] = 0
+        reps = []
+        for replicate in data:
+            rep_dict = {}
+            rep_dict["replicate"] = replicate.tolist()
+            reps.append(rep_dict)
+        measurement["data"] = reps
+        
+        measurements_product.append(measurement)
+
+    data_dict = {
+        "pH": pH,
+        "name": f"ABTS oxidation pH {pH} and {temperature[0]}C",
+        "date": str(datetime(*[int(x) for x in date.split("/")],)),
+        "time": [to_seconds(x) for x in time],
+        "temperature": [float(x) for x in temperature][0],
+        "measurements_substrate": measurements_substrate,
+        "measurements_product": measurements_product,
+        "measurements_product_control": measurements_product_control,
+        "measurements_product_control": measurements_product_control,
+    }
+    return data_dict
 
 # Helper functions
 
@@ -198,8 +305,8 @@ def to_seconds(string: str) -> List[int]:
 
 if __name__ == "__main__":
     res = parse_CalibrationData(
-        path_standard="/Users/maxhaussler/Dropbox/master_thesis/data/sdRDM_example/CalibrationData/pH 3.0+3.5 25deg standards.txt",
-        path_spectrum="/Users/maxhaussler/Dropbox/master_thesis/data/sdRDM_example/SpectrumData/pH 3.0+3.5 25deg scan.txt",
+        path_standard="/Users/maxhaussler/Dropbox/master_thesis/data/sdRDM_ABTS_oxidation/StandardData/pH 3.0+3.5 25deg standards.txt",
+        path_spectrum="/Users/maxhaussler/Dropbox/master_thesis/data/sdRDM_ABTS_oxidation/SpectrumData/pH 3.0+3.5 25deg scan.txt",
         species_id="s1",
         wavelengths=[340, 420],
         concentrations=[0,5,10,15,25,50,75,100,125,150,175,200],

@@ -33,6 +33,7 @@ class CalibrationModel:
             data=absorption, x=concentration, params=lmfit_params)
 
 
+# Fitting equations
 def linear1(x, a) -> float:
     return a*x
 
@@ -51,3 +52,38 @@ def poly_e(x, a, b) -> float:
 
 def rational(x, a, b) -> float:
     return (a*x)/(b+x)
+
+
+# Root equations
+def root_linear1(x: float, params: Dict[str, float]) -> float:
+    a, absorption = params.values()
+    return a*x - absorption
+
+
+def root_quadratic(x: float, params: Dict[str, float]) -> float:
+    a, b, absorption = params.values()
+    return a*x**2 + b*x - absorption
+
+
+def root_poly3(x: float, params: Dict[str, float]) -> float:
+    a, b, c, absorption = params.values()
+    return a*x**3 + b*x**2 + c*x - absorption
+
+
+def root_poly_e(x: float, params: Dict[str, float]) -> float:
+    a, b, absorption = params.values()
+    return a*np.exp(x/b) - absorption
+
+
+def root_rational(x: float, params: Dict[str, float]) -> float:
+    a, b, absorption = params.values()
+    return (a*x)/(b+x) - absorption
+
+# Mapper for root equations
+equation_dict: Dict[str, Callable] = {
+    "Linear": root_linear1,
+    "Quadratic": root_quadratic,
+    "3rd polynominal": root_poly3,
+    "Exponential": root_poly_e,
+    "Rational": root_rational
+    }

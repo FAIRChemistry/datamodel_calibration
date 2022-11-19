@@ -1,15 +1,16 @@
-from typing import Dict
+from typing import Dict, List, Callable
 from Calibration.core.calibration import Calibration
 from Calibration.tools.calibrationmodel import CalibrationModel
-from Calibration.tools.calibrationmodel import linear1, quadratic, poly3, poly_e, rational
+from Calibration.tools.calibrationmodel import linear1, quadratic, poly3, poly_e, rational, root_linear1, root_poly3, root_poly_e, root_quadratic, root_rational, equation_dict
 
-from scipy.optimize import curve_fit
-from lmfit.model import ModelResult
 import matplotlib.pyplot as plt
 import numpy as np
 from IPython.display import display
 from pandas import DataFrame
+from pyenzyme import EnzymeMLDocument
+from scipy.optimize import fsolve
 
+# TODO calcualte method to abso --> conc
 
 class StandardCurve:
     def __init__(self, calibration_data: Calibration, wavelength: int = None, blanc_data: bool = True, cutoff_absorption: float = None):
@@ -27,12 +28,10 @@ class StandardCurve:
     def _initialize_measurement_arrays(self):
         absorption = [measurement.values for measurement in self.standard.absorption]
         n_replicates = len(absorption)
-        print(self.standard.concentration)
 
         self.concentration = np.tile(self.standard.concentration, n_replicates)
         if self.blank_data and np.any(self.concentration == 0):
             pos = int(np.where(np.array(self.standard.concentration) == 0)[0])
-            print(pos)
             absorption = np.array([])
             for repeat in self.standard.absorption:
                 absorption = np.append(absorption, [x - repeat.values[pos] for x in repeat.values])
@@ -47,7 +46,6 @@ class StandardCurve:
     def _get_Standard(self):
         if self.wavelength != None:
             try:
-                print("try")
                 return next(standard for standard in self.calibration_data.standard if standard.wavelength == self.wavelength)
             except:
                 raise StopIteration(
@@ -138,21 +136,81 @@ class StandardCurve:
         plt.title(f"calibration curve of {self.substance_name}")
         plt.show()
 
+    def get_concentration(self, absorption: List[float], model_name: str = None) -> List[float]:
+        
+        # Convert to ndarray for performance
+        if not isinstance(absorption, np.ndarray):
+            absorption = np.array(absorption)
+
+        # Select model equation
+        if model_name == None:
+            model = self.models[next(iter(self.result_dict))]
+        else:
+            model = self.models[model_name]
+        equation: Callable = equation_dict[model.name]
+
+        # Calculate concentration through roots
+        concentration = []
+        for value in absorption:
+            params = model.parameters
+            params["absorption"] = value
+            concentration.append(float(fsolve(equation, 0, params)))
+
+        return concentration
+
+    def apply_to_EnzymeML(
+        self,
+        enzmldoc: EnzymeMLDocument,
+        species_id: str,
+        model_name: str = None,
+        ommit_nan_measurements: bool = False
+        ) -> EnzymeMLDocument:
+
+        max_absorption_standard_curve = max(self.absorption)
+
+        delete_measurements = []
+
+        for id, measurement in enzmldoc.measurement_dict.items():
+            del_meas = False
+            for rep, replicates in enumerate(measurement.getReactant(species_id).replicates):
+                data = [x if x < max_absorption_standard_curve else float("nan") for x in replicates.data] # TODO add info if values are removed
+                
+                # Check if nan values are in measurement data
+                if np.isnan(np.min(data)) and ommit_nan_measurements == True:
+                    del_meas = True
+                else:
+                    conc = self.get_concentration(absorption=data, model_name=model_name)
+                    conc = [float(x) if x != 0 else float("nan") for x in conc] #retrieves nans from 'to_concentration', since fsolve outputs 0 if input is nan
+
+                    enzmldoc.measurement_dict[id].species_dict["reactants"][species_id].replicates[rep].data = conc
+                    enzmldoc.measurement_dict[id].species_dict["reactants"][species_id].replicates[rep].data_unit = self.concentration_unit
+                    enzmldoc.measurement_dict[id].species_dict["reactants"][species_id].replicates[rep].data_type = "conc"
+            if del_meas:
+                delete_measurements.append(id)
+        for id in delete_measurements:
+            del enzmldoc.measurement_dict[id]
+        
+        if len(delete_measurements) != 0:
+            print(f"Measurements '{delete_measurements}' removed from document, since respective measurement values are out of calibration range.")
+
+        return enzmldoc
+
+
 
 if __name__ == "__main__":
     from Calibration.core.standard import Standard
 
     standard = Standard(
         wavelength=405,
-        concentration=[0, 0.1, 0.5, 1, 2.5, 5, 10],
-        concentration_unit="mM"
+        concentration=[0.1, 0.5],
+        concentration_unit="mole / l"
     )
     standard.add_to_absorption(
-        values=[0.11, 0.24, 0.46, 0.68, 1, 1.61, 2.39])
+        values=[0.00004,0.00005])
     standard.add_to_absorption(
-        values=[0.11, 0.2, 0.4, 0.6, 1, 1.6, 2])
+        values=[0.00004,0.00005])
     standard.add_to_absorption(
-        values=[0.11, 0.27, 0.43, 0.63, 1.9, 1.66, 2.31])
+        values=[0.00004,0.00005])
 
 
 
@@ -164,9 +222,12 @@ if __name__ == "__main__":
         temperature_unit="C",
         standard=[standard]
         )
+    standardcurce = StandardCurve(calibration_data, 405)#.standard.absorption)
 
+    #print(to_concentration(standardcurce, [0.1,0.33,float("nan"),1.3,0.6]))
+    
 
-    # Fitter
+    enzmldoc = EnzymeMLDocument.fromFile("/Users/maxhaussler/Dropbox/master_thesis/data/sdRDM_ABTS_oxidation/test_ABTS.omex")
 
-    standardcurce = StandardCurve(calibration_data, cutoff_absorption=1.1)#.standard.absorption)
-    standardcurce.visualize()
+    enzmldoc = standardcurce.apply_to_EnzymeML(enzmldoc, "s0", ommit_nan_measurements=True)
+    #print(enzmldoc.measurement_dict["m9"].species_dict["reactants"]["s0"].replicates[2].data)

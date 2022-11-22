@@ -31,5 +31,5 @@ class Device(sdRDM.DataModel):
     )
 
     __commit__: Optional[str] = PrivateAttr(
-        default="7368c406829f501ea364dcc8b68c0ccb65ebb03a"
+        default="0b5e9b0f8d834323cf7e81c3e7b39fe24907d173"
     )

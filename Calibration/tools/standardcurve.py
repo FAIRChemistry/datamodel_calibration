@@ -13,7 +13,7 @@ from scipy.optimize import fsolve
 # TODO calcualte method to abso --> conc
 
 class StandardCurve:
-    def __init__(self, calibration_data: Calibration, wavelength: int = None, blanc_data: bool = True, cutoff_absorption: float = None):
+    def __init__(self, calibration_data: Calibration, wavelength: int = None, blanc_data: bool = True, cutoff_absorption: float = None, show_output: bool = True):
         self.blank_data = blanc_data
         self.cutoff = cutoff_absorption
         self.calibration_data = calibration_data
@@ -23,7 +23,7 @@ class StandardCurve:
         self.substance_name = calibration_data.reactant_id
         self._initialize_measurement_arrays()
         self.models = self._initialize_models()
-        self._fit_models()
+        self._fit_models(show_output)
 
     def _initialize_measurement_arrays(self):
         absorption = [measurement.values for measurement in self.standard.absorption]
@@ -96,12 +96,13 @@ class StandardCurve:
             rational_model.name: rational_model}
 
 
-    def _fit_models(self):
+    def _fit_models(self, show_output: bool = True):
         for model in self.models.values():
             model.fit(self.absorption, self.concentration)
 
         self.result_dict = self._evaluate_aic()
-        display(DataFrame.from_dict(self.result_dict, orient='index', columns=["AIC"]).rename(columns={0: "AIC"}).round().astype("int"))
+        if show_output:
+            display(DataFrame.from_dict(self.result_dict, orient='index', columns=["AIC"]).rename(columns={0: "AIC"}).round().astype("int"))
 
     def _evaluate_aic(self):
         names = []
@@ -116,8 +117,14 @@ class StandardCurve:
         return result_dict
 
 
-    def visualize(self, model_name: str = None):
-        # TODO: add file directory for save
+    def visualize(self, model_name: str = None, ax: plt.Axes = None):
+        ax
+        if ax is None:
+            ax_provided = False
+            ax = plt.gca()
+        else:
+            ax_provided = True
+
         if model_name is None:
             model = self.models[next(iter(self.result_dict.keys()))]
         else:
@@ -129,12 +136,13 @@ class StandardCurve:
         equation = model.equation
         params = model.result.params.valuesdict()
 
-        plt.scatter(self.concentration, self.absorption)
-        plt.plot(smooth_x, equation(smooth_x, **params))
-        plt.ylabel(f"absorption at {int(self.wavelength)} nm")
-        plt.xlabel(f"{self.substance_name} [{self.concentration_unit}]")
-        plt.title(f"calibration curve of {self.substance_name}")
-        plt.show()
+        ax.scatter(self.concentration, self.absorption)
+        ax.plot(smooth_x, equation(smooth_x, **params))
+        if ax_provided == False:
+            ax.set_ylabel(f"absorption at {int(self.wavelength)} nm")
+            ax.set_xlabel(f"{self.substance_name} [{self.concentration_unit}]")
+            ax.set_title(f"calibration curve of {self.substance_name}")
+
 
     def get_concentration(self, absorption: List[float], model_name: str = None) -> List[float]:
         

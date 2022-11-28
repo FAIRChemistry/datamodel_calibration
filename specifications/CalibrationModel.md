@@ -1,7 +1,6 @@
-# Calibration data-model
+# CaliPytion
 
-Data model handling reactant-standard data for UV-Vis photo-spectrometry.
-
+Data model handling (meta-) data of standard curves and spectras of an annalyte.
 ### Calibration
 
 - __reactant_id__

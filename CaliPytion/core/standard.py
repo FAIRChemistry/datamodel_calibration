@@ -12,20 +12,21 @@ from .series import Series
 
 
 @forge_signature
-class Spectrum(sdRDM.DataModel):
+class Standard(sdRDM.DataModel):
+    """Description of a standard curve."""
+
     id: str = Field(
         description="Unique identifier of the given object.",
-        default_factory=IDGenerator("spectrumINDEX"),
+        default_factory=IDGenerator("standardINDEX"),
         xml="@id",
     )
 
-    concentration: Optional[float] = Field(
-        description="Concentration of the reactant at which the spectrum was recorded.",
-        default=None,
+    wavelength: Optional[float] = Field(
+        description="Detection wavelength.", default=None
     )
 
-    wavelength: List[float] = Field(
-        description="Wavelengths used for detection.", default_factory=ListPlus
+    concentration: List[float] = Field(
+        description="Concentration of the reactant.", default_factory=ListPlus
     )
 
     concentration_unit: Optional[ConcentrationUnits] = Field(
@@ -33,16 +34,19 @@ class Spectrum(sdRDM.DataModel):
     )
 
     absorption: List[Series] = Field(
-        description="Measured absorption, corresponding to detection wavelengths.",
+        description=(
+            "Measured absorption, corresponding to the applied concentration of the"
+            " reactant."
+        ),
         default_factory=ListPlus,
     )
 
     __repo__: Optional[str] = PrivateAttr(
-        default="git://github.com/FAIRChemistry/datamodel_calibration.git"
+        default="git://github.com/FAIRChemistry/CaliPytion.git"
     )
 
     __commit__: Optional[str] = PrivateAttr(
-        default="0b5e9b0f8d834323cf7e81c3e7b39fe24907d173"
+        default="9375692de716baa6d0002609c4bbaf3040f76071"
     )
 
     def add_to_absorption(self, values: List[float], id: Optional[str] = None) -> None:

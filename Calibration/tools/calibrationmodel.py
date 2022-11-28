@@ -72,7 +72,7 @@ def root_poly3(x: float, params: Dict[str, float]) -> float:
 
 def root_poly_e(x: float, params: Dict[str, float]) -> float:
     a, b, absorption = params.values()
-    return a*np.exp(x/b) - absorption
+    return a*exp(x/b) - absorption
 
 
 def root_rational(x: float, params: Dict[str, float]) -> float:

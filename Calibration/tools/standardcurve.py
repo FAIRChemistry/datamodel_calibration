@@ -1,10 +1,16 @@
 from typing import Dict, List, Callable
 from Calibration.core.calibration import Calibration
 from Calibration.tools.calibrationmodel import CalibrationModel
+from Calibration.core.device import Device
+from Calibration.core.spectrum import Spectrum
+from Calibration.core.standard import Standard
+from Calibration.core.series import Series
+
 from Calibration.tools.calibrationmodel import linear1, quadratic, poly3, poly_e, rational, root_linear1, root_poly3, root_poly_e, root_quadratic, root_rational, equation_dict
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from IPython.display import display
 from pandas import DataFrame
 from pyenzyme import EnzymeMLDocument
@@ -117,7 +123,7 @@ class StandardCurve:
         return result_dict
 
 
-    def visualize(self, model_name: str = None, ax: plt.Axes = None):
+    def visualize(self, model_name: str = None, ax: plt.Axes = None, title: str = None, y_label: str = None):
         ax
         if ax is None:
             ax_provided = False
@@ -142,6 +148,11 @@ class StandardCurve:
             ax.set_ylabel(f"absorption at {int(self.wavelength)} nm")
             ax.set_xlabel(f"{self.substance_name} [{self.concentration_unit}]")
             ax.set_title(f"calibration curve of {self.substance_name}")
+        if title:
+            ax.set_title(title)
+        if y_label:
+            print(f"{y_label}")
+            ax.set_ylabel(y_label)
 
 
     def get_concentration(self, absorption: List[float], model_name: str = None) -> List[float]:
@@ -157,6 +168,11 @@ class StandardCurve:
             model = self.models[model_name]
         equation: Callable = equation_dict[model.name]
 
+        # Avoide extrapolation
+        if np.any(absorption > max(self.absorption)):
+            absorption = [float("nan") if x > max(self.absorption) else x for x in absorption]
+            print("Absorption values out of calibration bonds. Respective values were replaced with \'nan\'.")
+
         # Calculate concentration through roots
         concentration = []
         for value in absorption:
@@ -164,6 +180,7 @@ class StandardCurve:
             params["absorption"] = value
             concentration.append(float(fsolve(equation, 0, params)))
 
+        concentration = [float("nan") if x == 0 else x for x in absorption]
         return concentration
 
     def apply_to_EnzymeML(
@@ -203,6 +220,57 @@ class StandardCurve:
 
         return enzmldoc
 
+    @classmethod
+    def from_excel(
+        cls,
+        path: str,
+        reactant_id: str,
+        wavelength: float,
+        concentration_unit: str,
+        temperature: float = None,
+        temperature_unit: str = None,
+        pH: float = None,
+        device_name: str = None,
+        device_model: str = None,
+        blanc_data: bool = True,
+        cutoff_absorption: float = None,
+        sheet_name: str = None):
+
+        df = pd.read_excel(path, sheet_name=sheet_name)
+        concentration = df.iloc[:,0].values
+        absorptions = df.iloc[:,1:]
+        absorption_list = absorptions.values.T
+
+        device = Device(
+            manufacturer=device_name,
+            model=device_model)
+
+        absorption = []
+        for abso in absorption_list:
+            absorption.append(Series(values=list(abso)))
+
+
+        standard = Standard(
+            wavelength=wavelength,
+            concentration=list(concentration),
+            concentration_unit=concentration_unit,
+            absorption=absorption)
+
+        calibration = Calibration(
+            reactant_id=reactant_id,
+            pH=pH,
+            temperature=temperature,
+            temmperature_unit=temperature_unit,
+            device=device,
+            standard=[standard]
+        )
+
+        return cls(
+            calibration_data=calibration,
+            blanc_data=blanc_data, 
+            cutoff_absorption=cutoff_absorption,
+            wavelength=wavelength
+        )
 
 
 if __name__ == "__main__":
@@ -214,11 +282,11 @@ if __name__ == "__main__":
         concentration_unit="mole / l"
     )
     standard.add_to_absorption(
-        values=[0.00004,0.00005])
+        values=[0.4,0.5])
     standard.add_to_absorption(
-        values=[0.00004,0.00005])
+        values=[0.4,0.5])
     standard.add_to_absorption(
-        values=[0.00004,0.00005])
+        values=[0.4,0.5])
 
 
 
@@ -232,10 +300,12 @@ if __name__ == "__main__":
         )
     standardcurce = StandardCurve(calibration_data, 405)#.standard.absorption)
 
+    print(standardcurce.get_concentration([0.12, 0.5, 0.6]))
+
     #print(to_concentration(standardcurce, [0.1,0.33,float("nan"),1.3,0.6]))
     
 
-    enzmldoc = EnzymeMLDocument.fromFile("/Users/maxhaussler/Dropbox/master_thesis/data/sdRDM_ABTS_oxidation/test_ABTS.omex")
+    #enzmldoc = EnzymeMLDocument.fromFile("/Users/maxhaussler/Dropbox/master_thesis/data/sdRDM_ABTS_oxidation/test_ABTS.omex")
 
-    enzmldoc = standardcurce.apply_to_EnzymeML(enzmldoc, "s0", ommit_nan_measurements=True)
+    #enzmldoc = standardcurce.apply_to_EnzymeML(enzmldoc, "s0", ommit_nan_measurements=True)
     #print(enzmldoc.measurement_dict["m9"].species_dict["reactants"]["s0"].replicates[2].data)

@@ -1,21 +1,18 @@
 import sdRDM
 
 from typing import Optional, Union
-from pydantic import PrivateAttr
-from sdRDM.base.listplus import ListPlus
-from sdRDM.base.utils import forge_signature, IDGenerator
-
-from pydantic import Field
 from typing import List
 from typing import Optional
-
+from pydantic import PrivateAttr
+from pydantic import Field
+from sdRDM.base.listplus import ListPlus
+from sdRDM.base.utils import forge_signature, IDGenerator
 from .concentrationunits import ConcentrationUnits
 from .series import Series
 
 
 @forge_signature
 class Standard(sdRDM.DataModel):
-
     """Description of a standard curve."""
 
     id: str = Field(
@@ -23,19 +20,17 @@ class Standard(sdRDM.DataModel):
         default_factory=IDGenerator("standardINDEX"),
         xml="@id",
     )
+
     wavelength: Optional[float] = Field(
-        description="Detection wavelength.",
-        default=None,
+        description="Detection wavelength.", default=None
     )
 
     concentration: List[float] = Field(
-        description="Concentration of the reactant.",
-        default_factory=ListPlus,
+        description="Concentration of the reactant.", default_factory=ListPlus
     )
 
     concentration_unit: Optional[ConcentrationUnits] = Field(
-        description="Concentration unit.",
-        default=None,
+        description="Concentration unit.", default=None
     )
 
     absorption: List[Series] = Field(
@@ -49,8 +44,9 @@ class Standard(sdRDM.DataModel):
     __repo__: Optional[str] = PrivateAttr(
         default="git://github.com/FAIRChemistry/CaliPytion.git"
     )
+
     __commit__: Optional[str] = PrivateAttr(
-        default="1b5fbf69a0789d320ea9ab9f1e170acd5eb90aa6"
+        default="9375692de716baa6d0002609c4bbaf3040f76071"
     )
 
     def add_to_absorption(self, values: List[float], id: Optional[str] = None) -> None:
@@ -58,17 +54,16 @@ class Standard(sdRDM.DataModel):
         Adds an instance of 'Series' to the attribute 'absorption'.
 
         Args:
+
+
             id (str): Unique identifier of the 'Series' object. Defaults to 'None'.
+
+
             values (List[float]): Series representing an array of value.
         """
 
-        params = {
-            "values": values,
-        }
-
+        params = {"values": values}
         if id is not None:
             params["id"] = id
-
         absorption = [Series(**params)]
-
         self.absorption = self.absorption + absorption

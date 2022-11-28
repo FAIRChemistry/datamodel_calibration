@@ -1,12 +1,11 @@
 import sdRDM
 
 from typing import Optional, Union
+from typing import List
 from pydantic import PrivateAttr
+from pydantic import Field
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
-
-from pydantic import Field
-from typing import List
 
 
 @forge_signature
@@ -16,14 +15,15 @@ class Series(sdRDM.DataModel):
         default_factory=IDGenerator("seriesINDEX"),
         xml="@id",
     )
+
     values: List[float] = Field(
-        description="Series representing an array of value",
-        default_factory=ListPlus,
+        description="Series representing an array of value", default_factory=ListPlus
     )
 
     __repo__: Optional[str] = PrivateAttr(
         default="git://github.com/FAIRChemistry/CaliPytion.git"
     )
+
     __commit__: Optional[str] = PrivateAttr(
-        default="1b5fbf69a0789d320ea9ab9f1e170acd5eb90aa6"
+        default="9375692de716baa6d0002609c4bbaf3040f76071"
     )

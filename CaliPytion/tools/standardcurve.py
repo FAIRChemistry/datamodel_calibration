@@ -1,12 +1,12 @@
 from typing import Dict, List, Callable
-from Calibration.core.calibration import Calibration
-from Calibration.tools.calibrationmodel import CalibrationModel
-from Calibration.core.device import Device
-from Calibration.core.spectrum import Spectrum
-from Calibration.core.standard import Standard
-from Calibration.core.series import Series
+from CaliPytion.core.calibration import Calibration
+from CaliPytion.tools.calibrationmodel import CalibrationModel
+from CaliPytion.core.device import Device
+from CaliPytion.core.spectrum import Spectrum
+from CaliPytion.core.standard import Standard
+from CaliPytion.core.series import Series
 
-from Calibration.tools.calibrationmodel import linear1, quadratic, poly3, poly_e, rational, root_linear1, root_poly3, root_poly_e, root_quadratic, root_rational, equation_dict
+from CaliPytion.tools.calibrationmodel import linear1, quadratic, poly3, poly_e, rational, root_linear1, root_poly3, root_poly_e, root_quadratic, root_rational, equation_dict
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -180,7 +180,7 @@ class StandardCurve:
             params["absorption"] = value
             concentration.append(float(fsolve(equation, 0, params)))
 
-        concentration = [float("nan") if x == 0 else x for x in absorption]
+        concentration = [float("nan") if x == 0 else x for x in concentration]
         return concentration
 
     def apply_to_EnzymeML(
@@ -274,38 +274,17 @@ class StandardCurve:
 
 
 if __name__ == "__main__":
-    from Calibration.core.standard import Standard
-
-    standard = Standard(
-        wavelength=405,
-        concentration=[0.1, 0.5],
-        concentration_unit="mole / l"
-    )
-    standard.add_to_absorption(
-        values=[0.4,0.5])
-    standard.add_to_absorption(
-        values=[0.4,0.5])
-    standard.add_to_absorption(
-        values=[0.4,0.5])
+    from CaliPytion.core.standard import Standard
 
 
+    std = StandardCurve.from_excel("/Users/maxhaussler/Dropbox/master_thesis/data/marwa/round5_control/pNA-standard.xlsx", wavelength = 410, concentration_unit="mmole / l", reactant_id="s1", sheet_name="csv")
+    #std.visualize()
+    #plt.show()
 
-    calibration_data = Calibration(
-        reactant_id="test chemical",
-        pH=6.9,
-        date="14.11.22",
-        temperature=40,
-        temperature_unit="C",
-        standard=[standard]
-        )
-    standardcurce = StandardCurve(calibration_data, 405)#.standard.absorption)
+    enzmldoc = EnzymeMLDocument.fromTemplate("/Users/maxhaussler/Dropbox/master_thesis/data/marwa/final/each set/chymo_HSA(M3) copy.xlsx")
+    enzmldoc.visualize()
+    plt.show()
 
-    print(standardcurce.get_concentration([0.12, 0.5, 0.6]))
-
-    #print(to_concentration(standardcurce, [0.1,0.33,float("nan"),1.3,0.6]))
-    
-
-    #enzmldoc = EnzymeMLDocument.fromFile("/Users/maxhaussler/Dropbox/master_thesis/data/sdRDM_ABTS_oxidation/test_ABTS.omex")
-
-    #enzmldoc = standardcurce.apply_to_EnzymeML(enzmldoc, "s0", ommit_nan_measurements=True)
-    #print(enzmldoc.measurement_dict["m9"].species_dict["reactants"]["s0"].replicates[2].data)
+    enzmldoc = std.apply_to_EnzymeML(enzmldoc, "s1")
+    enzmldoc.visualize()
+    plt.show()

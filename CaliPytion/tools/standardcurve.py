@@ -27,11 +27,11 @@ class StandardCurve:
         self.standard = self._get_Standard()
         self.concentration_unit = self.standard.concentration_unit
         self.substance_name = calibration_data.reactant_id
-        self._initialize_measurement_arrays()
+        self._initialize_measurement_arrays(show_output)
         self.models = self._initialize_models()
         self._fit_models(show_output)
 
-    def _initialize_measurement_arrays(self):
+    def _initialize_measurement_arrays(self, show_output: bool):
         absorption = [measurement.values for measurement in self.standard.absorption]
         n_replicates = len(absorption)
 
@@ -41,7 +41,8 @@ class StandardCurve:
             absorption = np.array([])
             for repeat in self.standard.absorption:
                 absorption = np.append(absorption, [x - repeat.values[pos] for x in repeat.values])
-            print("Calibration data was automatically blanked.")
+            if show_output:
+                print("Calibration data was automatically blanked.")
             self.absorption = absorption
         else:
             self.absorption = np.array([measurement.values for measurement in self.standard.absorption]).flatten()
@@ -108,7 +109,7 @@ class StandardCurve:
 
         self.result_dict = self._evaluate_aic()
         if show_output:
-            display(DataFrame.from_dict(self.result_dict, orient='index', columns=["AIC"]).rename(columns={0: "AIC"}).round().astype("int"))
+            display(DataFrame.from_dict(self.result_dict, orient='index', columns=["AIC"]).rename(columns={0: "AIC"}).round().astype("int").style.set_table_attributes('style="font-size: 12px"'))
 
     def _evaluate_aic(self):
         names = []

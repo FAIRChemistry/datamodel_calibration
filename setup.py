@@ -10,7 +10,6 @@ setup(
     author_email="st171427@stud.uni-stuttgart.de",
     packages=setuptools.find_packages(),
     install_requires=[
-        "sdRDM @ git+https://github.com/JR-1991/software-driven-rdm.git",
         "ipython==8.6.0",
         "lmfit==1.0.3",
         "matplotlib==3.6.2",

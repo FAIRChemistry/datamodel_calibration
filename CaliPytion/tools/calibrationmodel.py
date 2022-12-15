@@ -5,7 +5,6 @@ from scipy.optimize import curve_fit
 
 from numpy import exp, ndarray
 
-
 class CalibrationModel:
     def __init__(
         self,

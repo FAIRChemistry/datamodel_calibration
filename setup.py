@@ -2,9 +2,9 @@ import setuptools
 from setuptools import setup
 
 setup(
-    name="datamodel_calibration",
+    name="CaliPytion",
     version="0.0.1",
-    description="Datamodel, handling calibration data from UV-Vis measurements",
+    description="Data model and standard curve functionalities for calibration data",
     url="https://github.com/FAIRChemistry/calibration_data",
     author="Haeussler, Max",
     author_email="st171427@stud.uni-stuttgart.de",

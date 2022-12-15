@@ -272,20 +272,3 @@ class StandardCurve:
             cutoff_absorption=cutoff_absorption,
             wavelength=wavelength
         )
-
-
-if __name__ == "__main__":
-    from CaliPytion.core.standard import Standard
-
-
-    std = StandardCurve.from_excel("/Users/maxhaussler/Dropbox/master_thesis/data/marwa/round5_control/pNA-standard.xlsx", wavelength = 410, concentration_unit="mmole / l", reactant_id="s1", sheet_name="csv")
-    #std.visualize()
-    #plt.show()
-
-    enzmldoc = EnzymeMLDocument.fromTemplate("/Users/maxhaussler/Dropbox/master_thesis/data/marwa/final/each set/chymo_HSA(M3) copy.xlsx")
-    enzmldoc.visualize()
-    plt.show()
-
-    enzmldoc = std.apply_to_EnzymeML(enzmldoc, "s1")
-    enzmldoc.visualize()
-    plt.show()

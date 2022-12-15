@@ -60,7 +60,7 @@ class Calibration(sdRDM.DataModel):
     )
 
     __commit__: Optional[str] = PrivateAttr(
-        default="969645b25804e47b0d0b7a005f17f7ec49ac3081"
+        default="e91d9d7fe97fce7a8c92c13d98ece45137e71ff2"
     )
 
     def add_to_standard(

@@ -1,6 +1,6 @@
 # CaliPytion
 
-Data model handling (meta-) data of standard curves and spectras of an annalyte.
+Data model for (meta-) data of standard curves and spectras for spectrophotometric data.
 ### Calibration
 
 - __reactant_id__

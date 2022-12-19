@@ -1,5 +1,5 @@
 {
-  "docstring": "Data model handling (meta-) data of standard curves and spectras of an annalyte.",
+  "docstring": "Data model for (meta-) data of standard curves and spectras for spectrophotometric data.",
   "enums": [
     "TemperatureUnits",
     "TemperatureUnits",

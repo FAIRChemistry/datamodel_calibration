@@ -6,9 +6,7 @@ from .spectrum import Spectrum
 from .standard import Standard
 from .temperatureunits import TemperatureUnits
 
-__doc__ = (
-    "Data model handling (meta-) data of standard curves and spectras of an annalyte."
-)
+__doc__ = "Data model for (meta-) data of standard curves and spectras for spectrophotometric data."
 
 __all__ = [
     "Calibration",

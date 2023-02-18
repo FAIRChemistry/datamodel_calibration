@@ -1,6 +1,6 @@
 # CaliPytion
 
-Data model for (meta-) data of standard curves and spectras for spectrophotometric data.
+Data model for (meta-) data of standard curves and spectra for spectrophotometric data.
 ### Calibration
 
 - __reactant_id__

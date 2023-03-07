@@ -77,6 +77,38 @@ Description of a standard curve.
   - Multiple: True
   - Description: Measured absorption, corresponding to detection wavelengths.
 
+### Result
+
+- __concentration__
+  - Type: float
+  - Description: Calculated concentration, based on the calibration model.
+  - Multiple: True
+- __calibration_model__
+  - Type: CalibrationModel
+  - Description: Utilized calibration model and its parameters, leading to the calculated concentrations.
+
+### CalibrationModel
+
+- __name__
+  - Type: string
+  - Description: Name of the calibration model.
+- __equation__
+  - Type: string
+  - Description: Equation of the calibration model.
+- __parameters__
+  - Type: Parameter
+  - Description: Parameters of the calibration model equation.
+  - Multiple: True
+
+### Parameter
+
+- __name__
+  - Type: string
+  - Description: Name of the parameter.
+- __value__
+  - Type: float
+  - Description: Value of the parameter.
+
 ### Series
 
 - __values__

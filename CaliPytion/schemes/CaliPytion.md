@@ -8,6 +8,8 @@ classDiagram
     Standard *-- Series
     Spectrum *-- ConcentrationUnits
     Spectrum *-- Series
+    Result *-- CalibrationModel
+    CalibrationModel *-- Parameter
     
     class Calibration {
         +string reactant_id
@@ -38,6 +40,22 @@ classDiagram
         +float[0..*] wavelength
         +ConcentrationUnits concentration_unit
         +Series[0..*] absorption
+    }
+    
+    class Result {
+        +float[0..*] concentration
+        +CalibrationModel calibration_model
+    }
+    
+    class CalibrationModel {
+        +string name
+        +string equation
+        +Parameter[0..*] parameters
+    }
+    
+    class Parameter {
+        +string name
+        +float value
     }
     
     class Series {

@@ -88,6 +88,44 @@
     },
     "docstring": null
   },
+  "Result": {
+    "attributes": {
+      "concentration": {
+        "description": "Calculated concentration, based on the calibration model.",
+        "multiple": "True"
+      },
+      "calibration_model": {
+        "description": "Utilized calibration model and its parameters, leading to the calculated concentrations."
+      }
+    },
+    "docstring": null
+  },
+  "CalibrationModel": {
+    "attributes": {
+      "name": {
+        "description": "Name of the calibration model."
+      },
+      "equation": {
+        "description": "Equation of the calibration model."
+      },
+      "parameters": {
+        "description": "Parameters of the calibration model equation.",
+        "multiple": "True"
+      }
+    },
+    "docstring": null
+  },
+  "Parameter": {
+    "attributes": {
+      "name": {
+        "description": "Name of the parameter."
+      },
+      "value": {
+        "description": "Value of the parameter."
+      }
+    },
+    "docstring": null
+  },
   "Series": {
     "attributes": {
       "values": {

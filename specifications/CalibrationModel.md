@@ -28,6 +28,10 @@ Data model for (meta-) data of standard curves and spectra for spectrophotometri
 - __spectrum__
   - Type: Spectrum
   - Description: Spectrum data of a substance.
+- __result__
+  - Type: Result
+  - Description: Contains calculated concentrations and information on the fitted calibration equation to calculate the concentrations.
+
 
 ### Device
 

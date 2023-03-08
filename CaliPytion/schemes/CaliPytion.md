@@ -4,6 +4,7 @@ classDiagram
     Calibration *-- Device
     Calibration *-- Standard
     Calibration *-- Spectrum
+    Calibration *-- Result
     Standard *-- ConcentrationUnits
     Standard *-- Series
     Spectrum *-- ConcentrationUnits
@@ -20,6 +21,7 @@ classDiagram
         +Device device
         +Standard[0..*] standard
         +Spectrum spectrum
+        +Result result
     }
     
     class Device {

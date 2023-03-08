@@ -32,6 +32,9 @@
       },
       "spectrum": {
         "description": "Spectrum data of a substance."
+      },
+      "result": {
+        "description": "Contains calculated concentrations and information on the fitted calibration equation to calculate the concentrations."
       }
     },
     "docstring": null

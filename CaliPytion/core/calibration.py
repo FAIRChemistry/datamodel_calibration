@@ -14,6 +14,7 @@ from .series import Series
 from .spectrum import Spectrum
 from .standard import Standard
 from .temperatureunits import TemperatureUnits
+from .result import Result
 
 
 @forge_signature
@@ -55,12 +56,20 @@ class Calibration(sdRDM.DataModel):
         description="Spectrum data of a substance.", default=None
     )
 
+    result: Optional[Result] = Field(
+        description=(
+            "Contains calculated concentrations and information on the fitted"
+            " calibration equation to calculate the concentrations."
+        ),
+        default=None,
+    )
+
     __repo__: Optional[str] = PrivateAttr(
         default="git://github.com/FAIRChemistry/CaliPytion.git"
     )
 
     __commit__: Optional[str] = PrivateAttr(
-        default="dfd92dd7694902755cc2d4a606332dcf491400d6"
+        default="0d245f862990cafeae9474f85306c412b5a8c19a"
     )
 
     def add_to_standard(

@@ -18,7 +18,7 @@ git clone https://github.com/FAIRChemistry/CaliPytion/
 
 Or install from PyPi:
 ```Bash
-pip install calipytion
+pip install CaliPytion
 ```
 
 

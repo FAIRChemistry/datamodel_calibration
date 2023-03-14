@@ -1,6 +1,4 @@
-# CaliPytion - tool for concentration calculation 
-
-
+# CaliPytion - tool for concentration calculation
 
 ## 🛤 What is CaliPytion?
 
@@ -17,15 +15,14 @@ git clone https://github.com/FAIRChemistry/CaliPytion/
 ```
 
 Or install from PyPi:
+
 ```Bash
 pip install CaliPytion
 ```
 
-
 ## 🔖 Example Code
 
 coming soon
-
 
 ## ⚖️ License
 

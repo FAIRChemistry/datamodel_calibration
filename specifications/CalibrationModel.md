@@ -7,7 +7,7 @@ Data model for (meta-) data of standard curves and spectra for spectrophotometri
   - Type: string
   - Description: Unique identifier of the calibrated reactant.
 - __date__
-  - Type: string
+  - Type: date
   - Description: Date when the calibration data was measured
 - __pH__
   - Type: PositiveFloat

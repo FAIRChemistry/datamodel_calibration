@@ -8,6 +8,7 @@ from pydantic import Field
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 from pydantic.types import PositiveFloat
+from datetime import datetime
 from .concentrationunits import ConcentrationUnits
 from .device import Device
 from .series import Series
@@ -27,10 +28,6 @@ class Calibration(sdRDM.DataModel):
 
     reactant_id: Optional[str] = Field(
         description="Unique identifier of the calibrated reactant.", default=None
-    )
-
-    date: Optional[str] = Field(
-        description="Date when the calibration data was measured", default=None
     )
 
     pH: Optional[PositiveFloat] = Field(description="pH of solution.", default=None)
@@ -64,12 +61,16 @@ class Calibration(sdRDM.DataModel):
         default=None,
     )
 
+    date: Optional[datetime] = Field(
+        description="Date when the calibration data was measured", default=None
+    )
+
     __repo__: Optional[str] = PrivateAttr(
         default="git://github.com/FAIRChemistry/CaliPytion.git"
     )
 
     __commit__: Optional[str] = PrivateAttr(
-        default="1f34b2ffa71469218fe20b15090d77d54217240b"
+        default="7c30255582b4c5426d341ff162de2693d5eb3e88"
     )
 
     def add_to_standard(

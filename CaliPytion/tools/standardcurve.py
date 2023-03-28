@@ -16,7 +16,6 @@ from pandas import DataFrame
 from pyenzyme import EnzymeMLDocument
 from scipy.optimize import fsolve
 
-# TODO calcualte method to abso --> conc
 
 class StandardCurve:
     def __init__(self, calibration_data: Calibration, wavelength: int = None, blanc_data: bool = True, cutoff_absorption: float = None, show_output: bool = True):
@@ -158,7 +157,7 @@ class StandardCurve:
 
     def get_concentration(self, absorption: List[float], model_name: str = None) -> List[float]:
         
-        # Convert to ndarray for performance
+        # Convert to ndarray
         if not isinstance(absorption, np.ndarray):
             absorption = np.array(absorption)
 

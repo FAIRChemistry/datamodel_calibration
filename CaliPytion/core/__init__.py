@@ -1,7 +1,7 @@
 from .calibration import Calibration
-from .calibrationmodel import CalibrationModel
 from .concentrationunits import ConcentrationUnits
 from .device import Device
+from .model import Model
 from .parameter import Parameter
 from .result import Result
 from .series import Series
@@ -13,9 +13,9 @@ __doc__ = "Data model for (meta-) data of standard curves and spectra for spectr
 
 __all__ = [
     "Calibration",
-    "CalibrationModel",
     "ConcentrationUnits",
     "Device",
+    "Model",
     "Parameter",
     "Result",
     "Series",

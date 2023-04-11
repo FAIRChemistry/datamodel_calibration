@@ -66,11 +66,11 @@ class Calibration(sdRDM.DataModel):
     )
 
     __repo__: Optional[str] = PrivateAttr(
-        default="git://github.com/FAIRChemistry/CaliPytion.git"
+        default="https://github.com/FAIRChemistry/CaliPytion.git"
     )
 
     __commit__: Optional[str] = PrivateAttr(
-        default="e6a1c0f0aaa132f80387f645be36fe8482bcc977"
+        default="a3c1331e33573329a5c6372c58afab2c22b5d68c"
     )
 
     def add_to_standard(

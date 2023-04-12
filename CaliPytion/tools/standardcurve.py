@@ -10,12 +10,11 @@ from CaliPytion.core.result import Result
 from CaliPytion.tools.equations import  linear, quadratic, poly_3, poly_e, rational
 
 import matplotlib.pyplot as plt
-from numpy import ndarray, mean, std, where, any, array, tile
+from numpy import ndarray, mean, std, where, any, array, tile, linspace
 import pandas as pd
 from IPython.display import display
 from pandas import DataFrame
 from pyenzyme import EnzymeMLDocument
-from scipy.optimize import fsolve
 
 
 class StandardCurve:
@@ -69,7 +68,7 @@ class StandardCurve:
     def _cutoff_signal(self):
         pos = where(self.signals < self.cutoff_signal)
         self.concentration = self.concentration[pos]
-        self.absorption = self.absorption[pos]
+        self.signals = self.signals[pos]
 
     
     def _initialize_models(self) -> Dict[str, CalibrationModel]:
@@ -94,9 +93,9 @@ class StandardCurve:
             equation=rational,
         )
         return {
-            poly3_model.name: poly3_model,
             linear_model.name: linear_model,
             quadratic_model.name: quadratic_model,
+            poly3_model.name: poly3_model,
             polye_model.name: polye_model,
             rational_model.name: rational_model,
             }
@@ -104,9 +103,9 @@ class StandardCurve:
 
     def _fit_models(self, concentrations: ndarray, signals: ndarray):
         for model in self.models.values():
-            model.fit(signals=self.signals, concentrations=self.concentrations)
+            model._fit(signals=self.signals, concentrations=self.concentrations)
 
-        #self.result_dict = self._evaluate_aic()
+        self.result_dict = self._evaluate_aic()
 
         #display(DataFrame.from_dict(self.result_dict, orient='index', columns=["AIC"]).rename(columns={0: "AIC"}).round().astype("int").style.set_table_attributes('style="font-size: 12px"'))
 
@@ -115,7 +114,7 @@ class StandardCurve:
         aic = []
         for model in self.models.values():
             names.append(model.name)
-            aic.append(model.result.aic)
+            aic.append(model.aic)
 
         result_dict = dict(zip(names, aic))
         result_dict = dict(sorted(result_dict.items(), key=lambda item: item[1]))
@@ -136,13 +135,13 @@ class StandardCurve:
         else:
             model = self.models[model_name]
 
-        smooth_x = np.linspace(
-            self.concentration[0], self.concentration[-1], len(self.concentration)*2)
+        smooth_x = linspace(
+            self.concentrations[0], self.concentrations[-1], len(self.concentrations)*2)
 
         equation = model.equation
-        params = model.result.params.valuesdict()
+        params = model.params
 
-        ax.scatter(self.concentration, self.absorption)
+        ax.scatter(self.concentrations, self.signals)
         ax.plot(smooth_x, equation(smooth_x, **params))
         if ax_provided == False:
             ax.set_ylabel(f"absorption at {int(self.wavelength)} nm")
@@ -155,33 +154,16 @@ class StandardCurve:
             ax.set_ylabel(y_label)
 
 
-    def get_concentration(self, absorption: List[float], model_name: str = None) -> List[float]:
+    def get_concentration(self, signals: List[float], model_name: str = None) -> List[float]:
         
-        # Convert to ndarray
-        if not isinstance(absorption, ndarray):
-            absorption = array(absorption)
-
         # Select model equation
         if model_name == None:
             model = self.models[next(iter(self.result_dict))]
         else:
             model = self.models[model_name]
-        equation: Callable = equation_dict[model.name]
 
-        # Avoide extrapolation
-        if any(absorption > max(self.absorption)):
-            absorption = [float("nan") if x > max(self.absorption) else x for x in absorption]
-            print("Absorption values out of calibration bonds. Respective values were replaced with \'nan\'.")
+        return model.calculate_concentration(signal=signals)
 
-        # Calculate concentration through roots
-        concentration = []
-        for value in absorption:
-            params = model.parameters
-            params["absorption"] = value
-            concentration.append(float(fsolve(equation, 0, params)))
-
-        concentration = [float("nan") if x == 0 else x for x in concentration]
-        return concentration
 
     def apply_to_EnzymeML(
         self,
@@ -191,7 +173,7 @@ class StandardCurve:
         ommit_nan_measurements: bool = False
         ) -> EnzymeMLDocument:
 
-        max_absorption_standard_curve = max(self.absorption)
+        max_absorption_standard_curve = max(self.signals)
 
         delete_measurements = []
 

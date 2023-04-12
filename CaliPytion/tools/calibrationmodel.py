@@ -26,7 +26,7 @@ class CalibrationModel:
         param_list = [str(x) for x in list(self.equation.lhs.free_symbols)]
         return dict(zip(param_list, [0.1]*len(param_list)))
 
-    def fit(self, concentrations: ndarray, signals: ndarray):
+    def _fit(self, concentrations: ndarray, signals: ndarray):
 
         # define lmfit model from sympy equation
         model = self.equation.lhs

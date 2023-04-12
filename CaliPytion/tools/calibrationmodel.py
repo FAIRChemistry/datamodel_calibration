@@ -1,88 +1,103 @@
-from typing import Dict, Optional, Callable
-from lmfit import Model, Parameters
+from lmfit import Model
 from lmfit.model import ModelResult
-from scipy.optimize import curve_fit
+from sympy import Equality, lambdify, solve
+from numpy import ndarray, array, sum, sqrt, where, nan
 
-from numpy import exp, ndarray
+from CaliPytion.tools.equations import *
+
 
 class CalibrationModel:
     def __init__(
         self,
         name: str,
-        equation: Callable,
-        parameters: Dict[str, float]
+        equation: Equality,
         ):
         self.name = name
         self.equation = equation
-        self.parameters = parameters
+        self.initial_params = self._initialze_params()
 
 
-    def fit(self, absorption: ndarray, concentration: ndarray) -> ModelResult:
-        # Get parameter estimates
-        result = curve_fit(
-            f=self.equation, xdata=concentration, ydata=absorption)[0]
-        self.parameters = dict(zip(self.parameters.keys(), result))
+    def _initialze_params(self) -> dict:
+        """Initializes parameters from Sympy equation. Initializes all parameters with 0.
 
-        # Initialize lmfit
-        lmfit_model = Model(self.equation)
-        lmfit_params = lmfit_model.make_params(**self.parameters)
+        Returns:
+            dict: Key value pairs of all model parameters
+        """
+        param_list = [str(x) for x in list(self.equation.lhs.free_symbols)]
+        return dict(zip(param_list, [0]*len(param_list)))
 
-        # Fit data to model
-        self.result = lmfit_model.fit(
-            data=absorption, x=concentration, params=lmfit_params)
+    def fit(self, concentrations, signals):
 
+        # define lmfit model from sympy equation
+        model = self.equation.lhs
+        model_func = lambdify(list(model.free_symbols), model)
+        lm_mod = Model(model_func, name=equation_to_string(self.equation))
 
-# Fitting equations
-def linear1(x, a) -> float:
-    return a*x
+        # set parameters
+        params = self.initial_params
+        params["concentration"] = concentrations
 
+        # fit data to model
+        result = lm_mod.fit(data=signals, **params)
 
-def quadratic(x, a, b) -> float:
-    return a*x**2 + b*x
+        # extract fit statistics
+        self.aic = result.aic
+        self.bic = result.bic
+        self.r2 = result.rsquared
+        self.residuals = result.residual
+        self.best_fit = result.best_fit
+        self.params = result.params.valuesdict()
+        self.rmsd = self.calculate_RMSD(self.residuals)
+        self.lmfit_result = result
 
+    def calculate_RMSD(self, residuals: ndarray) -> float:
+        return sqrt(sum(residuals**2) / len(residuals))
+    
+    
+    def calculate_concentration(self, 
+                                signal: float | ndarray, 
+                                allow_extrapolation: bool = False
+                                ) -> float | ndarray:
+        """Calculates unknown concentrations based on fit of Calibration model.
 
-def poly3(x, a, b, c) -> float:
-    return a*x**3 + b*x**2 + c*x
+        Args:
+            signal (float | np.ndarray): Measured signal(s) of unknown concentration
+            allow_extrapolation (bool): Allow or disallow extrapolation for concentration calculation. Defaults to False.
 
+        Returns:
+            float | np.ndarray: Calculated concentration.
+        """
 
-def poly_e(x, a, b) -> float:
-    return a*exp(x/b)
+        signal = array(signal).astype("float")
+        calibration_signals = self.lmfit_result.data
 
+        # replace values above upper calibration limit with nans
+        if not allow_extrapolation:
+            extrapolation_pos = where(signal > max(calibration_signals))[0]
+            if extrapolation_pos.size != 0:
+                print(f"{len(extrapolation_pos)} measurements are above upper calibration limit of {max(calibration_signals):.2f}.\n \
+                      Respective measurments are replaced with nans. To extrapolate set 'allow_extrapolation' = True")
+                signal[extrapolation_pos] = nan
 
-def rational(x, a, b) -> float:
-    return (a*x)/(b+x)
+        # convert equation to solve for concentration
+        equation: Equality = solve(self.equation, "concentration")[0]
+        function = lambdify(list(equation.free_symbols), equation)
 
+        # set parameters
+        params = self.params
+        params["signal"] = signal
 
-# Root equations
-def root_linear1(x: float, params: Dict[str, float]) -> float:
-    a, absorption = params.values()
-    return a*x - absorption
+        result: ndarray = function(**params)
 
+        if result.size > 1:
+            return result
+        else:
+            return float(result)
+        
+    def visualize_fit(self, **kwargs):
+        self.lmfit_result.plot_fit(**kwargs)
 
-def root_quadratic(x: float, params: Dict[str, float]) -> float:
-    a, b, absorption = params.values()
-    return a*x**2 + b*x - absorption
+    def visualize_residuals(self, **kwargs):
+        self.lmfit_result.plot_residuals(**kwargs)
 
-
-def root_poly3(x: float, params: Dict[str, float]) -> float:
-    a, b, c, absorption = params.values()
-    return a*x**3 + b*x**2 + c*x - absorption
-
-
-def root_poly_e(x: float, params: Dict[str, float]) -> float:
-    a, b, absorption = params.values()
-    return a*exp(x/b) - absorption
-
-
-def root_rational(x: float, params: Dict[str, float]) -> float:
-    a, b, absorption = params.values()
-    return (a*x)/(b+x) - absorption
-
-# Mapper for root equations
-equation_dict: Dict[str, Callable] = {
-    "Linear": root_linear1,
-    "Quadratic": root_quadratic,
-    "3rd polynominal": root_poly3,
-    "Exponential": root_poly_e,
-    "Rational": root_rational
-    }
+        

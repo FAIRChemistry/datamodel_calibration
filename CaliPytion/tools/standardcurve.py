@@ -5,11 +5,12 @@ from CaliPytion.core.device import Device
 from CaliPytion.core.spectrum import Spectrum
 from CaliPytion.core.standard import Standard
 from CaliPytion.core.series import Series
+from CaliPytion.core.result import Result
 
-from CaliPytion.tools.calibrationmodel import linear1, quadratic, poly3, poly_e, rational, root_linear1, root_poly3, root_poly_e, root_quadratic, root_rational, equation_dict
+from CaliPytion.tools.equations import  linear, quadratic, poly_3, poly_e, rational
 
 import matplotlib.pyplot as plt
-import numpy as np
+from numpy import ndarray, mean, std, where, any, array, tile
 import pandas as pd
 from IPython.display import display
 from pandas import DataFrame
@@ -18,97 +19,96 @@ from scipy.optimize import fsolve
 
 
 class StandardCurve:
-    def __init__(self, calibration_data: Calibration, wavelength: int = None, blanc_data: bool = True, cutoff_absorption: float = None, show_output: bool = True):
-        self.blank_data = blanc_data
-        self.cutoff = cutoff_absorption
-        self.calibration_data = calibration_data
-        self.wavelength = wavelength
-        self.standard = self._get_Standard()
-        self.concentration_unit = self.standard.concentration_unit
-        self.substance_name = calibration_data.reactant_id
-        self._initialize_measurement_arrays(show_output)
-        self.models = self._initialize_models()
-        self._fit_models(show_output)
-
-    def _initialize_measurement_arrays(self, show_output: bool):
-        absorption = [measurement.values for measurement in self.standard.absorption]
-        n_replicates = len(absorption)
-
-        self.concentration = np.tile(self.standard.concentration, n_replicates)
-        if self.blank_data and np.any(self.concentration == 0):
-            pos = int(np.where(np.array(self.standard.concentration) == 0)[0])
-            absorption = np.array([])
-            for repeat in self.standard.absorption:
-                absorption = np.append(absorption, [x - repeat.values[pos] for x in repeat.values])
-            if show_output:
-                print("Calibration data was automatically blanked.")
-            self.absorption = absorption
-        else:
-            self.absorption = np.array([measurement.values for measurement in self.standard.absorption]).flatten()
+    def __init__(self, 
+                 concentrations: list,
+                 signals: list,
+                 conc_unit: str = None,
+                 wavelength: int = None,
+                 analyte_name: str = None,
+                 blank_data: bool = True, 
+                 cutoff_signal: float = None, 
+                 ):
         
-        if self.cutoff != None:
-            self._cutoff_absorption()
+        self.concentrations = concentrations
+        self.signals = signals
+        self.conc_unit = conc_unit
+        self.analyte_name = analyte_name
+        self.blank_data = blank_data
+        self.cutoff_signal = cutoff_signal
+        self.wavelength = wavelength
 
-    def _get_Standard(self):
-        if self.wavelength != None:
-            try:
-                return next(standard for standard in self.calibration_data.standard if standard.wavelength == self.wavelength)
-            except:
-                raise StopIteration(
-                    f"No calibration data found for calibration at {self.wavelength} nm. Calibration data exists for following wavelengths: {[x.wavelength for x in self.calibration_data.standard]}")
+        if blank_data:
+            self.signals = self._blank_measurement_signal()
+            print("Standard curve data was blanked.")
+
+        if cutoff_signal:
+            self._cutoff_signal()
+
+        self.models = self._initialize_models()
+        self._fit_models(concentrations=concentrations, signals=signals)
+
+
+    def _blank_measurement_signal(self) -> List[float]:
+        if any(self.concentrations == 0):
+            pos = where(self.concentrations == 0)[0]
+            mean_blank = mean(self.signals[pos])
+            std_blank = std(self.signals[pos])
+            percentual_std = std_blank / mean_blank
+
+            if percentual_std > 0.05:
+                print(f"Standard deviation among blank measurements exceeds 5% ({percentual_std*100:.1f}%)")
+
+            return self.signals - mean_blank
+
         else:
-            standard = self.calibration_data.standard[0]
-            print(f"Found calibration data at {int(standard.wavelength)} nm")
-            self.wavelength = standard.wavelength
-            return standard
+            raise ValueError(
+                f"No measurements with an analyte concentration of 0 {self.conc_unit} defined.\n\
+                Set 'blank_data = False'.")
+    
 
-    def _cutoff_absorption(self):
-        pos = np.where(self.absorption < self.cutoff)
+    def _cutoff_signal(self):
+        pos = where(self.signals < self.cutoff_signal)
         self.concentration = self.concentration[pos]
         self.absorption = self.absorption[pos]
 
-
+    
     def _initialize_models(self) -> Dict[str, CalibrationModel]:
         linear_model = CalibrationModel(
             name="Linear",
-            equation=linear1,
-            parameters={"a": 0.0}
+            equation=linear,
         )
         quadratic_model = CalibrationModel(
             name="Quadratic",
             equation=quadratic,
-            parameters={"a": 0.0, "b": 0.0}
         )
         poly3_model = CalibrationModel(
-            name="3rd polynominal",
-            equation=poly3,
-            parameters={"a": 0.0, "b": 0.0, "c": 0.0}
+            name="3rd degree polynominal",
+            equation=poly_3,
         )
         polye_model = CalibrationModel(
             name="Exponential",
             equation=poly_e,
-            parameters={"a": 0.0, "b": 0.0}
         )
         rational_model = CalibrationModel(
             name="Rational",
             equation=rational,
-            parameters={"a": 0.0, "b": 0.0}
         )
         return {
+            poly3_model.name: poly3_model,
             linear_model.name: linear_model,
             quadratic_model.name: quadratic_model,
-            poly3_model.name: poly3_model,
             polye_model.name: polye_model,
-            rational_model.name: rational_model}
+            #rational_model.name: rational_model,
+            }
 
 
-    def _fit_models(self, show_output: bool = True):
+    def _fit_models(self, concentrations: ndarray, signals: ndarray):
         for model in self.models.values():
-            model.fit(self.absorption, self.concentration)
+            model.fit(signals=self.signals, concentrations=self.concentrations)
 
-        self.result_dict = self._evaluate_aic()
-        if show_output:
-            display(DataFrame.from_dict(self.result_dict, orient='index', columns=["AIC"]).rename(columns={0: "AIC"}).round().astype("int").style.set_table_attributes('style="font-size: 12px"'))
+        #self.result_dict = self._evaluate_aic()
+
+        #display(DataFrame.from_dict(self.result_dict, orient='index', columns=["AIC"]).rename(columns={0: "AIC"}).round().astype("int").style.set_table_attributes('style="font-size: 12px"'))
 
     def _evaluate_aic(self):
         names = []
@@ -124,7 +124,7 @@ class StandardCurve:
 
 
     def visualize(self, model_name: str = None, ax: plt.Axes = None, title: str = None, y_label: str = None):
-        ax
+
         if ax is None:
             ax_provided = False
             ax = plt.gca()
@@ -158,8 +158,8 @@ class StandardCurve:
     def get_concentration(self, absorption: List[float], model_name: str = None) -> List[float]:
         
         # Convert to ndarray
-        if not isinstance(absorption, np.ndarray):
-            absorption = np.array(absorption)
+        if not isinstance(absorption, ndarray):
+            absorption = array(absorption)
 
         # Select model equation
         if model_name == None:
@@ -169,7 +169,7 @@ class StandardCurve:
         equation: Callable = equation_dict[model.name]
 
         # Avoide extrapolation
-        if np.any(absorption > max(self.absorption)):
+        if any(absorption > max(self.absorption)):
             absorption = [float("nan") if x > max(self.absorption) else x for x in absorption]
             print("Absorption values out of calibration bonds. Respective values were replaced with \'nan\'.")
 
@@ -271,3 +271,50 @@ class StandardCurve:
             cutoff_absorption=cutoff_absorption,
             wavelength=wavelength
         )
+    
+
+    @classmethod
+    def from_calibration_datamodel(cls, 
+                                   calibration_data: Calibration,
+                                   wavelength: float = None,
+                                   blank_data: bool = True,
+                                   cutoff: bool = None,
+                                   ) -> "StandardCurve":
+        
+        # Get standard curve for given wavelength
+        if wavelength != None:
+            try:
+                standard = next(standard for standard in calibration_data.standard if standard.wavelength == wavelength)
+            except:
+                raise StopIteration(
+                    f"No calibration data found for calibration at {wavelength} nm. Calibration data exists for following wavelengths: \
+                        {[x.wavelength for x in calibration_data.standard]}")
+        else:
+            standard = calibration_data.standard[0]
+            print(f"Found calibration data at {float(standard.wavelength)} nm")
+
+        # get concentrations and corresponding analyte signal 
+        concentrations = tile(standard.concentration, len(standard.absorption))
+        signals = array([measurement.values for measurement in standard.absorption]).flatten()
+        
+        return cls(concentrations=concentrations,
+                   signals=signals,
+                   cutoff_signal=cutoff,
+                   blank_data=blank_data,
+                   wavelength=wavelength,
+                   analyte_name=calibration_data.reactant_id) # TODO: add analyte name or id or inchi
+    
+
+
+if __name__ == "__main__":
+    from sdRDM import DataModel
+    test_data, lib = DataModel.parse(path="linear_test.json")
+    test_data
+
+    standard_curve = StandardCurve.from_calibration_datamodel(test_data)
+
+    for model in standard_curve.models.values():
+        print(model.rmsd)
+
+
+        # models werden nicht einzeln instanzier, sndern überschreiben sich

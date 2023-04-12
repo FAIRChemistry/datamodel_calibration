@@ -98,7 +98,7 @@ class StandardCurve:
             linear_model.name: linear_model,
             quadratic_model.name: quadratic_model,
             polye_model.name: polye_model,
-            #rational_model.name: rational_model,
+            rational_model.name: rational_model,
             }
 
 
@@ -314,7 +314,7 @@ if __name__ == "__main__":
     standard_curve = StandardCurve.from_calibration_datamodel(test_data)
 
     for model in standard_curve.models.values():
-        print(model.rmsd)
+        print(model.residuals)
 
 
         # models werden nicht einzeln instanzier, sndern überschreiben sich

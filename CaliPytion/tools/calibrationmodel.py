@@ -15,7 +15,6 @@ class CalibrationModel:
         self.name = name
         self.equation = equation
         self.initial_params = self._initialze_params()
-        print("pause")
 
 
     def _initialze_params(self) -> dict:
@@ -25,7 +24,7 @@ class CalibrationModel:
             dict: Key value pairs of all model parameters
         """
         param_list = [str(x) for x in list(self.equation.lhs.free_symbols)]
-        return dict(zip(param_list, [0]*len(param_list)))
+        return dict(zip(param_list, [0.1]*len(param_list)))
 
     def fit(self, concentrations: ndarray, signals: ndarray):
 
@@ -41,7 +40,7 @@ class CalibrationModel:
         params["concentration"] = concentrations
 
         # fit data to model
-        result = lm_mod.fit(data=signals, **params, nan_policy="omit")
+        result = lm_mod.fit(data=signals, **params)
 
         # extract fit statistics
         self.aic = result.aic

@@ -103,7 +103,7 @@
     },
     "docstring": null
   },
-  "CalibrationModel": {
+  "Model": {
     "attributes": {
       "name": {
         "description": "Name of the calibration model."

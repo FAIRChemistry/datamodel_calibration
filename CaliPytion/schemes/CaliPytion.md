@@ -9,8 +9,8 @@ classDiagram
     Standard *-- Series
     Spectrum *-- ConcentrationUnits
     Spectrum *-- Series
-    Result *-- CalibrationModel
-    CalibrationModel *-- Parameter
+    Result *-- Model
+    Model *-- Parameter
     
     class Calibration {
         +string reactant_id
@@ -46,10 +46,10 @@ classDiagram
     
     class Result {
         +float[0..*] concentration
-        +CalibrationModel calibration_model
+        +Model calibration_model
     }
     
-    class CalibrationModel {
+    class Model {
         +string name
         +string equation
         +Parameter[0..*] parameters

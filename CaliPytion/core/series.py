@@ -21,9 +21,9 @@ class Series(sdRDM.DataModel):
     )
 
     __repo__: Optional[str] = PrivateAttr(
-        default="git://github.com/FAIRChemistry/CaliPytion.git"
+        default="https://github.com/FAIRChemistry/CaliPytion.git"
     )
 
     __commit__: Optional[str] = PrivateAttr(
-        default="7c30255582b4c5426d341ff162de2693d5eb3e88"
+        default="a3c1331e33573329a5c6372c58afab2c22b5d68c"
     )

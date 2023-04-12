@@ -88,10 +88,10 @@ Description of a standard curve.
   - Description: Calculated concentration, based on the calibration model.
   - Multiple: True
 - __calibration_model__
-  - Type: CalibrationModel
+  - Type: Model
   - Description: Utilized calibration model and its parameters, leading to the calculated concentrations.
 
-### CalibrationModel
+### Model
 
 - __name__
   - Type: string

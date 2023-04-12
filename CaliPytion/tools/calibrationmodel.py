@@ -15,6 +15,7 @@ class CalibrationModel:
         self.name = name
         self.equation = equation
         self.initial_params = self._initialze_params()
+        print("pause")
 
 
     def _initialze_params(self) -> dict:
@@ -26,11 +27,13 @@ class CalibrationModel:
         param_list = [str(x) for x in list(self.equation.lhs.free_symbols)]
         return dict(zip(param_list, [0]*len(param_list)))
 
-    def fit(self, concentrations, signals):
+    def fit(self, concentrations: ndarray, signals: ndarray):
 
         # define lmfit model from sympy equation
         model = self.equation.lhs
-        model_func = lambdify(list(model.free_symbols), model)
+        variables = [str(x) for x in list(model.free_symbols)]
+        variables.insert(0, variables.pop(variables.index("concentration"))) # dependent variable needs to be in first pos for lmfit --> change of variable order
+        model_func = lambdify(variables, model)
         lm_mod = Model(model_func, name=equation_to_string(self.equation))
 
         # set parameters
@@ -38,7 +41,7 @@ class CalibrationModel:
         params["concentration"] = concentrations
 
         # fit data to model
-        result = lm_mod.fit(data=signals, **params)
+        result = lm_mod.fit(data=signals, **params, nan_policy="omit")
 
         # extract fit statistics
         self.aic = result.aic
@@ -101,3 +104,17 @@ class CalibrationModel:
         self.lmfit_result.plot_residuals(**kwargs)
 
         
+if __name__ == "__main__":
+    import numpy as np
+    from CaliPytion.tools.equations import linear
+    import matplotlib.pyplot as plt
+    conc = np.linspace(0,10,10)
+    sig = np.linspace(0,20,10)
+
+
+
+    mod = CalibrationModel(name=("linear"), equation=linear)
+    mod.fit(conc,sig)
+    print(mod.r2)
+    mod.visualize_fit()
+    plt.show

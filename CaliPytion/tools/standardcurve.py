@@ -1,11 +1,13 @@
-from typing import Dict, List, Callable
+from typing import Dict, List
 from CaliPytion.core.calibration import Calibration
 from CaliPytion.tools.calibrationmodel import CalibrationModel
 from CaliPytion.core.device import Device
-from CaliPytion.core.spectrum import Spectrum
 from CaliPytion.core.standard import Standard
 from CaliPytion.core.series import Series
 from CaliPytion.core.result import Result
+from CaliPytion.core.model import Model
+from CaliPytion.core.parameter import Parameter
+
 
 from CaliPytion.tools.equations import  linear, quadratic, poly_3, poly_e, rational
 
@@ -13,7 +15,6 @@ import matplotlib.pyplot as plt
 from numpy import ndarray, mean, std, where, any, array, tile, linspace
 import pandas as pd
 from IPython.display import display
-from pandas import DataFrame
 from pyenzyme import EnzymeMLDocument
 
 
@@ -154,15 +155,30 @@ class StandardCurve:
             ax.set_ylabel(y_label)
 
 
-    def get_concentration(self, signals: List[float], model_name: str = None) -> List[float]:
+    def calculate_concentration(self, signals: List[float], model_name: str = None,
+                                allow_extrapolation: bool = False, values_only: bool = False
+                                ) -> List[float]:
         
-        # Select model equation
+        # Select calibration model (defaults to model with lowest AIC)
         if model_name == None:
             model = self.models[next(iter(self.result_dict))]
         else:
             model = self.models[model_name]
 
-        return model.calculate_concentration(signal=signals)
+        # calculate concentrations
+        concentrations =  model.calculate_concentration(signal=signals, 
+                                                        allow_extrapolation=allow_extrapolation)
+        
+        if values_only:
+            return concentrations
+        
+        else:
+            # instanciate result class
+            parameters = [Parameter(name=key, value=float(value)) for key, value in model.params.items()] #TODO: add stddev or uncertainty to Parameter class
+            model = Model(name=model.name, equation=model.equation_string,
+                        parameters=parameters)
+            return Result(concentration=concentrations.tolist(), calibration_model=model)
+
 
 
     def apply_to_EnzymeML(
@@ -186,7 +202,7 @@ class StandardCurve:
                 if np.isnan(np.min(data)) and ommit_nan_measurements == True:
                     del_meas = True
                 else:
-                    conc = self.get_concentration(absorption=data, model_name=model_name)
+                    conc = self.calculate_concentration(absorption=data, model_name=model_name)
                     conc = [float(x) if x != 0 else float("nan") for x in conc] #retrieves nans from 'to_concentration', since fsolve outputs 0 if input is nan
 
                     enzmldoc.measurement_dict[id].species_dict["reactants"][species_id].replicates[rep].data = conc
@@ -256,12 +272,12 @@ class StandardCurve:
     
 
     @classmethod
-    def from_calibration_datamodel(cls, 
-                                   calibration_data: Calibration,
-                                   wavelength: float = None,
-                                   blank_data: bool = True,
-                                   cutoff: bool = None,
-                                   ) -> "StandardCurve":
+    def from_datamodel(cls, 
+                       calibration_data: Calibration,
+                       wavelength: float = None,
+                       blank_data: bool = True,
+                       cutoff: bool = None,
+                       ) -> "StandardCurve":
         
         # Get standard curve for given wavelength
         if wavelength != None:
@@ -289,14 +305,14 @@ class StandardCurve:
 
 
 if __name__ == "__main__":
+    
     from sdRDM import DataModel
     test_data, lib = DataModel.parse(path="linear_test.json")
     test_data
 
-    standard_curve = StandardCurve.from_calibration_datamodel(test_data)
+    standard_curve = StandardCurve.from_datamodel(test_data)
 
     for model in standard_curve.models.values():
         print(model.residuals)
 
-
-        # models werden nicht einzeln instanzier, sndern überschreiben sich
+    print(standard_curve.calculate_concentration(0.3))

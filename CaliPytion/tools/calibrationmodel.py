@@ -1,5 +1,5 @@
+from typing import Callable, Tuple
 from lmfit import Model
-from lmfit.model import ModelResult
 from sympy import Equality, lambdify, solve
 from numpy import ndarray, array, sum, sqrt, where, nan
 
@@ -10,37 +10,27 @@ class CalibrationModel:
     def __init__(
         self,
         name: str,
-        equation: Equality,
+        equation: Equality
         ):
+
         self.name = name
         self.equation = equation
-        self.initial_params = self._initialze_params()
-
-
-    def _initialze_params(self) -> dict:
-        """Initializes parameters from Sympy equation. Initializes all parameters with 0.
-
-        Returns:
-            dict: Key value pairs of all model parameters
-        """
-        param_list = [str(x) for x in list(self.equation.lhs.free_symbols)]
-        return dict(zip(param_list, [0.1]*len(param_list)))
+        self.equation_string = self._equation_to_string(equation)
+        
 
     def _fit(self, concentrations: ndarray, signals: ndarray):
 
         # define lmfit model from sympy equation
-        model = self.equation.lhs
-        variables = [str(x) for x in list(model.free_symbols)]
-        variables.insert(0, variables.pop(variables.index("concentration"))) # dependent variable needs to be in first pos for lmfit --> change of variable order
-        model_func = lambdify(variables, model)
-        lm_mod = Model(model_func, name=equation_to_string(self.equation))
+        model = self.equation
+        function, parameter_keys = self._get_np_function(model, solve_for="signal", dependent_variable="concentration")
+        lmfit_model = Model(function, name=self.equation_string)
 
-        # set parameters
-        params = self.initial_params
-        params["concentration"] = concentrations
+        # initialize parameters
+        parameters = dict(zip(parameter_keys, [0.1]*len(parameter_keys)))
+        parameters["concentration"] = concentrations
 
         # fit data to model
-        result = lm_mod.fit(data=signals, **params)
+        result = lmfit_model.fit(data=signals, **parameters)
 
         # extract fit statistics
         self.aic = result.aic
@@ -49,10 +39,11 @@ class CalibrationModel:
         self.residuals = result.residual
         self.best_fit = result.best_fit
         self.params = result.params.valuesdict()
-        self.rmsd = self.calculate_RMSD(self.residuals)
-        self.lmfit_result = result
+        self.rmsd = self._calculate_RMSD(self.residuals)
+        self._lmfit_result = result
 
-    def calculate_RMSD(self, residuals: ndarray) -> float:
+
+    def _calculate_RMSD(self, residuals: ndarray) -> float:
         return sqrt(sum(residuals**2) / len(residuals))
     
     
@@ -70,8 +61,9 @@ class CalibrationModel:
             float | np.ndarray: Calculated concentration.
         """
 
+        # Concert input to numpy array
         signal = array(signal).astype("float")
-        calibration_signals = self.lmfit_result.data
+        calibration_signals = self._lmfit_result.data
 
         # replace values above upper calibration limit with nans
         if not allow_extrapolation:
@@ -82,38 +74,55 @@ class CalibrationModel:
                 signal[extrapolation_pos] = nan
 
         # convert equation to solve for concentration
-        equation: Equality = solve(self.equation, "concentration")[0]
-        function = lambdify(list(equation.free_symbols), equation)
+        function, _ = self._get_np_function(self.equation, solve_for="concentration", dependent_variable="signal")
 
         # set parameters
-        params = self.params
-        params["signal"] = signal
+        parameters = self.params
+        parameters["signal"] = signal
 
-        result: ndarray = function(**params)
+        result: ndarray = function(**parameters)
 
         if result.size > 1:
             return result
         else:
             return float(result)
+
+    @staticmethod 
+    def _get_np_function(equation: Equality, solve_for: str, dependent_variable: str) -> Tuple[Callable, list]:
+        equation: Equality = solve(equation, solve_for)[0]
+        variables = [str(x) for x in list(equation.free_symbols)]
+        variables.insert(0, variables.pop(variables.index(dependent_variable))) # dependent variable needs to be in first pos for lmfit --> change of variable order
+        return (lambdify(variables, equation), variables)
         
     def visualize_fit(self, **kwargs):
-        self.lmfit_result.plot_fit(**kwargs)
+        self._lmfit_result.plot_fit(**kwargs)
 
     def visualize_residuals(self, **kwargs):
-        self.lmfit_result.plot_residuals(**kwargs)
+        self._lmfit_result.plot_residuals(**kwargs)
+
+    @staticmethod
+    def _equation_to_string(equation: Equality) -> str:
+        """Formats the string representation of a sympy.Equality object.
+
+        Args:
+            equation (Equality): Sympy Equality.
+
+        Returns:
+            str: "left_side = right_side"
+        """
+        equation = str(equation)
+
+        left_side, right_side = equation.split(", ")
+        left_side = left_side.split("Eq(")[1]
+
+        right_side = right_side[:-1]
+
+        return f"{right_side} = {left_side}"
 
         
 if __name__ == "__main__":
-    import numpy as np
-    from CaliPytion.tools.equations import linear
-    import matplotlib.pyplot as plt
-    conc = np.linspace(0,10,10)
-    sig = np.linspace(0,20,10)
+    from sdRDM import DataModel
 
+    dm, lib = DataModel.parse(path="rational_test.xml")
 
-
-    mod = CalibrationModel(name=("linear"), equation=linear)
-    mod.fit(conc,sig)
-    print(mod.r2)
-    mod.visualize_fit()
-    plt.show
+    print(dm)

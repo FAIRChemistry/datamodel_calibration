@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Calibration id="calibration12" repo="https://github.com/FAIRChemistry/CaliPytion.git" commit="7c30255582b4c5426d341ff162de2693d5eb3e88" url="https://github.com/FAIRChemistry/CaliPytion/tree/7c30255582b4c5426d341ff162de2693d5eb3e88">
+  <ReactantId>s0</ReactantId>
+  <pH>7.0</pH>
+  <temperature>37.0</temperature>
+  <TemperatureUnit>C</TemperatureUnit>
+  <standard>
+    <Standard id="standard12">
+      <wavelength>420.0</wavelength>
+      <concentration>
+        <concentration>0.0</concentration>
+        <concentration>1.0</concentration>
+        <concentration>2.0</concentration>
+        <concentration>3.0</concentration>
+        <concentration>4.0</concentration>
+        <concentration>5.0</concentration>
+        <concentration>6.0</concentration>
+        <concentration>7.0</concentration>
+        <concentration>8.0</concentration>
+        <concentration>9.0</concentration>
+        <concentration>10.0</concentration>
+      </concentration>
+      <absorption>
+        <Series id="series36">
+          <values>
+            <values>0.9988237556996625</values>
+            <values>1.04050142602617</values>
+            <values>1.0672334594582602</values>
+            <values>1.084360749888094</values>
+            <values>1.099074036224762</values>
+            <values>1.1102207302613514</values>
+            <values>1.118472188656841</values>
+            <values>1.1275371063847872</values>
+            <values>1.1351876460694976</values>
+            <values>1.1388431267259973</values>
+            <values>1.1433437677008906</values>
+          </values>
+        </Series>
+        <Series id="series37">
+          <values>
+            <values>1.00021469719719</values>
+            <values>1.0388364801664813</values>
+            <values>1.065439418438803</values>
+            <values>1.0842508336631664</values>
+            <values>1.1000857017293844</values>
+            <values>1.1112918550895887</values>
+            <values>1.1214182645462014</values>
+            <values>1.1280625392148966</values>
+            <values>1.1343107586740646</values>
+            <values>1.1389645676158624</values>
+            <values>1.1425881076664564</values>
+          </values>
+        </Series>
+        <Series id="series38">
+          <values>
+            <values>0.9989733570110154</values>
+            <values>1.0395005832187403</values>
+            <values>1.0665482238087225</values>
+            <values>1.086145859282951</values>
+            <values>1.1010017281150382</values>
+            <values>1.1121260803373567</values>
+            <values>1.1220581445555557</values>
+            <values>1.1299313665341508</values>
+            <values>1.1319872642493893</values>
+            <values>1.1379554864906793</values>
+            <values>1.1436238328598443</values>
+          </values>
+        </Series>
+      </absorption>
+    </Standard>
+  </standard>
+</Calibration>

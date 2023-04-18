@@ -36,7 +36,7 @@ class Model(sdRDM.DataModel):
     )
 
     __commit__: Optional[str] = PrivateAttr(
-        default="861e23c0f38be10d7124af4cf2daeb92319b70c0"
+        default="3ac803b55505f15885ae1db5c49d8fe81bd9fcf6"
     )
 
     def add_to_parameters(

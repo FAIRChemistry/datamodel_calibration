@@ -164,7 +164,6 @@ class StandardCurve:
             model = self.models[next(iter(self.result_dict))]
         else:
             model = self.models[model_name]
-
         # calculate concentrations
         concentrations =  model.calculate_concentration(signal=signals, 
                                                         allow_extrapolation=allow_extrapolation)
@@ -173,12 +172,10 @@ class StandardCurve:
             return concentrations
         
         else:
-            # instanciate result class
-            parameters = [Parameter(name=key, value=float(value)) for key, value in model.params.items()] #TODO: add stddev or uncertainty to Parameter class
+            parameters = [Parameter(name=key, value=value) for key, value in model.params.items()] #TODO: add stddev or uncertainty to Parameter class
             model = Model(name=model.name, equation=model.equation_string,
                         parameters=parameters)
             return Result(concentration=concentrations.tolist(), calibration_model=model)
-
 
 
     def apply_to_EnzymeML(
@@ -312,7 +309,5 @@ if __name__ == "__main__":
 
     standard_curve = StandardCurve.from_datamodel(test_data)
 
-    for model in standard_curve.models.values():
-        print(model.residuals)
 
-    print(standard_curve.calculate_concentration(0.3))
+    print(standard_curve.calculate_concentration([0.1,0.2]))

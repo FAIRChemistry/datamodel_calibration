@@ -77,15 +77,13 @@ class CalibrationModel:
         function, _ = self._get_np_function(self.equation, solve_for="concentration", dependent_variable="signal")
 
         # set parameters
-        parameters = self.params
+        parameters = self.params.copy()
         parameters["signal"] = signal
 
-        result: ndarray = function(**parameters)
+        result = function(**parameters)
 
-        if result.size > 1:
-            return result
-        else:
-            return float(result)
+        return result
+
 
     @staticmethod 
     def _get_np_function(equation: Equality, solve_for: str, dependent_variable: str) -> Tuple[Callable, list]:

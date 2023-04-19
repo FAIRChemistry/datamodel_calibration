@@ -93,7 +93,7 @@
   "date": "2023-03-14 00:00:00",
   "__source__": {
     "root": "Calibration",
-    "repo": "git://github.com/FAIRChemistry/CaliPytion.git",
+    "repo": "https://github.com/FAIRChemistry/CaliPytion.git",
     "commit": "7c30255582b4c5426d341ff162de2693d5eb3e88",
     "url": "git://github.com/FAIRChemistry/CaliPytion/tree/7c30255582b4c5426d341ff162de2693d5eb3e88"
   }

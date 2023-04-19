@@ -12,7 +12,7 @@ from CaliPytion.core.parameter import Parameter
 from CaliPytion.tools.equations import  linear, quadratic, poly_3, poly_e, rational
 
 import matplotlib.pyplot as plt
-from numpy import ndarray, mean, std, where, any, array, tile, linspace
+from numpy import ndarray, mean, std, where, any, array, tile, linspace, isnan
 import pandas as pd
 from IPython.display import display
 from pyenzyme import EnzymeMLDocument
@@ -157,7 +157,7 @@ class StandardCurve:
 
     def calculate_concentration(self, signals: List[float], model_name: str = None,
                                 allow_extrapolation: bool = False, values_only: bool = False
-                                ) -> List[float]:
+                                ) -> Result:
         
 
         # Check that input is provided as a list
@@ -189,7 +189,8 @@ class StandardCurve:
         enzmldoc: EnzymeMLDocument,
         species_id: str,
         model_name: str = None,
-        ommit_nan_measurements: bool = False
+        ommit_nan_measurements: bool = False,
+        allow_extrapolation: bool = False,
         ) -> EnzymeMLDocument:
 
         max_absorption_standard_curve = max(self.signals)
@@ -202,14 +203,16 @@ class StandardCurve:
                 data = [x if x < max_absorption_standard_curve else float("nan") for x in replicates.data] # TODO add info if values are removed
                 
                 # Check if nan values are in measurement data
-                if np.isnan(np.min(data)) and ommit_nan_measurements == True:
+                if isnan(min(data)) and ommit_nan_measurements == True:
                     del_meas = True
                 else:
-                    conc = self.calculate_concentration(absorption=data, model_name=model_name)
-                    conc = [float(x) if x != 0 else float("nan") for x in conc] #retrieves nans from 'to_concentration', since fsolve outputs 0 if input is nan
-
-                    enzmldoc.measurement_dict[id].species_dict["reactants"][species_id].replicates[rep].data = conc
-                    enzmldoc.measurement_dict[id].species_dict["reactants"][species_id].replicates[rep].data_unit = self.concentration_unit
+                    result = self.calculate_concentration(signals=data, 
+                                                        model_name=model_name,
+                                                        allow_extrapolation=allow_extrapolation)
+                    
+                    print(self.conc_unit)
+                    enzmldoc.measurement_dict[id].species_dict["reactants"][species_id].replicates[rep].data = result.concentration
+                    enzmldoc.measurement_dict[id].species_dict["reactants"][species_id].replicates[rep].data_unit = self.conc_unit
                     enzmldoc.measurement_dict[id].species_dict["reactants"][species_id].replicates[rep].data_type = "conc"
             if del_meas:
                 delete_measurements.append(id)
@@ -303,6 +306,7 @@ class StandardCurve:
                    cutoff_signal=cutoff,
                    blank_data=blank_data,
                    wavelength=wavelength,
+                   conc_unit=standard.concentration_unit,
                    analyte_name=calibration_data.reactant_id) # TODO: add analyte name or id or inchi
     
 

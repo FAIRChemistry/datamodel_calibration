@@ -23,47 +23,47 @@
       <absorption>
         <Series id="series0">
           <values>
-            <values>0.9980565455656168</values>
-            <values>1.0409789109594665</values>
-            <values>1.0685056948447917</values>
-            <values>1.0850974940371418</values>
-            <values>1.1001607634798551</values>
-            <values>1.111436730079999</values>
-            <values>1.1207950532717326</values>
-            <values>1.127690981309389</values>
-            <values>1.1303273615355003</values>
-            <values>1.1390667630890792</values>
-            <values>1.144508022659928</values>
+            <values>0.9999076466313102</values>
+            <values>1.039783987367966</values>
+            <values>1.067850570054596</values>
+            <values>1.085993654342462</values>
+            <values>1.0995299791337712</values>
+            <values>1.1110047925689486</values>
+            <values>1.1197026500192877</values>
+            <values>1.1262126996210027</values>
+            <values>1.132440439033332</values>
+            <values>1.137852686885726</values>
+            <values>1.1420558202008648</values>
           </values>
         </Series>
         <Series id="series1">
           <values>
-            <values>0.9999870791458799</values>
-            <values>1.0390310845573028</values>
-            <values>1.0660418090997201</values>
-            <values>1.0864618926159104</values>
-            <values>1.0997779230347802</values>
-            <values>1.110427700623868</values>
-            <values>1.1195182913005848</values>
-            <values>1.1289285432346503</values>
-            <values>1.133058561149659</values>
-            <values>1.1367440624818066</values>
-            <values>1.143290194887181</values>
+            <values>0.9992373668277921</values>
+            <values>1.0409153936256328</values>
+            <values>1.0689758380578491</values>
+            <values>1.086818588268119</values>
+            <values>1.0995763034642012</values>
+            <values>1.1096938951175805</values>
+            <values>1.1191554674260669</values>
+            <values>1.1282241492628657</values>
+            <values>1.1326200990586466</values>
+            <values>1.1379430232383776</values>
+            <values>1.1429779752680356</values>
           </values>
         </Series>
         <Series id="series2">
           <values>
-            <values>1.0011954510343513</values>
-            <values>1.0382957233838106</values>
-            <values>1.0675818112247595</values>
-            <values>1.0867707732401584</values>
-            <values>1.1001191156014072</values>
-            <values>1.1113145079953508</values>
-            <values>1.1192383594610322</values>
-            <values>1.1248114621639886</values>
-            <values>1.1329698131088393</values>
-            <values>1.1388051414982867</values>
-            <values>1.1439186478007872</values>
+            <values>1.0019736128821786</values>
+            <values>1.0402619046578236</values>
+            <values>1.0668725277779387</values>
+            <values>1.08545853268841</values>
+            <values>1.0997128056673504</values>
+            <values>1.1110220427594688</values>
+            <values>1.1208086309205572</values>
+            <values>1.1278855241009664</values>
+            <values>1.1345670232554848</values>
+            <values>1.1388195997970056</values>
+            <values>1.1437375439679869</values>
           </values>
         </Series>
       </absorption>

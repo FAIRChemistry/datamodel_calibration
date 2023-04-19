@@ -159,6 +159,12 @@ class StandardCurve:
                                 allow_extrapolation: bool = False, values_only: bool = False
                                 ) -> List[float]:
         
+
+        # Check that input is provided as a list
+        if not isinstance(signals, (list, ndarray)): raise ValueError(
+                "'signals' need to be provided as a list."
+        )
+
         # Select calibration model (defaults to model with lowest AIC)
         if model_name == None:
             model = self.models[next(iter(self.result_dict))]

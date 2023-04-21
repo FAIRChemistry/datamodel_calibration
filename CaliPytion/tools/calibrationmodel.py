@@ -19,6 +19,12 @@ class CalibrationModel:
         
 
     def _fit(self, concentrations: ndarray, signals: ndarray):
+        """Fits a kinetic model 
+
+        Args:
+            concentrations (ndarray): _description_
+            signals (ndarray): _description_
+        """
 
         # define lmfit model from sympy equation
         model = self.equation

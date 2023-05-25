@@ -76,7 +76,7 @@ class CalibrationModel:
             extrapolation_pos = where(signal > max(calibration_signals))[0]
             if extrapolation_pos.size != 0:
                 print(f"{len(extrapolation_pos)} measurements are above upper calibration limit of {max(calibration_signals):.2f}.\n \
-                      Respective measurments are replaced with nans. To extrapolate set 'allow_extrapolation' = True")
+                      Respective measurments are replaced with nans. To extrapolate, set 'allow_extrapolation = True'")
                 signal[extrapolation_pos] = nan
 
         # convert equation to solve for concentration

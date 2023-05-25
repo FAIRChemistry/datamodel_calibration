@@ -7,19 +7,13 @@ from CaliPytion.tools.equations import *
 
 
 class CalibrationModel:
-    def __init__(
-        self,
-        name: str,
-        equation: Equality
-        ):
-
+    def __init__(self, name: str, equation: Equality):
         self.name = name
         self.equation = equation
         self.equation_string = self._equation_to_string(equation)
-        
 
     def _fit(self, concentrations: ndarray, signals: ndarray):
-        """Fits a kinetic model 
+        """Fits a kinetic model
 
         Args:
             concentrations (ndarray): _description_
@@ -28,11 +22,13 @@ class CalibrationModel:
 
         # define lmfit model from sympy equation
         model = self.equation
-        function, parameter_keys = self._get_np_function(model, solve_for="signal", dependent_variable="concentration")
+        function, parameter_keys = self._get_np_function(
+            model, solve_for="signal", dependent_variable="concentration"
+        )
         lmfit_model = Model(function, name=self.equation_string)
 
         # initialize parameters
-        parameters = dict(zip(parameter_keys, [0.1]*len(parameter_keys)))
+        parameters = dict(zip(parameter_keys, [0.1] * len(parameter_keys)))
         parameters["concentration"] = concentrations
 
         # fit data to model
@@ -48,15 +44,12 @@ class CalibrationModel:
         self.rmsd = self._calculate_RMSD(self.residuals)
         self._lmfit_result = result
 
-
     def _calculate_RMSD(self, residuals: ndarray) -> float:
         return sqrt(sum(residuals**2) / len(residuals))
-    
-    
-    def calculate_concentration(self, 
-                                signal: float | ndarray, 
-                                allow_extrapolation: bool = False
-                                ) -> float | ndarray:
+
+    def calculate_concentration(
+        self, signal: float | ndarray, allow_extrapolation: bool = False
+    ) -> float | ndarray:
         """Calculates unknown concentrations based on fit of Calibration model.
 
         Args:
@@ -75,12 +68,16 @@ class CalibrationModel:
         if not allow_extrapolation:
             extrapolation_pos = where(signal > max(calibration_signals))[0]
             if extrapolation_pos.size != 0:
-                print(f"{len(extrapolation_pos)} measurements are above upper calibration limit of {max(calibration_signals):.2f}.\n \
-                      Respective measurments are replaced with nans. To extrapolate, set 'allow_extrapolation = True'")
+                print(
+                    f"{len(extrapolation_pos)} measurements are above upper calibration limit of {max(calibration_signals):.2f}.\n \
+                      Respective measurments are replaced with nans. To extrapolate, set 'allow_extrapolation = True'"
+                )
                 signal[extrapolation_pos] = nan
 
         # convert equation to solve for concentration
-        function, _ = self._get_np_function(self.equation, solve_for="concentration", dependent_variable="signal")
+        function, _ = self._get_np_function(
+            self.equation, solve_for="concentration", dependent_variable="signal"
+        )
 
         # set parameters
         parameters = self.params.copy()
@@ -90,14 +87,17 @@ class CalibrationModel:
 
         return result
 
-
-    @staticmethod 
-    def _get_np_function(equation: Equality, solve_for: str, dependent_variable: str) -> Tuple[Callable, list]:
+    @staticmethod
+    def _get_np_function(
+        equation: Equality, solve_for: str, dependent_variable: str
+    ) -> Tuple[Callable, list]:
         equation: Equality = solve(equation, solve_for)[0]
         variables = [str(x) for x in list(equation.free_symbols)]
-        variables.insert(0, variables.pop(variables.index(dependent_variable))) # dependent variable needs to be in first pos for lmfit --> change of variable order
+        variables.insert(
+            0, variables.pop(variables.index(dependent_variable))
+        )  # dependent variable needs to be in first pos for lmfit --> change of variable order
         return (lambdify(variables, equation), variables)
-        
+
     def visualize_fit(self, **kwargs):
         self._lmfit_result.plot_fit(**kwargs)
 
@@ -123,7 +123,7 @@ class CalibrationModel:
 
         return f"{right_side} = {left_side}"
 
-        
+
 if __name__ == "__main__":
     from sdRDM import DataModel
 

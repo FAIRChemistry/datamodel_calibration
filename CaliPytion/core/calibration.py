@@ -112,3 +112,7 @@ class Calibration(sdRDM.DataModel):
             params["id"] = id
         standard = [Standard(**params)]
         self.standard = self.standard + standard
+
+    def get_temperature(self):
+        print("... getting temperature")
+        return self.temperature

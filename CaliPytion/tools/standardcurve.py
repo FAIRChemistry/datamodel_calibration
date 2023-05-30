@@ -294,13 +294,16 @@ class StandardCurve:
             device=device,
             standard=[standard],
         )
-
         return cls(
-            calibration_data=calibration,
-            blanc_data=blanc_data,
-            cutoff_absorption=cutoff_absorption,
-            wavelength=wavelength,
+            concentrations: list,
+            signals: list,
+            conc_unit: str = None,
+            wavelength: int = None,
+            analyte_name: str = None,
+            blank_data: bool = True,
+            cutoff_signal: float = None,
         )
+        
 
     @classmethod
     def from_datamodel(
@@ -343,13 +346,3 @@ class StandardCurve:
             analyte_name=calibration_data.reactant_id,
         )  # TODO: add analyte name or id or inchi
 
-
-if __name__ == "__main__":
-    from sdRDM import DataModel
-
-    test_data, lib = DataModel.parse(path="linear_test.json")
-    test_data
-
-    standard_curve = StandardCurve.from_datamodel(test_data)
-
-    print(standard_curve.calculate_concentration([0.1, 0.2]))

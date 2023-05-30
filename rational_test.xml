@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<Calibration id="calibration2" repo="https://github.com/FAIRChemistry/CaliPytion.git" commit="7c30255582b4c5426d341ff162de2693d5eb3e88" url="https://github.com/FAIRChemistry/CaliPytion/tree/7c30255582b4c5426d341ff162de2693d5eb3e88">
+<Calibration id="calibration4" repo="https://github.com/FAIRChemistry/CaliPytion.git" commit="3c716c6843c2c71253316e81bbf7b08913c0520b" url="https://github.com/FAIRChemistry/CaliPytion/tree/3c716c6843c2c71253316e81bbf7b08913c0520b">
   <ReactantId>s0</ReactantId>
   <pH>7.0</pH>
   <temperature>37.0</temperature>
@@ -20,50 +20,51 @@
         <concentration>9.0</concentration>
         <concentration>10.0</concentration>
       </concentration>
+      <ConcentrationUnit>mmole / l</ConcentrationUnit>
       <absorption>
         <Series id="series6">
           <values>
-            <values>0.9997384106300202</values>
-            <values>1.999795725659166</values>
-            <values>2.665542669772835</values>
-            <values>3.142026257386323</values>
-            <values>3.498984164175635</values>
-            <values>3.778628953037457</values>
-            <values>3.9993558786893635</values>
-            <values>4.180721541924484</values>
-            <values>4.334877706327628</values>
-            <values>4.461647121271667</values>
-            <values>4.572815592278681</values>
+            <values>0.9994221754686075</values>
+            <values>2.0010213235369374</values>
+            <values>2.6663719713454195</values>
+            <values>3.1415968515519745</values>
+            <values>3.499896420663014</values>
+            <values>3.7766739776283273</values>
+            <values>3.999999966517299</values>
+            <values>4.182102016556913</values>
+            <values>4.3327121142635185</values>
+            <values>4.460915579367506</values>
+            <values>4.572843633650482</values>
           </values>
         </Series>
         <Series id="series7">
           <values>
-            <values>0.9999221843383662</values>
-            <values>1.9976304467378116</values>
-            <values>2.6660179785681524</values>
-            <values>3.1441040416580037</values>
-            <values>3.4996522410059807</values>
-            <values>3.7776237416770257</values>
-            <values>3.999761711942509</values>
-            <values>4.181498075095829</values>
-            <values>4.334281318835995</values>
-            <values>4.460845817570341</values>
-            <values>4.571360732129948</values>
+            <values>1.0000766653368487</values>
+            <values>2.0001060337990815</values>
+            <values>2.667273740449885</values>
+            <values>3.145182379921338</values>
+            <values>3.4992434811680493</values>
+            <values>3.7776143381938287</values>
+            <values>3.999455109846163</values>
+            <values>4.181701890266276</values>
+            <values>4.333489621182997</values>
+            <values>4.461587561978167</values>
+            <values>4.571364229867816</values>
           </values>
         </Series>
         <Series id="series8">
           <values>
-            <values>0.9995870065160967</values>
-            <values>1.9997260105798609</values>
-            <values>2.665308904599379</values>
-            <values>3.141710174888493</values>
-            <values>3.4997299267160713</values>
-            <values>3.777323156565652</values>
-            <values>4.000514110669437</values>
-            <values>4.180675307288309</values>
-            <values>4.332998860018208</values>
-            <values>4.46207321132099</values>
-            <values>4.570361427499233</values>
+            <values>1.0010393455671616</values>
+            <values>1.99988583357931</values>
+            <values>2.6664714084522796</values>
+            <values>3.1427601713899116</values>
+            <values>3.4989624172329683</values>
+            <values>3.7791090387367627</values>
+            <values>4.0001909407649725</values>
+            <values>4.181395726352399</values>
+            <values>4.334351145255061</values>
+            <values>4.460329187183252</values>
+            <values>4.5730364424073215</values>
           </values>
         </Series>
       </absorption>

@@ -12,6 +12,7 @@ from CaliPytion.core.parameter import Parameter
 from CaliPytion.tools.equations import linear, quadratic, poly_3, poly_e, rational
 
 import matplotlib.pyplot as plt
+import copy
 from numpy import ndarray, mean, std, where, any, array, tile, linspace, isnan
 import pandas as pd
 from IPython.display import display
@@ -69,7 +70,7 @@ class StandardCurve:
 
     def _cutoff_signal(self):
         pos = where(self.signals < self.cutoff_signal)
-        self.concentration = self.concentration[pos]
+        self.concentrations = self.concentrations[pos]
         self.signals = self.signals[pos]
 
     def _initialize_models(self) -> Dict[str, CalibrationModel]:
@@ -180,8 +181,8 @@ class StandardCurve:
         else:
             model = self.models[model_name]
         # calculate concentrations
-        concentrations = model.calculate_concentration(
-            signal=signals, allow_extrapolation=allow_extrapolation
+        concentrations = model.calculate_roots(
+            signals=signals, allow_extrapolation=allow_extrapolation
         )
 
         if values_only:
@@ -194,6 +195,7 @@ class StandardCurve:
             model = Model(
                 name=model.name, equation=model.equation_string, parameters=parameters
             )
+            print(f"result conc: {concentrations}")
             return Result(
                 concentration=concentrations.tolist(), calibration_model=model
             )
@@ -209,6 +211,8 @@ class StandardCurve:
         max_absorption_standard_curve = max(self.signals)
 
         delete_measurements = []
+
+        enzmldoc = copy.deepcopy(enzmldoc)
 
         for id, measurement in enzmldoc.measurement_dict.items():
             del_meas = False
@@ -230,7 +234,6 @@ class StandardCurve:
                         allow_extrapolation=allow_extrapolation,
                     )
 
-                    print(self.conc_unit)
                     enzmldoc.measurement_dict[id].species_dict["reactants"][
                         species_id
                     ].replicates[rep].data = result.concentration
@@ -253,56 +256,12 @@ class StandardCurve:
         return enzmldoc
 
     @classmethod
-    def from_excel(
-        cls,
-        path: str,
-        reactant_id: str,
-        wavelength: float,
-        concentration_unit: str,
-        temperature: float = None,
-        temperature_unit: str = None,
-        pH: float = None,
-        device_name: str = None,
-        device_model: str = None,
-        blanc_data: bool = True,
-        cutoff_absorption: float = None,
-        sheet_name: str = None,
-    ):
-        df = pd.read_excel(path, sheet_name=sheet_name)
-        concentration = df.iloc[:, 0].values
-        absorptions = df.iloc[:, 1:]
-        absorption_list = absorptions.values.T
-
-        device = Device(manufacturer=device_name, model=device_model)
-
-        absorption = []
-        for abso in absorption_list:
-            absorption.append(Series(values=list(abso)))
-
-        standard = Standard(
-            wavelength=wavelength,
-            concentration=list(concentration),
-            concentration_unit=concentration_unit,
-            absorption=absorption,
-        )
-
-        calibration = Calibration(
-            reactant_id=reactant_id,
-            pH=pH,
-            temperature=temperature,
-            temmperature_unit=temperature_unit,
-            device=device,
-            standard=[standard],
-        )
-        return calibration
-
-    @classmethod
     def from_datamodel(
         cls,
         calibration_data: Calibration,
         wavelength: float = None,
         blank_data: bool = True,
-        cutoff: bool = None,
+        cutoff_signal: float = None,
     ) -> "StandardCurve":
         # Get standard curve for given wavelength
         if wavelength != None:
@@ -319,6 +278,7 @@ class StandardCurve:
                 )
         else:
             standard = calibration_data.standard[0]
+            wavelength = standard.wavelength
             print(f"Found calibration data at {float(standard.wavelength)} nm")
 
         # get concentrations and corresponding analyte signal
@@ -330,7 +290,7 @@ class StandardCurve:
         return cls(
             concentrations=concentrations,
             signals=signals,
-            cutoff_signal=cutoff,
+            cutoff_signal=cutoff_signal,
             blank_data=blank_data,
             wavelength=wavelength,
             conc_unit=standard.concentration_unit,

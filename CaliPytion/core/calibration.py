@@ -113,6 +113,45 @@ class Calibration(sdRDM.DataModel):
         standard = [Standard(**params)]
         self.standard = self.standard + standard
 
-    def get_temperature(self):
-        print("... getting temperature")
-        return self.temperature
+    @classmethod
+    def from_excel(
+        cls,
+        path: str,
+        reactant_id: str,
+        wavelength: float,
+        concentration_unit: str,
+        temperature: float = None,
+        temperature_unit: str = None,
+        pH: float = None,
+        device_name: str = None,
+        device_model: str = None,
+        sheet_name: str = None,
+    ):
+        import pandas as pd
+
+        df = pd.read_excel(path, sheet_name=sheet_name)
+        concentration = df.iloc[:, 0].values
+        absorptions = df.iloc[:, 1:]
+        absorption_list = absorptions.values.T
+
+        device = Device(manufacturer=device_name, model=device_model)
+
+        absorption = []
+        for abso in absorption_list:
+            absorption.append(Series(values=list(abso)))
+
+        standard = Standard(
+            wavelength=wavelength,
+            concentration=list(concentration),
+            concentration_unit=concentration_unit,
+            absorption=absorption,
+        )
+
+        return Calibration(
+            reactant_id=reactant_id,
+            pH=pH,
+            temperature=temperature,
+            temperature_unit=temperature_unit,
+            device=device,
+            standard=[standard],
+        )

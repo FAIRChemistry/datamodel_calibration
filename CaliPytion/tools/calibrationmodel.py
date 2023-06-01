@@ -1,6 +1,8 @@
-from typing import Callable, Tuple
+from typing import Callable, Tuple, Dict
 from lmfit import Model
-from sympy import Equality, lambdify, solve
+import sympy as s
+from sympy import Equality, lambdify, solve, pprint
+import numpy as np
 from numpy import ndarray, array, sum, sqrt, where, nan
 
 from CaliPytion.tools.equations import *
@@ -47,6 +49,53 @@ class CalibrationModel:
     def _calculate_RMSD(self, residuals: ndarray) -> float:
         return sqrt(sum(residuals**2) / len(residuals))
 
+    def calculate_roots(
+        self,
+        signals: list,
+        allow_extrapolation: bool = False,
+    ):
+        calibration_signals = self._lmfit_result.data
+        min_signals = min(calibration_signals)
+        max_signals = max(calibration_signals)
+
+        # replace values above upper calibration limit with nans
+        if not allow_extrapolation:
+            extrapolation_pos = where(signals > max_signals)[0]
+            if extrapolation_pos.size != 0:
+                print(
+                    f"{len(extrapolation_pos)} measurements are above upper calibration limit of {max(calibration_signals):.2f}.\n \
+                      Respective measurments are replaced with nans. To extrapolate, set 'allow_extrapolation = True'"
+                )
+                print(f"extrapolation_pos: {extrapolation_pos}")
+
+                signals[extrapolation_pos] = nan
+
+        root_eq = self.equation.lhs - self.equation.rhs
+
+        print("aaa", self.params)
+
+        results = []
+        parameters = self.params.copy()
+        for signal in signals:
+            parameters[self.equation.rhs] = signal
+            print(f"eq: {root_eq}")
+            print(f"rhs: {self.equation.rhs}")
+
+            results.append(list(s.roots(s.real_root(root_eq.subs(parameters))).keys()))
+
+        results = np.array(results).T
+        print(results)
+
+        n_values_in_calibration_range = []
+        for result in results:
+            n_values_in_calibration_range.append(
+                ((min_signals < result) & (result < max_signals)).sum()
+            )
+
+        correct_roots = results[np.argmax(n_values_in_calibration_range)]
+
+        return correct_roots
+
     def calculate_concentration(
         self, signal: float | ndarray, allow_extrapolation: bool = False
     ) -> float | ndarray:
@@ -61,21 +110,24 @@ class CalibrationModel:
         """
 
         # Concert input to numpy array
-        signal = array(signal).astype("float")
         calibration_signals = self._lmfit_result.data
+        min_signals = min(calibration_signals)
+        max_signals = max(calibration_signals)
 
         # replace values above upper calibration limit with nans
         if not allow_extrapolation:
-            extrapolation_pos = where(signal > max(calibration_signals))[0]
+            extrapolation_pos = where(signal > max_signals)[0]
             if extrapolation_pos.size != 0:
                 print(
                     f"{len(extrapolation_pos)} measurements are above upper calibration limit of {max(calibration_signals):.2f}.\n \
                       Respective measurments are replaced with nans. To extrapolate, set 'allow_extrapolation = True'"
                 )
+                print(f"extrapolation_pos: {extrapolation_pos}")
+
                 signal[extrapolation_pos] = nan
 
         # convert equation to solve for concentration
-        function, _ = self._get_np_function(
+        functions = self._get_np_functions(
             self.equation, solve_for="concentration", dependent_variable="signal"
         )
 
@@ -83,15 +135,24 @@ class CalibrationModel:
         parameters = self.params.copy()
         parameters["signal"] = signal
 
-        result = function(**parameters)
+        solutions = []
+        for function in functions:
+            solutions.append(function[0](**parameters))
 
-        return result
+        n_values_in_calibration_range = []
+        for solution in solutions:
+            n_values_in_calibration_range.append(
+                ((min_signals < solution) & (solution < max_signals)).sum()
+            )
+
+        return solutions[np.argmax(n_values_in_calibration_range)]
 
     @staticmethod
     def _get_np_function(
-        equation: Equality, solve_for: str, dependent_variable: str
+        eq: Equality, solve_for: str, dependent_variable: str
     ) -> Tuple[Callable, list]:
-        equation: Equality = solve(equation, solve_for)[0]
+        equation: Equality = solve(eq, solve_for)[0]
+
         variables = [str(x) for x in list(equation.free_symbols)]
         variables.insert(
             0, variables.pop(variables.index(dependent_variable))
@@ -122,11 +183,3 @@ class CalibrationModel:
         right_side = right_side[:-1]
 
         return f"{right_side} = {left_side}"
-
-
-if __name__ == "__main__":
-    from sdRDM import DataModel
-
-    dm, lib = DataModel.parse(path="rational_test.xml")
-
-    print(dm)

@@ -58,6 +58,10 @@ class CalibrationModel:
         min_signals = min(calibration_signals)
         max_signals = max(calibration_signals)
 
+        print(f"signals: {signals}")
+        print(f"type of signals: {type(signals)}")
+        print(f"type of signals entry: {type(signals[0])}")
+
         # replace values above upper calibration limit with nans
         if not allow_extrapolation:
             extrapolation_pos = where(signals > max_signals)[0]
@@ -67,23 +71,36 @@ class CalibrationModel:
                       Respective measurments are replaced with nans. To extrapolate, set 'allow_extrapolation = True'"
                 )
                 print(f"extrapolation_pos: {extrapolation_pos}")
+                print(type(extrapolation_pos[0]))
 
-                signals[extrapolation_pos] = nan
+                print(f"pos_array {extrapolation_pos}")
+                extrapolation_pos = extrapolation_pos.astype(int)
+                print(f"pos_array type {type(extrapolation_pos[0])}")
+
+                signals[extrapolation_pos] = np.nan
+
+        print(f"signals after correction: {signals}")
 
         root_eq = self.equation.lhs - self.equation.rhs
-
-        print("aaa", self.params)
 
         results = []
         parameters = self.params.copy()
         for signal in signals:
-            parameters[self.equation.rhs] = signal
-            print(f"eq: {root_eq}")
-            print(f"rhs: {self.equation.rhs}")
+            if not np.isnan(signal):
+                print(f"signal: {signal}")
+                parameters[self.equation.rhs] = signal
+                results.append(
+                    list(s.roots(s.real_root(root_eq.subs(parameters))).keys())
+                )
+            else:
+                results.append([np.nan])
 
-            results.append(list(s.roots(s.real_root(root_eq.subs(parameters))).keys()))
+        # reshape results, fill nan columns for signals above upper calibration range
+        matrix = np.zeros([len(results), len(max(results, key=lambda x: len(results)))])
+        for i, j in enumerate(results):
+            matrix[i][0 : len(j)] = j
 
-        results = np.array(results).T
+        results = np.array(matrix).T
         print(results)
 
         n_values_in_calibration_range = []

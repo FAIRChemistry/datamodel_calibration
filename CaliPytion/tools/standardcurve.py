@@ -13,6 +13,7 @@ from CaliPytion.tools.equations import linear, quadratic, poly_3, poly_e, ration
 
 import matplotlib.pyplot as plt
 import copy
+import numpy as np
 from numpy import ndarray, mean, std, where, any, array, tile, linspace, isnan
 import pandas as pd
 from IPython.display import display
@@ -166,7 +167,7 @@ class StandardCurve:
 
     def calculate_concentration(
         self,
-        signals: List[float],
+        signals: np.ndarray,
         model_name: str = None,
         allow_extrapolation: bool = False,
         values_only: bool = False,
@@ -174,6 +175,11 @@ class StandardCurve:
         # Check that input is provided as a list
         if not isinstance(signals, (list, ndarray)):
             raise ValueError("'signals' need to be provided as a list.")
+
+        if isinstance(signals, list):
+            signals = np.array(signals)
+
+        signals = signals.astype("float")
 
         # Select calibration model (defaults to model with lowest AIC)
         if model_name == None:

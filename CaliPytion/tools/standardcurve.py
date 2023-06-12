@@ -220,7 +220,6 @@ class StandardCurve:
     def visualize(self, model: CalibrationModel = None):
         if model == None:
             model = self.models[next(iter(self.result_dict.keys()))]
-            model = self.models["Quadratic"]
         else:
             model = self.models(model)
 
@@ -308,7 +307,7 @@ class StandardCurve:
         )
 
         fig.update_yaxes(title_text="Signal (a.u.)", row=1, col=1)
-        fig.update_yaxes(title_text="Percentual Residuals", row=1, col=2)
+        fig.update_yaxes(title_text="Residuals (%)", row=1, col=2)
 
         config = {
             "toImageButtonOptions": {

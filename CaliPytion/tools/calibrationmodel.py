@@ -58,10 +58,6 @@ class CalibrationModel:
         min_signals = min(calibration_signals)
         max_signals = max(calibration_signals)
 
-        print(f"signals: {signals}")
-        print(f"type of signals: {type(signals)}")
-        print(f"type of signals entry: {type(signals[0])}")
-
         # replace values above upper calibration limit with nans
         if not allow_extrapolation:
             extrapolation_pos = where(signals > max_signals)[0]
@@ -70,16 +66,9 @@ class CalibrationModel:
                     f"{len(extrapolation_pos)} measurements are above upper calibration limit of {max(calibration_signals):.2f}.\n \
                       Respective measurments are replaced with nans. To extrapolate, set 'allow_extrapolation = True'"
                 )
-                print(f"extrapolation_pos: {extrapolation_pos}")
-                print(type(extrapolation_pos[0]))
-
-                print(f"pos_array {extrapolation_pos}")
                 extrapolation_pos = extrapolation_pos.astype(int)
-                print(f"pos_array type {type(extrapolation_pos[0])}")
 
                 signals[extrapolation_pos] = np.nan
-
-        print(f"signals after correction: {signals}")
 
         root_eq = self.equation.lhs - self.equation.rhs
 
@@ -87,7 +76,6 @@ class CalibrationModel:
         parameters = self.params.copy()
         for signal in signals:
             if not np.isnan(signal):
-                print(f"signal: {signal}")
                 parameters[self.equation.rhs] = signal
                 results.append(
                     list(s.roots(s.real_root(root_eq.subs(parameters))).keys())
@@ -101,7 +89,6 @@ class CalibrationModel:
             matrix[i][0 : len(j)] = j
 
         results = np.array(matrix).T
-        print(results)
 
         n_values_in_calibration_range = []
         for result in results:

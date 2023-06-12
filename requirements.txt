@@ -7,3 +7,4 @@ pydantic==1.8.2
 scipy
 setuptools
 sdRDM
+sympy

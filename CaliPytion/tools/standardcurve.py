@@ -12,6 +12,9 @@ from CaliPytion.core.parameter import Parameter
 from CaliPytion.tools.equations import linear, quadratic, poly_3, poly_e, rational
 
 import matplotlib.pyplot as plt
+import plotly.express as px
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 import copy
 import numpy as np
 from numpy import ndarray, mean, std, where, any, array, tile, linspace, isnan
@@ -99,7 +102,7 @@ class StandardCurve:
             linear_model.name: linear_model,
             quadratic_model.name: quadratic_model,
             poly3_model.name: poly3_model,
-            polye_model.name: polye_model,
+            # polye_model.name: polye_model,
             rational_model.name: rational_model,
         }
 
@@ -123,7 +126,7 @@ class StandardCurve:
 
         return result_dict
 
-    def visualize(
+    def visualizee(
         self,
         model_name: str = None,
         ax: plt.Axes = None,
@@ -162,7 +165,6 @@ class StandardCurve:
         if title:
             ax.set_title(title)
         if y_label:
-            print(f"{y_label}")
             ax.set_ylabel(y_label)
 
     def calculate_concentration(
@@ -201,10 +203,124 @@ class StandardCurve:
             model = Model(
                 name=model.name, equation=model.equation_string, parameters=parameters
             )
-            print(f"result conc: {concentrations}")
             return Result(
                 concentration=concentrations.tolist(), calibration_model=model
             )
+
+    @staticmethod
+    def _format_unit(unit: str) -> str:
+        unit = unit.replace(" / l", " L<sup>-1</sup>")
+        unit = unit.replace("1 / s", "s<sup>-1</sup>")
+        unit = unit.replace("1 / min", "min<sup>-1</sup>")
+        unit = unit.replace("mole", "mol")
+        unit = unit.replace("umol", "µmol")
+        unit = unit.replace("ug", "µg")
+        return unit
+
+    def visualize(self, model: CalibrationModel = None):
+        if model == None:
+            model = self.models[next(iter(self.result_dict.keys()))]
+            model = self.models["Quadratic"]
+        else:
+            model = self.models(model)
+
+        fig = make_subplots(
+            rows=1,
+            cols=2,
+            x_title=f"{self.analyte_name} concentration ({self._format_unit(self.conc_unit)})",
+            subplot_titles=[
+                "Standard Curve",
+                "Residuals",
+            ],
+            horizontal_spacing=0.15,
+        )
+
+        fig.add_trace(
+            go.Scatter(
+                x=self.concentrations,
+                y=self.signals,
+                name=f"{self.analyte_name} Standard",
+                mode="markers",
+                marker=dict(color="#1f77b4"),
+                # showlegend=show_legend,
+                # customdata=["replicates"],
+                hoverinfo="skip",
+                visible=True,
+            ),
+            col=1,
+            row=1,
+        )
+
+        smooth_x = linspace(
+            self.concentrations[0],
+            self.concentrations[-1],
+            len(self.concentrations) * 5,
+        )
+
+        # equation = model.equation.lhs
+        function, _ = model._get_np_function(
+            model.equation, solve_for="signal", dependent_variable="concentration"
+        )
+        params = model.params
+
+        model_data = function(smooth_x, **params)
+
+        fig.add_trace(
+            go.Scatter(
+                x=smooth_x,
+                y=model_data,
+                name=f"{model.name}",
+                mode="lines",
+                marker=dict(color="#1f77b4"),
+                # marker=dict(color=self._HEX_to_RGBA_string(color)),
+                # showlegend=show_legend,
+                # customdata=["replicates"],
+                hoverinfo="skip",
+                visible=True,
+            ),
+            col=1,
+            row=1,
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=self.concentrations,
+                # y=model.residuals,
+                y=np.divide(
+                    model.residuals,
+                    model._lmfit_result.best_fit,
+                    out=np.zeros_like(model.residuals),
+                    where=model._lmfit_result.best_fit != 0,
+                )
+                * 100,
+                name="Residuals",
+                mode="markers",
+                marker=dict(color="#d62728"),
+                # showlegend=show_legend,
+                # customdata=["replicates"],
+                hoverinfo="skip",
+                visible=True,
+            ),
+            col=2,
+            row=1,
+        )
+        fig.add_hline(
+            y=0, line_dash="dot", row=1, col=2, line_color="#000000", line_width=2
+        )
+
+        fig.update_yaxes(title_text="Signal (a.u.)", row=1, col=1)
+        fig.update_yaxes(title_text="Percentual Residuals", row=1, col=2)
+
+        config = {
+            "toImageButtonOptions": {
+                "format": "svg",  # one of png, svg, jpeg, webp
+                "filename": "custom_image",
+                # "height": 600,
+                # "width": 700,
+                "scale": 1,  # Multiply title/legend/axis/canvas sizes by this factor
+            }
+        }
+
+        return fig.show(config=config)
 
     def apply_to_EnzymeML(
         self,

@@ -1,69 +1,74 @@
 import sdRDM
 
-from typing import Optional, Union
-from typing import List
-from typing import Optional
-from pydantic import PrivateAttr
-from pydantic import Field
+from typing import List, Optional
+from pydantic import Field, PrivateAttr
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
+
+
 from .concentrationunits import ConcentrationUnits
 from .series import Series
 
 
 @forge_signature
 class Standard(sdRDM.DataModel):
+
     """Description of a standard curve."""
 
-    id: str = Field(
+    id: Optional[str] = Field(
         description="Unique identifier of the given object.",
         default_factory=IDGenerator("standardINDEX"),
         xml="@id",
     )
 
     wavelength: Optional[float] = Field(
-        description="Detection wavelength.", default=None
+        default=None,
+        description="Detection wavelength.",
     )
 
     concentration: List[float] = Field(
-        description="Concentration of the reactant.", default_factory=ListPlus
+        default_factory=ListPlus,
+        multiple=True,
+        description="Concentration of the reactant.",
     )
 
     concentration_unit: Optional[ConcentrationUnits] = Field(
-        description="Concentration unit.", default=None
+        default=None,
+        description="Concentration unit.",
     )
 
     absorption: List[Series] = Field(
+        default_factory=ListPlus,
+        multiple=True,
         description=(
             "Measured absorption, corresponding to the applied concentration of the"
             " reactant."
         ),
-        default_factory=ListPlus,
     )
 
     __repo__: Optional[str] = PrivateAttr(
         default="https://github.com/FAIRChemistry/CaliPytion.git"
     )
-
     __commit__: Optional[str] = PrivateAttr(
-        default="dba04b3c83b580af4ea49da8fcf2c0da47dca5a6"
+        default="bc021638ad7cf48c8fae5a68d2c125187f59825d"
     )
 
-    def add_to_absorption(self, values: List[float], id: Optional[str] = None) -> None:
+    def add_to_absorption(
+        self, values: List[float] = ListPlus(), id: Optional[str] = None
+    ) -> None:
         """
-        Adds an instance of 'Series' to the attribute 'absorption'.
+        This method adds an object of type 'Series' to attribute absorption
 
         Args:
-
-
             id (str): Unique identifier of the 'Series' object. Defaults to 'None'.
-
-
-            values (List[float]): Series representing an array of value.
+            values (): Series representing an array of value. Defaults to ListPlus()
         """
 
-        params = {"values": values}
+        params = {
+            "values": values,
+        }
+
         if id is not None:
             params["id"] = id
-        absorption = [Series(**params)]
-        self.absorption = self.absorption + absorption
+
+        self.absorption.append(Series(**params))

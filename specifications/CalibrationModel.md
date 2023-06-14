@@ -1,47 +1,50 @@
 # CaliPytion
 
 Data model for (meta-) data of standard curves and spectra for spectrophotometric data.
+
+## Objects
+
 ### Calibration
 
-- __reactant_id__
+- reactant_id
   - Type: string
   - Description: Unique identifier of the calibrated reactant.
-- __date__
+- date
   - Type: date
   - Description: Date when the calibration data was measured
-- __pH__
+- pH
   - Type: PositiveFloat
   - Description: pH of solution.
-- __temperature__
+- temperature
   - Type: PositiveFloat
   - Description: Temperature during calibration.
-- __temperature_unit__
+- temperature_unit
   - Type: TemperatureUnits
   - Description: Temperature unit.
-- __device__
+- device
   - Type: Device
   - Description: Device object, containing information about the analytic device.
-- __standard__
+- standard
   - Type: Standard
   - Description: Standard data of a substance.
   - Multiple: True
-- __spectrum__
+- spectrum
   - Type: Spectrum
   - Description: Spectrum data of a substance.
-- __result__
+- result
   - Type: Result
   - Description: Contains calculated concentrations and information on the fitted calibration equation to calculate the concentrations.
 
 
 ### Device
 
-- __manufacturer__
+- manufacturer
   - Type: string
   - Description: Device manufacturer.
-- __model__
+- model
   - Type: string
   - Description: Model name of the device.
-- __software_version__
+- software_version
   - Type: string
   - Description: Software version of the device.
 
@@ -49,78 +52,80 @@ Data model for (meta-) data of standard curves and spectra for spectrophotometri
 
 Description of a standard curve.
 
-- __wavelength__
+- wavelength
   - Type: float
   - Description: Detection wavelength.
-- __concentration__
+- concentration
   - Type: float
   - Multiple: True
   - Description: Concentration of the reactant.
-- __concentration_unit__
+- concentration_unit
   - Type: ConcentrationUnits
   - Description: Concentration unit.
-- __absorption__
+- absorption
   - Type: Series
   - Multiple: True
   - Description: Measured absorption, corresponding to the applied concentration of the reactant.
 
 ### Spectrum
 
-- __concentration__
+- concentration
   - Type: float
   - Description: Concentration of the reactant at which the spectrum was recorded.
-- __wavelength__
+- wavelength
   - Type: float
   - Multiple: True
   - Description: Wavelengths used for detection.
-- __concentration_unit__
+- concentration_unit
   - Type: ConcentrationUnits
   - Description: Concentration unit.
-- __absorption__
+- absorption
   - Type: Series
   - Multiple: True
   - Description: Measured absorption, corresponding to detection wavelengths.
 
 ### Result
 
-- __concentration__
+- concentration
   - Type: float
   - Description: Calculated concentration, based on the calibration model.
   - Multiple: True
-- __calibration_model__
+- calibration_model
   - Type: Model
   - Description: Utilized calibration model and its parameters, leading to the calculated concentrations.
 
 ### Model
 
-- __name__
+- name
   - Type: string
   - Description: Name of the calibration model.
-- __equation__
+- equation
   - Type: string
   - Description: Equation of the calibration model.
-- __parameters__
+- parameters
   - Type: Parameter
   - Description: Parameters of the calibration model equation.
   - Multiple: True
 
 ### Parameter
 
-- __name__
+- name
   - Type: string
   - Description: Name of the parameter.
-- __value__
+- value
   - Type: float
   - Description: Value of the parameter.
 
 ### Series
 
-- __values__
+- values
   - Type: float
   - Multiple: True
   - Description: Series representing an array of value
 
-#### TemperatureUnits
+## Enumerations
+
+### TemperatureUnits
 
 Values used to determine the temperature unit.
 
@@ -129,7 +134,7 @@ CELSIUS = "C"
 KELVIN = "K"
 ```
 
-#### ConcentrationUnits
+### ConcentrationUnits
 
 These values are used to determine the concentration unit.
 

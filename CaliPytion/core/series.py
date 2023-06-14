@@ -27,5 +27,5 @@ class Series(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="bc021638ad7cf48c8fae5a68d2c125187f59825d"
+        default="94582cadc198cc7cd5ca0d4aae51f18e9e2d7289"
     )

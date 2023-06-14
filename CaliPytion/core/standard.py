@@ -50,7 +50,7 @@ class Standard(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="3f19f6691170163e573b0a697d6880008b576c25"
+        default="cfb439810735824816b6b5688463a9d410dd00d1"
     )
 
     def add_to_absorption(

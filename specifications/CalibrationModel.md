@@ -9,7 +9,7 @@ Data model for (meta-) data of standard curves and spectra for spectrophotometri
 - reactant_id
   - Type: string
   - Description: Unique identifier of the calibrated reactant.
-- date
+- date_measured
   - Type: date
   - Description: Date when the calibration data was measured
 - pH

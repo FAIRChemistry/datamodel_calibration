@@ -1,26 +1,18 @@
+import copy
 from typing import Dict, List
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import numpy as np
+
+from plotly.subplots import make_subplots
+from pyenzyme import EnzymeMLDocument
+
 from CaliPytion.core.calibration import Calibration
 from CaliPytion.tools.calibrationmodel import CalibrationModel
-from CaliPytion.core.device import Device
-from CaliPytion.core.standard import Standard
-from CaliPytion.core.series import Series
 from CaliPytion.core.result import Result
 from CaliPytion.core.model import Model
 from CaliPytion.core.parameter import Parameter
-
-
 from CaliPytion.tools.equations import linear, quadratic, poly_3, poly_e, rational
-
-import matplotlib.pyplot as plt
-import plotly.express as px
-from plotly.subplots import make_subplots
-import plotly.graph_objects as go
-import copy
-import numpy as np
-from numpy import ndarray, mean, std, where, any, array, tile, linspace, isnan
-import pandas as pd
-from IPython.display import display
-from pyenzyme import EnzymeMLDocument
 
 
 class StandardCurve:
@@ -54,9 +46,9 @@ class StandardCurve:
 
     def _blank_measurement_signal(self) -> List[float]:
         if any(self.concentrations == 0):
-            pos = where(self.concentrations == 0)[0]
-            mean_blank = mean(self.signals[pos])
-            std_blank = std(self.signals[pos])
+            pos = np.where(self.concentrations == 0)[0]
+            mean_blank = np.mean(self.signals[pos])
+            std_blank = np.std(self.signals[pos])
             percentual_std = std_blank / mean_blank
 
             if percentual_std > 0.05:
@@ -73,7 +65,7 @@ class StandardCurve:
             )
 
     def _cutoff_signal(self):
-        pos = where(self.signals < self.cutoff_signal)
+        pos = np.where(self.signals < self.cutoff_signal)
         self.concentrations = self.concentrations[pos]
         self.signals = self.signals[pos]
 
@@ -106,9 +98,10 @@ class StandardCurve:
             rational_model.name: rational_model,
         }
 
-    def _fit_models(self, concentrations: ndarray, signals: ndarray):
+    def _fit_models(self, concentrations: np.ndarray, signals: np.ndarray):
         for model in self.models.values():
-            model._fit(signals=self.signals, concentrations=self.concentrations)
+            model._fit(signals=self.signals,
+                       concentrations=self.concentrations)
 
         self.result_dict = self._evaluate_aic()
 
@@ -122,50 +115,10 @@ class StandardCurve:
             aic.append(model.aic)
 
         result_dict = dict(zip(names, aic))
-        result_dict = dict(sorted(result_dict.items(), key=lambda item: item[1]))
+        result_dict = dict(
+            sorted(result_dict.items(), key=lambda item: item[1]))
 
         return result_dict
-
-    def visualizee(
-        self,
-        model_name: str = None,
-        ax: plt.Axes = None,
-        title: str = None,
-        y_label: str = None,
-    ):
-        if ax is None:
-            ax_provided = False
-            ax = plt.gca()
-        else:
-            ax_provided = True
-
-        if model_name is None:
-            model = self.models[next(iter(self.result_dict.keys()))]
-        else:
-            model = self.models[model_name]
-
-        smooth_x = linspace(
-            self.concentrations[0],
-            self.concentrations[-1],
-            len(self.concentrations) * 2,
-        )
-
-        # equation = model.equation.lhs
-        function, _ = model._get_np_function(
-            model.equation, solve_for="signal", dependent_variable="concentration"
-        )
-        params = model.params
-
-        ax.scatter(self.concentrations, self.signals)
-        ax.plot(smooth_x, function(smooth_x, **params))
-        if ax_provided == False:
-            ax.set_ylabel(f"absorption at {int(self.wavelength)} nm")
-            ax.set_xlabel(f"{self.analyte_name} [{self.conc_unit}]")
-            ax.set_title(f"calibration curve of {self.analyte_name}")
-        if title:
-            ax.set_title(title)
-        if y_label:
-            ax.set_ylabel(y_label)
 
     def calculate_concentration(
         self,
@@ -175,7 +128,7 @@ class StandardCurve:
         values_only: bool = False,
     ) -> Result:
         # Check that input is provided as a list
-        if not isinstance(signals, (list, ndarray)):
+        if not isinstance(signals, (list, np.ndarray)):
             raise ValueError("'signals' need to be provided as a list.")
 
         if isinstance(signals, list):
@@ -184,7 +137,7 @@ class StandardCurve:
         signals = signals.astype("float")
 
         # Select calibration model (defaults to model with lowest AIC)
-        if model_name == None:
+        if model_name is None:
             model = self.models[next(iter(self.result_dict))]
         else:
             model = self.models[model_name]
@@ -196,16 +149,15 @@ class StandardCurve:
         if values_only:
             return concentrations
 
-        else:
-            parameters = [
-                Parameter(name=key, value=value) for key, value in model.params.items()
-            ]  # TODO: add stddev or uncertainty to Parameter class
-            model = Model(
-                name=model.name, equation=model.equation_string, parameters=parameters
-            )
-            return Result(
-                concentration=concentrations.tolist(), calibration_model=model
-            )
+        parameters = [
+            Parameter(name=key, value=value) for key, value in model.params.items()
+        ]  # TODO: add stddev or uncertainty to Parameter class
+        model = Model(
+            name=model.name, equation=model.equation_string, parameters=parameters
+        )
+        return Result(
+            concentration=concentrations.tolist(), calibration_model=model
+        )
 
     @staticmethod
     def _format_unit(unit: str) -> str:
@@ -217,11 +169,11 @@ class StandardCurve:
         unit = unit.replace("ug", "µg")
         return unit
 
-    def visualize(self, model: CalibrationModel = None):
-        if model == None:
+    def visualize(self, model: CalibrationModel = None, model_name: str = None):
+        if model is None and model_name is None:
             model = self.models[next(iter(self.result_dict.keys()))]
-        else:
-            model = self.models(model)
+        if model is None and model_name is True:
+            model = self.models[model_name]
 
         fig = make_subplots(
             rows=1,
@@ -250,7 +202,7 @@ class StandardCurve:
             row=1,
         )
 
-        smooth_x = linspace(
+        smooth_x = np.linspace(
             self.concentrations[0],
             self.concentrations[-1],
             len(self.concentrations) * 5,
@@ -335,7 +287,7 @@ class StandardCurve:
 
         enzmldoc = copy.deepcopy(enzmldoc)
 
-        for id, measurement in enzmldoc.measurement_dict.items():
+        for measurement_id, measurement in enzmldoc.measurement_dict.items():
             del_meas = False
             for rep, replicates in enumerate(
                 measurement.getReactant(species_id).replicates
@@ -346,7 +298,7 @@ class StandardCurve:
                 ]  # TODO add info if values are removed
 
                 # Check if nan values are in measurement data
-                if isnan(min(data)) and ommit_nan_measurements == True:
+                if np.isnan(min(data)) and ommit_nan_measurements is True:
                     del_meas = True
                 else:
                     result = self.calculate_concentration(
@@ -355,19 +307,19 @@ class StandardCurve:
                         allow_extrapolation=allow_extrapolation,
                     )
 
-                    enzmldoc.measurement_dict[id].species_dict["reactants"][
+                    enzmldoc.measurement_dict[measurement_id].species_dict["reactants"][
                         species_id
                     ].replicates[rep].data = result.concentration
-                    enzmldoc.measurement_dict[id].species_dict["reactants"][
+                    enzmldoc.measurement_dict[measurement_id].species_dict["reactants"][
                         species_id
                     ].replicates[rep].data_unit = self.conc_unit
-                    enzmldoc.measurement_dict[id].species_dict["reactants"][
+                    enzmldoc.measurement_dict[measurement_id].species_dict["reactants"][
                         species_id
                     ].replicates[rep].data_type = "conc"
             if del_meas:
-                delete_measurements.append(id)
-        for id in delete_measurements:
-            del enzmldoc.measurement_dict[id]
+                delete_measurements.append(measurement_id)
+        for measurement in delete_measurements:
+            del enzmldoc.measurement_dict[measurement]
 
         if len(delete_measurements) != 0:
             print(
@@ -392,19 +344,18 @@ class StandardCurve:
                     for standard in calibration_data.standard
                     if standard.wavelength == wavelength
                 )
-            except:
+            except Exception as exc:
                 raise StopIteration(
-                    f"No calibration data found for calibration at {wavelength} nm. Calibration data exists for following wavelengths: \
-                        {[x.wavelength for x in calibration_data.standard]}"
-                )
+                    f"No calibration data found for calibration at {wavelength} nm. Calibration data exists for following wavelengths: {[x.wavelength for x in calibration_data.standard]}") from exc
         else:
             standard = calibration_data.standard[0]
             wavelength = standard.wavelength
             print(f"Found calibration data at {float(standard.wavelength)} nm")
 
         # get concentrations and corresponding analyte signal
-        concentrations = tile(standard.concentration, len(standard.absorption))
-        signals = array(
+        concentrations = np.tile(
+            standard.concentration, len(standard.absorption))
+        signals = np.array(
             [measurement.values for measurement in standard.absorption]
         ).flatten()
 

@@ -5,16 +5,16 @@ from pydantic import Field, PrivateAttr
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 
-from pydantic.types import PositiveFloat
 from datetime import date
+from pydantic.types import PositiveFloat
 
-from .result import Result
-from .temperatureunits import TemperatureUnits
 from .standard import Standard
-from .series import Series
-from .concentrationunits import ConcentrationUnits
+from .temperatureunits import TemperatureUnits
 from .device import Device
+from .concentrationunits import ConcentrationUnits
 from .spectrum import Spectrum
+from .result import Result
+from .series import Series
 
 
 @forge_signature
@@ -33,7 +33,7 @@ class Calibration(sdRDM.DataModel):
         description="Unique identifier of the calibrated reactant.",
     )
 
-    date: Optional[date] = Field(
+    date_measured: Optional[date] = Field(
         default=None,
         description="Date when the calibration data was measured",
     )
@@ -81,7 +81,7 @@ class Calibration(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="94582cadc198cc7cd5ca0d4aae51f18e9e2d7289"
+        default="3f19f6691170163e573b0a697d6880008b576c25"
     )
 
     def add_to_standard(

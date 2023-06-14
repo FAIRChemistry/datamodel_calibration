@@ -14,7 +14,7 @@ classDiagram
     
     class Calibration {
         +string reactant_id
-        +date date
+        +date date_measured
         +PositiveFloat pH
         +PositiveFloat temperature
         +TemperatureUnits temperature_unit

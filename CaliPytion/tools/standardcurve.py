@@ -155,9 +155,7 @@ class StandardCurve:
         model = Model(
             name=model.name, equation=model.equation_string, parameters=parameters
         )
-        return Result(
-            concentration=concentrations.tolist(), calibration_model=model
-        )
+        return Result(concentration=concentrations.tolist(), calibration_model=model)
 
     @staticmethod
     def _format_unit(unit: str) -> str:
@@ -346,7 +344,8 @@ class StandardCurve:
                 )
             except Exception as exc:
                 raise StopIteration(
-                    f"No calibration data found for calibration at {wavelength} nm. Calibration data exists for following wavelengths: {[x.wavelength for x in calibration_data.standard]}") from exc
+                    f"No calibration data found for calibration at {wavelength} nm. Calibration data exists for following wavelengths: {[x.wavelength for x in calibration_data.standard]}"
+                ) from exc
         else:
             standard = calibration_data.standard[0]
             wavelength = standard.wavelength

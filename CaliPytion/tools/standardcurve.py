@@ -1,6 +1,7 @@
 import copy
 from typing import Dict, List
 import matplotlib.pyplot as plt
+import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
 
@@ -45,7 +46,9 @@ class StandardCurve:
         self._fit_models(concentrations=concentrations, signals=signals)
 
     def _blank_measurement_signal(self) -> List[float]:
+
         if any(self.concentrations == 0):
+
             pos = np.where(self.concentrations == 0)[0]
             mean_blank = np.mean(self.signals[pos])
             std_blank = np.std(self.signals[pos])
@@ -327,6 +330,36 @@ class StandardCurve:
         return enzmldoc
 
     @classmethod
+    def from_excel(
+        cls,
+        path: str,
+        analyte_name: str,
+        conc_unit: str,
+        reactant_id: str,
+        wavelength: float,
+        blank_data: bool = True,
+        cutoff_signal: float = None,
+        sheet_name: str = None
+    ) -> "StandardCurve":
+
+        dframe = pd.read_excel(path, sheet_name, header=0, index_col=0).T
+
+        n_replicates = len(dframe.index)
+
+        signals = dframe.values.reshape(-1)
+        concentrations = np.tile(dframe.columns.values, n_replicates)
+
+        return cls(
+            concentrations=concentrations,
+            signals=signals,
+            cutoff_signal=cutoff_signal,
+            blank_data=blank_data,
+            wavelength=wavelength,
+            conc_unit=conc_unit,
+            analyte_name=analyte_name,
+        )
+
+    @classmethod
     def from_datamodel(
         cls,
         calibration_data: Calibration,
@@ -334,6 +367,7 @@ class StandardCurve:
         blank_data: bool = True,
         cutoff_signal: float = None,
     ) -> "StandardCurve":
+
         # Get standard curve for given wavelength
         if wavelength != None:
             try:

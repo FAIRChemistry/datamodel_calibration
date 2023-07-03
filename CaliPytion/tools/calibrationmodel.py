@@ -68,21 +68,6 @@ class CalibrationModel:
         min_concentration = min(calibration_conc_range)
         max_concentration = max(calibration_conc_range)
 
-        print(min_concentration, max_concentration)
-
-        # replace values above upper calibration limit with nans
-        # if not allow_extrapolation:
-        #     extrapolation_pos = np.where(signals > max_signals)[0]
-        #     if extrapolation_pos.size != 0:
-        #         print(
-        #             f"{len(extrapolation_pos)} measurements are above upper calibration limit of "
-        #             f"{max(calibration_signals):.2f}. Respective measurments are replaced "
-        #             f"with nans. To extrapolate, set 'allow_extrapolation = True'"
-        #         )
-        #         extrapolation_pos = extrapolation_pos.astype(int)
-
-        #         signals[extrapolation_pos] = np.nan
-
         root_eq = self.equation.lhs - self.equation.rhs
 
         results = []
@@ -103,16 +88,16 @@ class CalibrationModel:
         matrix = np.zeros(
             [len(results), len(max(results, key=lambda x: len(results)))]) * np.nan
 
+        # replace complex solutions with nans
         for i, j in enumerate(results):
-            # print(f"j: {type(j[1])}")
             without_complex = [float("nan") if isinstance(value, s.core.add.Add)
                                else value for value in j]
 
             matrix[i][0: len(without_complex)] = without_complex
 
         results = np.array(matrix).T
-        print(f"matrix: {results}")
 
+        # get root alternative with most values within calibration bonds
         n_values_in_calibration_range = []
         for result in results:
             n_values_in_calibration_range.append(
@@ -120,6 +105,10 @@ class CalibrationModel:
             )
 
         correct_roots = results[np.nanargmax(n_values_in_calibration_range)]
+
+        if not allow_extrapolation:
+            correct_roots[(min_concentration > correct_roots) |
+                          (max_concentration < correct_roots)] = float("nan")
 
         return correct_roots
 

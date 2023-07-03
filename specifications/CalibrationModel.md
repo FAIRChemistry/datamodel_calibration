@@ -139,10 +139,10 @@ KELVIN = "K"
 These values are used to determine the concentration unit.
 
 ```python
-MOLAR = "mole / l"
-MILLIMOLAR = "mmole / l"
-MICROMOLAR = "umole / l"
-NANAMOLAR = "nmole / l"
+MOLAR = "mol / l"
+MILLIMOLAR = "mmol / l"
+MICROMOLAR = "umol / l"
+NANAMOLAR = "nmol / l"
 GRAMLITER = "g / l"
 MILLIGRAMLITER = "mg / l"
 MICROGRAMLITER = "ug / l"

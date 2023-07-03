@@ -75,11 +75,11 @@ classDiagram
         +MOLAR
         +MILLIMOLAR
         +MICROMOLAR
-        +NANAMOLAR
+        +NANOMOLAR
         +GRAMLITER
         +MILLIGRAMLITER
         +MICROGRAMLITER
-        +NANGRAMLITER
+        +NANOGRAMLITER
     }
     
 ```

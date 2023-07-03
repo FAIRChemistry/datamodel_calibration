@@ -63,23 +63,25 @@ class CalibrationModel:
         signals: list,
         allow_extrapolation: bool = False,
     ):
-        """Calculates all roots for a model and returns the correct"""
-        calibration_signals = self._lmfit_result.data
-        min_signals = min(calibration_signals)
-        max_signals = max(calibration_signals)
+        """Calculates all roots for a model and returns the roots within calibration bonds"""
+        calibration_conc_range = self._lmfit_result.userkws["concentration"]
+        min_concentration = min(calibration_conc_range)
+        max_concentration = max(calibration_conc_range)
+
+        print(min_concentration, max_concentration)
 
         # replace values above upper calibration limit with nans
-        if not allow_extrapolation:
-            extrapolation_pos = np.where(signals > max_signals)[0]
-            if extrapolation_pos.size != 0:
-                print(
-                    f"{len(extrapolation_pos)} measurements are above upper calibration limit of "
-                    f"{max(calibration_signals):.2f}. Respective measurments are replaced "
-                    f"with nans. To extrapolate, set 'allow_extrapolation = True'"
-                )
-                extrapolation_pos = extrapolation_pos.astype(int)
+        # if not allow_extrapolation:
+        #     extrapolation_pos = np.where(signals > max_signals)[0]
+        #     if extrapolation_pos.size != 0:
+        #         print(
+        #             f"{len(extrapolation_pos)} measurements are above upper calibration limit of "
+        #             f"{max(calibration_signals):.2f}. Respective measurments are replaced "
+        #             f"with nans. To extrapolate, set 'allow_extrapolation = True'"
+        #         )
+        #         extrapolation_pos = extrapolation_pos.astype(int)
 
-                signals[extrapolation_pos] = np.nan
+        #         signals[extrapolation_pos] = np.nan
 
         root_eq = self.equation.lhs - self.equation.rhs
 
@@ -87,28 +89,37 @@ class CalibrationModel:
         parameters = self.params.copy()
         for signal_value in signals:
             if not np.isnan(signal_value):
+
                 parameters[self.equation.rhs] = signal_value
+
                 results.append(
                     list(s.roots(s.real_root(root_eq.subs(parameters))).keys())
                 )
             else:
-                results.append([np.nan])
+
+                results.append([float("nan")])
 
         # reshape results, fill nan columns for signals above upper calibration range
         matrix = np.zeros(
-            [len(results), len(max(results, key=lambda x: len(results)))])
+            [len(results), len(max(results, key=lambda x: len(results)))]) * np.nan
+
         for i, j in enumerate(results):
-            matrix[i][0: len(j)] = j
+            # print(f"j: {type(j[1])}")
+            without_complex = [float("nan") if isinstance(value, s.core.add.Add)
+                               else value for value in j]
+
+            matrix[i][0: len(without_complex)] = without_complex
 
         results = np.array(matrix).T
+        print(f"matrix: {results}")
 
         n_values_in_calibration_range = []
         for result in results:
             n_values_in_calibration_range.append(
-                ((min_signals < result) & (result < max_signals)).sum()
+                ((min_concentration < result) & (result < max_concentration)).sum()
             )
 
-        correct_roots = results[np.argmax(n_values_in_calibration_range)]
+        correct_roots = results[np.nanargmax(n_values_in_calibration_range)]
 
         return correct_roots
 

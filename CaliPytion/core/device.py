@@ -1,7 +1,7 @@
 import sdRDM
 
 from typing import Optional
-from pydantic import Field, PrivateAttr
+from pydantic import Field
 from sdRDM.base.utils import forge_signature, IDGenerator
 
 
@@ -29,11 +29,4 @@ class Device(sdRDM.DataModel):
     software_version: Optional[str] = Field(
         default=None,
         description="Software version of the device.",
-    )
-
-    __repo__: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion.git"
-    )
-    __commit__: Optional[str] = PrivateAttr(
-        default="41b13f145c9d9867886ac56c2c338c60edbc15f4"
     )

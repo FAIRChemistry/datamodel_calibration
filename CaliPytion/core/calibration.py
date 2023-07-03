@@ -1,20 +1,20 @@
 import sdRDM
 
 from typing import List, Optional
-from pydantic import Field, PrivateAttr
+from pydantic import Field
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 
-from datetime import date
-from pydantic.types import PositiveFloat
+from datetime import date as Date
+from pydantic import PositiveFloat
 
-from .spectrum import Spectrum
+from .series import Series
 from .device import Device
 from .standard import Standard
+from .spectrum import Spectrum
 from .concentrationunits import ConcentrationUnits
-from .result import Result
 from .temperatureunits import TemperatureUnits
-from .series import Series
+from .result import Result
 
 
 @forge_signature
@@ -33,7 +33,7 @@ class Calibration(sdRDM.DataModel):
         description="Unique identifier of the calibrated reactant.",
     )
 
-    date_measured: Optional[date] = Field(
+    date_measured: Optional[Date] = Field(
         default=None,
         description="Date when the calibration data was measured",
     )
@@ -77,13 +77,6 @@ class Calibration(sdRDM.DataModel):
         ),
     )
 
-    __repo__: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion.git"
-    )
-    __commit__: Optional[str] = PrivateAttr(
-        default="41b13f145c9d9867886ac56c2c338c60edbc15f4"
-    )
-
     def add_to_standard(
         self,
         wavelength: Optional[float] = None,
@@ -114,3 +107,5 @@ class Calibration(sdRDM.DataModel):
             params["id"] = id
 
         self.standard.append(Standard(**params))
+
+        return self.standard[-1]

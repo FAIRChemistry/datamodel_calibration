@@ -1,7 +1,7 @@
 import sdRDM
 
 from typing import List, Optional
-from pydantic import Field, PrivateAttr
+from pydantic import Field
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 
@@ -36,13 +36,6 @@ class Model(sdRDM.DataModel):
         multiple=True,
     )
 
-    __repo__: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion.git"
-    )
-    __commit__: Optional[str] = PrivateAttr(
-        default="41b13f145c9d9867886ac56c2c338c60edbc15f4"
-    )
-
     def add_to_parameters(
         self,
         name: Optional[str] = None,
@@ -67,3 +60,5 @@ class Model(sdRDM.DataModel):
             params["id"] = id
 
         self.parameters.append(Parameter(**params))
+
+        return self.parameters[-1]

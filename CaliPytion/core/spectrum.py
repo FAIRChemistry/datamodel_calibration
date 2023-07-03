@@ -1,13 +1,13 @@
 import sdRDM
 
 from typing import List, Optional
-from pydantic import Field, PrivateAttr
+from pydantic import Field
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 
 
-from .series import Series
 from .concentrationunits import ConcentrationUnits
+from .series import Series
 
 
 @forge_signature
@@ -43,13 +43,6 @@ class Spectrum(sdRDM.DataModel):
         description="Measured absorption, corresponding to detection wavelengths.",
     )
 
-    __repo__: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion.git"
-    )
-    __commit__: Optional[str] = PrivateAttr(
-        default="41b13f145c9d9867886ac56c2c338c60edbc15f4"
-    )
-
     def add_to_absorption(
         self, values: List[float] = ListPlus(), id: Optional[str] = None
     ) -> None:
@@ -69,3 +62,5 @@ class Spectrum(sdRDM.DataModel):
             params["id"] = id
 
         self.absorption.append(Series(**params))
+
+        return self.absorption[-1]

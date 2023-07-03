@@ -142,7 +142,7 @@ These values are used to determine the concentration unit.
 MOLAR = "mol / l"
 MILLIMOLAR = "mmol / l"
 MICROMOLAR = "umol / l"
-NANOMOLAR = "nmol / l"
+NANAMOLAR = "nmol / l"
 GRAMLITER = "g / l"
 MILLIGRAMLITER = "mg / l"
 MICROGRAMLITER = "ug / l"

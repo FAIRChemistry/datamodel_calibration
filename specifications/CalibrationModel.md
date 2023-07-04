@@ -4,33 +4,36 @@ Data model for (meta-) data of standard curves and spectra for spectrophotometri
 
 ## Objects
 
-### Calibration
+### Analyte
 
-- reactant_id
+- name
   - Type: string
-  - Description: Unique identifier of the calibrated reactant.
-- date_measured
-  - Type: date
-  - Description: Date when the calibration data was measured
+  - Description: Name of the analyte
+- inchi
+  - Type: string
+  - Description: In
 - pH
   - Type: PositiveFloat
   - Description: pH of solution.
 - temperature
   - Type: PositiveFloat
-  - Description: Temperature during calibration.
+  - Description: Temperature during calibration
 - temperature_unit
-  - Type: TemperatureUnits
+  - Type: TemperatureUnit
   - Description: Temperature unit.
+- date_measured
+  - Type: date
+  - Description: Date when the calibration data was measured
 - device
   - Type: Device
-  - Description: Device object, containing information about the analytic device.
+  - Description: Device object, containing information about the analytic device
 - standard
   - Type: Standard
-  - Description: Standard data of a substance.
+  - Description: Standard data of a substance
   - Multiple: True
 - spectrum
   - Type: Spectrum
-  - Description: Spectrum data of a substance.
+  - Description: Spectrum data of a substance
 - result
   - Type: Result
   - Description: Contains calculated concentrations and information on the fitted calibration equation to calculate the concentrations.
@@ -50,17 +53,17 @@ Data model for (meta-) data of standard curves and spectra for spectrophotometri
 
 ### Standard
 
-Description of a standard curve.
+Description of a standard curve for an analyte.
 
 - wavelength
   - Type: float
-  - Description: Detection wavelength.
+  - Description: Detection wavelength in nm.
 - concentration
   - Type: float
   - Multiple: True
   - Description: Concentration of the reactant.
 - concentration_unit
-  - Type: ConcentrationUnits
+  - Type: ConcentrationUnit
   - Description: Concentration unit.
 - absorption
   - Type: Series
@@ -125,7 +128,7 @@ Description of a standard curve.
 
 ## Enumerations
 
-### TemperatureUnits
+### TemperatureUnit
 
 Values used to determine the temperature unit.
 
@@ -134,7 +137,7 @@ CELSIUS = "C"
 KELVIN = "K"
 ```
 
-### ConcentrationUnits
+### ConcentrationUnit
 
 These values are used to determine the concentration unit.
 

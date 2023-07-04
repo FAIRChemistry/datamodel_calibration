@@ -11,8 +11,8 @@ Data model for (meta) data of spectrophotometric standard curves and absorption 
   - Description: Name of the analyte
 - inchi
   - Type: string
-  - Description: In
-- pH
+  - Description: InnChi code of the analyte
+- ph
   - Type: PositiveFloat
   - Description: pH of solution.
 - temperature
@@ -80,7 +80,7 @@ Description of a standard curve for an analyte.
   - Multiple: True
   - Description: Wavelengths used for detection.
 - concentration_unit
-  - Type: ConcentrationUnits
+  - Type: ConcentrationUnit
   - Description: Concentration unit.
 - absorption
   - Type: Series

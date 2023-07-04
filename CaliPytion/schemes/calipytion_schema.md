@@ -1,23 +1,24 @@
 ```mermaid
 classDiagram
-    Calibration *-- TemperatureUnits
-    Calibration *-- Device
-    Calibration *-- Standard
-    Calibration *-- Spectrum
-    Calibration *-- Result
-    Standard *-- ConcentrationUnits
+    Analyte *-- TemperatureUnit
+    Analyte *-- Device
+    Analyte *-- Standard
+    Analyte *-- Spectrum
+    Analyte *-- Result
+    Standard *-- ConcentrationUnit
     Standard *-- Series
-    Spectrum *-- ConcentrationUnits
+    Spectrum *-- ConcentrationUnit
     Spectrum *-- Series
     Result *-- Model
     Model *-- Parameter
     
-    class Calibration {
-        +string reactant_id
-        +date date_measured
-        +PositiveFloat pH
+    class Analyte {
+        +string name
+        +string inchi
+        +PositiveFloat ph
         +PositiveFloat temperature
-        +TemperatureUnits temperature_unit
+        +TemperatureUnit temperature_unit
+        +date date_measured
         +Device device
         +Standard[0..*] standard
         +Spectrum spectrum
@@ -33,14 +34,14 @@ classDiagram
     class Standard {
         +float wavelength
         +float[0..*] concentration
-        +ConcentrationUnits concentration_unit
+        +ConcentrationUnit concentration_unit
         +Series[0..*] absorption
     }
     
     class Spectrum {
         +float concentration
         +float[0..*] wavelength
-        +ConcentrationUnits concentration_unit
+        +ConcentrationUnit concentration_unit
         +Series[0..*] absorption
     }
     
@@ -64,18 +65,18 @@ classDiagram
         +float[0..*] values
     }
     
-    class TemperatureUnits {
+    class TemperatureUnit {
         << Enumeration >>
         +CELSIUS
         +KELVIN
     }
     
-    class ConcentrationUnits {
+    class ConcentrationUnit {
         << Enumeration >>
         +MOLAR
         +MILLIMOLAR
         +MICROMOLAR
-        +NANOMOLAR
+        +NANAMOLAR
         +GRAMLITER
         +MILLIGRAMLITER
         +MICROGRAMLITER

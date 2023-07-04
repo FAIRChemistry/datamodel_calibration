@@ -1,4 +1,4 @@
-from .calibration import Calibration
+from .analyte import Analyte
 from .device import Device
 from .standard import Standard
 from .spectrum import Spectrum
@@ -6,13 +6,13 @@ from .result import Result
 from .model import Model
 from .parameter import Parameter
 from .series import Series
-from .temperatureunits import TemperatureUnits
-from .concentrationunits import ConcentrationUnits
+from .temperatureunit import TemperatureUnit
+from .concentrationunit import ConcentrationUnit
 
 __doc__ = ""
 
 __all__ = [
-    "Calibration",
+    "Analyte",
     "Device",
     "Standard",
     "Spectrum",
@@ -20,6 +20,6 @@ __all__ = [
     "Model",
     "Parameter",
     "Series",
-    "TemperatureUnits",
-    "ConcentrationUnits",
+    "TemperatureUnit",
+    "ConcentrationUnit",
 ]

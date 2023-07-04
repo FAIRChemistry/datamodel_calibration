@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class ConcentrationUnits(Enum):
+class ConcentrationUnit(Enum):
     MOLAR = "mol / l"
     MILLIMOLAR = "mmol / l"
     MICROMOLAR = "umol / l"

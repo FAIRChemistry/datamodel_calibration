@@ -8,29 +8,49 @@ from sdRDM.base.utils import forge_signature, IDGenerator
 from datetime import date as Date
 from pydantic import PositiveFloat
 
-from .spectrum import Spectrum
 from .result import Result
-from .device import Device
 from .series import Series
-from .concentrationunits import ConcentrationUnits
+from .spectrum import Spectrum
+from .temperatureunit import TemperatureUnit
 from .standard import Standard
-from .temperatureunits import TemperatureUnits
+from .concentrationunit import ConcentrationUnit
+from .device import Device
 
 
 @forge_signature
-class Calibration(sdRDM.DataModel):
+class Analyte(sdRDM.DataModel):
 
     """"""
 
     id: Optional[str] = Field(
         description="Unique identifier of the given object.",
-        default_factory=IDGenerator("calibrationINDEX"),
+        default_factory=IDGenerator("analyteINDEX"),
         xml="@id",
     )
 
-    reactant_id: Optional[str] = Field(
+    name: Optional[str] = Field(
         default=None,
-        description="Unique identifier of the calibrated reactant.",
+        description="Name of the analyte",
+    )
+
+    inchi: Optional[str] = Field(
+        default=None,
+        description="InnChi code of the analyte",
+    )
+
+    ph: Optional[PositiveFloat] = Field(
+        default=None,
+        description="pH of solution.",
+    )
+
+    temperature: Optional[PositiveFloat] = Field(
+        default=None,
+        description="Temperature during calibration",
+    )
+
+    temperature_unit: Optional[TemperatureUnit] = Field(
+        default=None,
+        description="Temperature unit.",
     )
 
     date_measured: Optional[Date] = Field(
@@ -38,35 +58,20 @@ class Calibration(sdRDM.DataModel):
         description="Date when the calibration data was measured",
     )
 
-    pH: Optional[PositiveFloat] = Field(
-        default=None,
-        description="pH of solution.",
-    )
-
-    temperature: Optional[PositiveFloat] = Field(
-        default=None,
-        description="Temperature during calibration.",
-    )
-
-    temperature_unit: Optional[TemperatureUnits] = Field(
-        default=None,
-        description="Temperature unit.",
-    )
-
     device: Optional[Device] = Field(
         default=None,
-        description="Device object, containing information about the analytic device.",
+        description="Device object, containing information about the analytic device",
     )
 
     standard: List[Standard] = Field(
-        description="Standard data of a substance.",
+        description="Standard data of a substance",
         default_factory=ListPlus,
         multiple=True,
     )
 
     spectrum: Optional[Spectrum] = Field(
         default=None,
-        description="Spectrum data of a substance.",
+        description="Spectrum data of a substance",
     )
 
     result: Optional[Result] = Field(
@@ -81,7 +86,7 @@ class Calibration(sdRDM.DataModel):
         self,
         wavelength: Optional[float] = None,
         concentration: List[float] = ListPlus(),
-        concentration_unit: Optional[ConcentrationUnits] = None,
+        concentration_unit: Optional[ConcentrationUnit] = None,
         absorption: List[Series] = ListPlus(),
         id: Optional[str] = None,
     ) -> None:
@@ -90,7 +95,7 @@ class Calibration(sdRDM.DataModel):
 
         Args:
             id (str): Unique identifier of the 'Standard' object. Defaults to 'None'.
-            wavelength (): Detection wavelength.. Defaults to None
+            wavelength (): Detection wavelength in nm.. Defaults to None
             concentration (): Concentration of the reactant.. Defaults to ListPlus()
             concentration_unit (): Concentration unit.. Defaults to None
             absorption (): Measured absorption, corresponding to the applied concentration of the reactant.. Defaults to ListPlus()

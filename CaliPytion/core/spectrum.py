@@ -6,7 +6,7 @@ from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 
 
-from .concentrationunits import ConcentrationUnits
+from .concentrationunit import ConcentrationUnit
 from .series import Series
 
 
@@ -32,7 +32,7 @@ class Spectrum(sdRDM.DataModel):
         description="Wavelengths used for detection.",
     )
 
-    concentration_unit: Optional[ConcentrationUnits] = Field(
+    concentration_unit: Optional[ConcentrationUnit] = Field(
         default=None,
         description="Concentration unit.",
     )

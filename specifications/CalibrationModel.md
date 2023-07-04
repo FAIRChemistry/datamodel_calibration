@@ -1,6 +1,6 @@
 # CaliPytion
 
-Data model for (meta-) data of standard curves and spectra for spectrophotometric data.
+Data model for (meta) data of spectrophotometric standard curves and absorption spectra of spectrophotometric measurements of an analyte.
 
 ## Objects
 

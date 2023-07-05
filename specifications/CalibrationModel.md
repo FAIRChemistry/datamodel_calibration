@@ -133,7 +133,7 @@ Description of a standard curve for an analyte
 
 ### TemperatureUnit
 
-Values used to determine the temperature unit
+Allowed temperature units.
 
 ```python
 CELSIUS = "C"

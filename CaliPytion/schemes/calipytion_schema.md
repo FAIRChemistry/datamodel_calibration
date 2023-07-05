@@ -15,6 +15,7 @@ classDiagram
     class Analyte {
         +string name
         +string inchi
+        +string smiles
         +PositiveFloat ph
         +PositiveFloat temperature
         +TemperatureUnit temperature_unit

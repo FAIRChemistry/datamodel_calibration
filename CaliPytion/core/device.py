@@ -18,15 +18,15 @@ class Device(sdRDM.DataModel):
 
     manufacturer: Optional[str] = Field(
         default=None,
-        description="Device manufacturer.",
+        description="Device manufacturer",
     )
 
     model: Optional[str] = Field(
         default=None,
-        description="Model name of the device.",
+        description="Model name of the device",
     )
 
     software_version: Optional[str] = Field(
         default=None,
-        description="Software version of the device.",
+        description="Software version of the device",
     )

@@ -6,14 +6,14 @@ from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 
 
-from .concentrationunit import ConcentrationUnit
 from .series import Series
+from .concentrationunit import ConcentrationUnit
 
 
 @forge_signature
 class Standard(sdRDM.DataModel):
 
-    """Description of a standard curve for an analyte."""
+    """Description of a standard curve for an analyte"""
 
     id: Optional[str] = Field(
         description="Unique identifier of the given object.",
@@ -23,18 +23,18 @@ class Standard(sdRDM.DataModel):
 
     wavelength: Optional[float] = Field(
         default=None,
-        description="Detection wavelength in nm.",
+        description="Detection wavelength in nm",
     )
 
     concentration: List[float] = Field(
         default_factory=ListPlus,
         multiple=True,
-        description="Concentration of the reactant.",
+        description="Concentration of the reactant",
     )
 
     concentration_unit: Optional[ConcentrationUnit] = Field(
         default=None,
-        description="Concentration unit.",
+        description="Concentration unit",
     )
 
     absorption: List[Series] = Field(
@@ -42,7 +42,7 @@ class Standard(sdRDM.DataModel):
         multiple=True,
         description=(
             "Measured absorption, corresponding to the applied concentration of the"
-            " reactant."
+            " reactant"
         ),
     )
 

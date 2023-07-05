@@ -9,12 +9,12 @@ from datetime import date as Date
 from pydantic import PositiveFloat
 
 from .result import Result
-from .series import Series
-from .spectrum import Spectrum
+from .device import Device
 from .temperatureunit import TemperatureUnit
 from .standard import Standard
 from .concentrationunit import ConcentrationUnit
-from .device import Device
+from .series import Series
+from .spectrum import Spectrum
 
 
 @forge_signature
@@ -35,7 +35,12 @@ class Analyte(sdRDM.DataModel):
 
     inchi: Optional[str] = Field(
         default=None,
-        description="InnChi code of the analyte",
+        description="InChi code of the analyte",
+    )
+
+    smiles: Optional[str] = Field(
+        default=None,
+        description="Smiles code of the analyte",
     )
 
     ph: Optional[PositiveFloat] = Field(
@@ -95,10 +100,10 @@ class Analyte(sdRDM.DataModel):
 
         Args:
             id (str): Unique identifier of the 'Standard' object. Defaults to 'None'.
-            wavelength (): Detection wavelength in nm.. Defaults to None
-            concentration (): Concentration of the reactant.. Defaults to ListPlus()
-            concentration_unit (): Concentration unit.. Defaults to None
-            absorption (): Measured absorption, corresponding to the applied concentration of the reactant.. Defaults to ListPlus()
+            wavelength (): Detection wavelength in nm. Defaults to None
+            concentration (): Concentration of the reactant. Defaults to ListPlus()
+            concentration_unit (): Concentration unit. Defaults to None
+            absorption (): Measured absorption, corresponding to the applied concentration of the reactant. Defaults to ListPlus()
         """
 
         params = {

@@ -22,16 +22,16 @@ class Model(sdRDM.DataModel):
 
     name: Optional[str] = Field(
         default=None,
-        description="Name of the calibration model.",
+        description="Name of the calibration model",
     )
 
     equation: Optional[str] = Field(
         default=None,
-        description="Equation of the calibration model.",
+        description="Equation of the calibration model",
     )
 
     parameters: List[Parameter] = Field(
-        description="Parameters of the calibration model equation.",
+        description="Parameters of the calibration model equation",
         default_factory=ListPlus,
         multiple=True,
     )
@@ -47,8 +47,8 @@ class Model(sdRDM.DataModel):
 
         Args:
             id (str): Unique identifier of the 'Parameter' object. Defaults to 'None'.
-            name (): Name of the parameter.. Defaults to None
-            value (): Value of the parameter.. Defaults to None
+            name (): Name of the parameter. Defaults to None
+            value (): Value of the parameter. Defaults to None
         """
 
         params = {

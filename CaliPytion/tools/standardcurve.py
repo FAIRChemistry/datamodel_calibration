@@ -7,6 +7,7 @@ import numpy as np
 
 from plotly.subplots import make_subplots
 from pyenzyme import EnzymeMLDocument
+from CaliPytion.core.analyte import Analyte
 
 from CaliPytion.core.calibration import Calibration
 from CaliPytion.tools.calibrationmodel import CalibrationModel
@@ -160,17 +161,8 @@ class StandardCurve:
         )
         return Result(concentration=concentrations.tolist(), calibration_model=model)
 
-    @staticmethod
-    def _format_unit(unit: str) -> str:
-        unit = unit.replace(" / l", " L<sup>-1</sup>")
-        unit = unit.replace("1 / s", "s<sup>-1</sup>")
-        unit = unit.replace("1 / min", "min<sup>-1</sup>")
-        unit = unit.replace("mole", "mol")
-        unit = unit.replace("umol", "µmol")
-        unit = unit.replace("ug", "µg")
-        return unit
-
     def visualize(self, model: CalibrationModel = None, model_name: str = None):
+
         if model is None and model_name is None:
             model = self.models[next(iter(self.result_dict.keys()))]
         if model is None and model_name is True:
@@ -362,7 +354,7 @@ class StandardCurve:
     @classmethod
     def from_datamodel(
         cls,
-        calibration_data: Calibration,
+        calibration_data: Analyte,
         wavelength: float = None,
         blank_data: bool = True,
         cutoff_signal: float = None,
@@ -395,9 +387,19 @@ class StandardCurve:
         return cls(
             concentrations=concentrations,
             signals=signals,
+            analyte_name=calibration_data.name,
             cutoff_signal=cutoff_signal,
             blank_data=blank_data,
             wavelength=wavelength,
             conc_unit=standard.concentration_unit,
-            analyte_name=calibration_data.reactant_id,
-        )  # TODO: add analyte name or id or inchi
+        )
+
+    @staticmethod
+    def _format_unit(unit: str) -> str:
+        unit = unit.replace(" / l", " L<sup>-1</sup>")
+        unit = unit.replace("1 / s", "s<sup>-1</sup>")
+        unit = unit.replace("1 / min", "min<sup>-1</sup>")
+        unit = unit.replace("mole", "mol")
+        unit = unit.replace("umol", "µmol")
+        unit = unit.replace("ug", "µg")
+        return unit

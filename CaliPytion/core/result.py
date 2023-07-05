@@ -30,6 +30,6 @@ class Result(sdRDM.DataModel):
         default=None,
         description=(
             "Utilized calibration model and its parameters, leading to the calculated"
-            " concentrations."
+            " concentrations"
         ),
     )

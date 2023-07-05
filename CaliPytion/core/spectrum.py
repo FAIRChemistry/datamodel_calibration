@@ -6,8 +6,8 @@ from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 
 
-from .concentrationunit import ConcentrationUnit
 from .series import Series
+from .concentrationunit import ConcentrationUnit
 
 
 @forge_signature
@@ -23,24 +23,24 @@ class Spectrum(sdRDM.DataModel):
 
     concentration: Optional[float] = Field(
         default=None,
-        description="Concentration of the reactant at which the spectrum was recorded.",
+        description="Concentration of the reactant at which the spectrum was recorded",
     )
 
     wavelength: List[float] = Field(
         default_factory=ListPlus,
         multiple=True,
-        description="Wavelengths used for detection.",
+        description="Wavelengths used for detection",
     )
 
     concentration_unit: Optional[ConcentrationUnit] = Field(
         default=None,
-        description="Concentration unit.",
+        description="Concentration unit",
     )
 
     absorption: List[Series] = Field(
         default_factory=ListPlus,
         multiple=True,
-        description="Measured absorption, corresponding to detection wavelengths.",
+        description="Measured absorption, corresponding to detection wavelengths",
     )
 
     def add_to_absorption(

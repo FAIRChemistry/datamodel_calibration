@@ -18,10 +18,10 @@ class Parameter(sdRDM.DataModel):
 
     name: Optional[str] = Field(
         default=None,
-        description="Name of the parameter.",
+        description="Name of the parameter",
     )
 
     value: Optional[float] = Field(
         default=None,
-        description="Value of the parameter.",
+        description="Value of the parameter",
     )

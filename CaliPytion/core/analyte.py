@@ -1,19 +1,19 @@
 import sdRDM
 
 from typing import List, Optional
-from pydantic import Field
+from pydantic import Field, PrivateAttr
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 
-from datetime import date as Date
 from pydantic import PositiveFloat
+from datetime import date as Date
 
-from .result import Result
-from .device import Device
-from .temperatureunit import TemperatureUnit
 from .standard import Standard
+from .result import Result
 from .concentrationunit import ConcentrationUnit
+from .device import Device
 from .series import Series
+from .temperatureunit import TemperatureUnit
 from .spectrum import Spectrum
 
 
@@ -85,6 +85,13 @@ class Analyte(sdRDM.DataModel):
             "Contains calculated concentrations and information on the fitted"
             " calibration equation to calculate the concentrations."
         ),
+    )
+
+    __repo__: Optional[str] = PrivateAttr(
+        default="https://github.com/FAIRChemistry/CaliPytion.git"
+    )
+    __commit__: Optional[str] = PrivateAttr(
+        default="ac2969a829fcebd4fea6bd449c02c1d4fefba4be"
     )
 
     def add_to_standard(

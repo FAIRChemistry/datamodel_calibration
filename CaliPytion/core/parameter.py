@@ -1,7 +1,7 @@
 import sdRDM
 
 from typing import Optional
-from pydantic import Field
+from pydantic import Field, PrivateAttr
 from sdRDM.base.utils import forge_signature, IDGenerator
 
 
@@ -24,4 +24,11 @@ class Parameter(sdRDM.DataModel):
     value: Optional[float] = Field(
         default=None,
         description="Value of the parameter",
+    )
+
+    __repo__: Optional[str] = PrivateAttr(
+        default="https://github.com/FAIRChemistry/CaliPytion.git"
+    )
+    __commit__: Optional[str] = PrivateAttr(
+        default="ac2969a829fcebd4fea6bd449c02c1d4fefba4be"
     )

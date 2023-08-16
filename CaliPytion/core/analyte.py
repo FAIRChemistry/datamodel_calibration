@@ -8,18 +8,17 @@ from sdRDM.base.utils import forge_signature, IDGenerator
 from pydantic import PositiveFloat
 from datetime import date as Date
 
-from .standard import Standard
-from .result import Result
 from .concentrationunit import ConcentrationUnit
-from .device import Device
+from .standard import Standard
 from .series import Series
-from .temperatureunit import TemperatureUnit
+from .result import Result
+from .device import Device
 from .spectrum import Spectrum
+from .temperatureunit import TemperatureUnit
 
 
 @forge_signature
 class Analyte(sdRDM.DataModel):
-
     """"""
 
     id: Optional[str] = Field(
@@ -64,7 +63,7 @@ class Analyte(sdRDM.DataModel):
     )
 
     device: Optional[Device] = Field(
-        default=None,
+        default=Device(),
         description="Device object, containing information about the analytic device",
     )
 
@@ -75,12 +74,12 @@ class Analyte(sdRDM.DataModel):
     )
 
     spectrum: Optional[Spectrum] = Field(
-        default=None,
+        default=Spectrum(),
         description="Spectrum data of a substance",
     )
 
     result: Optional[Result] = Field(
-        default=None,
+        default=Result(),
         description=(
             "Contains calculated concentrations and information on the fitted"
             " calibration equation to calculate the concentrations."
@@ -91,7 +90,7 @@ class Analyte(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="ac2969a829fcebd4fea6bd449c02c1d4fefba4be"
+        default="407f25c90534e881d0b6c83a47567723930bd3c3"
     )
 
     def add_to_standard(

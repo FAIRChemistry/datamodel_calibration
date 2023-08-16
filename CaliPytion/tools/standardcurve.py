@@ -154,7 +154,7 @@ class StandardCurve:
             return concentrations
 
         parameters = [
-            Parameter(name=key, value=value) for key, value in model.params.items()
+            Parameter(name=key, value=float(value)) for key, value in model.params.items()
         ]  # TODO: add stddev or uncertainty to Parameter class
         model = Model(
             name=model.name, equation=model.equation_string, parameters=parameters
@@ -274,6 +274,7 @@ class StandardCurve:
         ommit_nan_measurements: bool = False,
         allow_extrapolation: bool = False,
     ) -> EnzymeMLDocument:
+
         max_absorption_standard_curve = max(self.signals)
 
         delete_measurements = []
@@ -285,13 +286,14 @@ class StandardCurve:
             for rep, replicates in enumerate(
                 measurement.getReactant(species_id).replicates
             ):
+                # TODO add info if values are removed
                 data = [
                     x if x < max_absorption_standard_curve else float("nan")
                     for x in replicates.data
-                ]  # TODO add info if values are removed
+                ]
 
                 # Check if nan values are in measurement data
-                if np.isnan(min(data)) and ommit_nan_measurements is True:
+                if any(np.isnan(data)) and ommit_nan_measurements is True:
                     del_meas = True
                 else:
                     result = self.calculate_concentration(

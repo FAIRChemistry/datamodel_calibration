@@ -132,17 +132,17 @@ class CalibrationModel:
         max_signals = max(calibration_signals)
 
         # replace values above upper calibration limit with nans
-        if not allow_extrapolation:
-            extrapolation_pos = np.where(signal > max_signals)[0]
-            if extrapolation_pos.size != 0:
-                print(
-                    f"{len(extrapolation_pos)} measurements are above upper calibration limit of "
-                    f"{max(calibration_signals):.2f}. Respective measurments are replaced with "
-                    f"nans. To extrapolate, set 'allow_extrapolation = True'"
-                )
-                print(f"extrapolation_pos: {extrapolation_pos}")
+        # if not allow_extrapolation:
+        #     extrapolation_pos = np.where(signal > max_signals)[0]
+        #     if extrapolation_pos.size != 0:
+        #         print(
+        #             f"{len(extrapolation_pos)} measurements are above upper calibration limit of "
+        #             f"{max(calibration_signals):.2f}. Respective measurments are replaced with "
+        #             f"nans. To extrapolate, set 'allow_extrapolation = True'"
+        #         )
+        #         print(f"extrapolation_pos: {extrapolation_pos}")
 
-                signal[extrapolation_pos] = np.nan
+        #         signal[extrapolation_pos] = np.nan
 
         # convert equation to solve for concentration
         functions = self._get_np_function(

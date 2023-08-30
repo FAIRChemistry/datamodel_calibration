@@ -7,7 +7,6 @@ from sdRDM.base.utils import forge_signature, IDGenerator
 
 @forge_signature
 class Device(sdRDM.DataModel):
-
     """"""
 
     id: Optional[str] = Field(
@@ -35,5 +34,5 @@ class Device(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="ac2969a829fcebd4fea6bd449c02c1d4fefba4be"
+        default="407f25c90534e881d0b6c83a47567723930bd3c3"
     )

@@ -44,7 +44,7 @@ class StandardCurve:
             self._cutoff_signal()
 
         self.models = self._initialize_models()
-        self._fit_models(concentrations=concentrations, signals=signals)
+        self._fit_models()
 
     def _blank_measurement_signal(self) -> List[float]:
 
@@ -54,11 +54,6 @@ class StandardCurve:
             mean_blank = np.mean(self.signals[pos])
             std_blank = np.std(self.signals[pos])
             percentual_std = std_blank / mean_blank
-
-            if percentual_std > 0.05:
-                print(
-                    f"Standard deviation among blank measurements exceeds 5% ({percentual_std*100:.1f}%)"
-                )
 
             return self.signals - mean_blank
 
@@ -102,7 +97,7 @@ class StandardCurve:
             rational_model.name: rational_model,
         }
 
-    def _fit_models(self, concentrations: np.ndarray, signals: np.ndarray):
+    def _fit_models(self):
         for model in self.models.values():
             model._fit(signals=self.signals,
                        concentrations=self.concentrations)

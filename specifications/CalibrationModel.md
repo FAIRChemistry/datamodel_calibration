@@ -37,9 +37,6 @@ Data model for (meta) data of spectrophotometric standard curves and absorption 
 - spectrum
   - Type: Spectrum
   - Description: Spectrum data of a substance
-- result
-  - Type: Result
-  - Description: Contains calculated concentrations and information on the fitted calibration equation to calculate the concentrations.
 
 
 ### Device
@@ -72,6 +69,9 @@ Description of a standard curve for an analyte
   - Type: Series
   - Multiple: True
   - Description: Measured absorption, corresponding to the applied concentration of the reactant
+- model
+  - Type: Model
+  - Description: information on the model, which was used for concentration determination
 
 ### Spectrum
 
@@ -89,16 +89,6 @@ Description of a standard curve for an analyte
   - Type: Series
   - Multiple: True
   - Description: Measured absorption, corresponding to detection wavelengths
-
-### Result
-
-- concentration
-  - Type: float
-  - Description: Calculated concentration, based on the calibration model
-  - Multiple: True
-- calibration_model
-  - Type: Model
-  - Description: Utilized calibration model and its parameters, leading to the calculated concentrations
 
 ### Model
 

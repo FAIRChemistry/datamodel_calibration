@@ -4,12 +4,11 @@ classDiagram
     Analyte *-- Device
     Analyte *-- Standard
     Analyte *-- Spectrum
-    Analyte *-- Result
     Standard *-- ConcentrationUnit
+    Standard *-- Model
     Standard *-- Series
     Spectrum *-- ConcentrationUnit
     Spectrum *-- Series
-    Result *-- Model
     Model *-- Parameter
     
     class Analyte {
@@ -23,7 +22,6 @@ classDiagram
         +Device device
         +Standard[0..*] standard
         +Spectrum spectrum
-        +Result result
     }
     
     class Device {
@@ -37,6 +35,7 @@ classDiagram
         +float[0..*] concentration
         +ConcentrationUnit concentration_unit
         +Series[0..*] absorption
+        +Model model
     }
     
     class Spectrum {
@@ -44,11 +43,6 @@ classDiagram
         +float[0..*] wavelength
         +ConcentrationUnit concentration_unit
         +Series[0..*] absorption
-    }
-    
-    class Result {
-        +float[0..*] concentration
-        +Model calibration_model
     }
     
     class Model {

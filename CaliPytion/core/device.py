@@ -34,5 +34,5 @@ class Device(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="407f25c90534e881d0b6c83a47567723930bd3c3"
+        default="7cf6bf6af8bc7b1907348433652a23ac8b986360"
     )

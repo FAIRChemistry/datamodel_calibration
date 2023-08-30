@@ -6,6 +6,7 @@ from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 
 
+from .model import Model
 from .concentrationunit import ConcentrationUnit
 from .series import Series
 
@@ -45,11 +46,18 @@ class Standard(sdRDM.DataModel):
         ),
     )
 
+    model: Optional[Model] = Field(
+        default=Model(),
+        description=(
+            "information on the model, which was used for concentration determination"
+        ),
+    )
+
     __repo__: Optional[str] = PrivateAttr(
         default="https://github.com/FAIRChemistry/CaliPytion.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="407f25c90534e881d0b6c83a47567723930bd3c3"
+        default="7cf6bf6af8bc7b1907348433652a23ac8b986360"
     )
 
     def add_to_absorption(

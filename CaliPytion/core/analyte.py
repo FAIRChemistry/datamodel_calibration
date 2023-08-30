@@ -8,13 +8,13 @@ from sdRDM.base.utils import forge_signature, IDGenerator
 from pydantic import PositiveFloat
 from datetime import date as Date
 
+from .model import Model
 from .concentrationunit import ConcentrationUnit
-from .standard import Standard
-from .series import Series
-from .result import Result
-from .device import Device
 from .spectrum import Spectrum
+from .standard import Standard
+from .device import Device
 from .temperatureunit import TemperatureUnit
+from .series import Series
 
 
 @forge_signature
@@ -78,19 +78,11 @@ class Analyte(sdRDM.DataModel):
         description="Spectrum data of a substance",
     )
 
-    result: Optional[Result] = Field(
-        default=Result(),
-        description=(
-            "Contains calculated concentrations and information on the fitted"
-            " calibration equation to calculate the concentrations."
-        ),
-    )
-
     __repo__: Optional[str] = PrivateAttr(
         default="https://github.com/FAIRChemistry/CaliPytion.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="407f25c90534e881d0b6c83a47567723930bd3c3"
+        default="7cf6bf6af8bc7b1907348433652a23ac8b986360"
     )
 
     def add_to_standard(
@@ -99,6 +91,7 @@ class Analyte(sdRDM.DataModel):
         concentration: List[float] = ListPlus(),
         concentration_unit: Optional[ConcentrationUnit] = None,
         absorption: List[Series] = ListPlus(),
+        model: Optional[Model] = None,
         id: Optional[str] = None,
     ) -> None:
         """
@@ -110,6 +103,7 @@ class Analyte(sdRDM.DataModel):
             concentration (): Concentration of the reactant. Defaults to ListPlus()
             concentration_unit (): Concentration unit. Defaults to None
             absorption (): Measured absorption, corresponding to the applied concentration of the reactant. Defaults to ListPlus()
+            model (): information on the model, which was used for concentration determination. Defaults to None
         """
 
         params = {
@@ -117,6 +111,7 @@ class Analyte(sdRDM.DataModel):
             "concentration": concentration,
             "concentration_unit": concentration_unit,
             "absorption": absorption,
+            "model": model,
         }
 
         if id is not None:

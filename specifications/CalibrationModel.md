@@ -32,11 +32,11 @@ Data model for (meta) data of spectrophotometric standard curves and absorption 
   - Description: Device object, containing information about the analytic device
 - standard
   - Type: Standard
-  - Description: Standard data of a substance
+  - Description: Standard data of the analyte
   - Multiple: True
 - spectrum
   - Type: Spectrum
-  - Description: Spectrum data of a substance
+  - Description: Spectrum data of the analyte 
 
 
 ### Device

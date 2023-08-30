@@ -6,8 +6,8 @@ from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 
 
-from .concentrationunit import ConcentrationUnit
 from .series import Series
+from .concentrationunit import ConcentrationUnit
 
 
 @forge_signature
@@ -46,7 +46,7 @@ class Spectrum(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="7cf6bf6af8bc7b1907348433652a23ac8b986360"
+        default="0afa0b34e4855e938b7282d485b3fd947bc4b7fe"
     )
 
     def add_to_absorption(

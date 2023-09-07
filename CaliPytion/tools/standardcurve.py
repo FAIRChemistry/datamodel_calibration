@@ -5,8 +5,10 @@ import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
 
+from dotted_dict import DottedDict
 from plotly.subplots import make_subplots
 from pyenzyme import EnzymeMLDocument
+from CaliPytion.core import calibration
 from CaliPytion.core.analyte import Analyte
 
 from CaliPytion.core.calibration import Calibration
@@ -27,6 +29,7 @@ class StandardCurve:
         analyte_name: str = None,
         blank_data: bool = True,
         cutoff_signal: float = None,
+        analyte: Analyte = None
     ):
         self.concentrations = concentrations
         self.signals = signals
@@ -35,6 +38,8 @@ class StandardCurve:
         self.blank_data = blank_data
         self.cutoff_signal = cutoff_signal
         self.wavelength = wavelength
+        self.models = None
+        self._analyte = analyte
 
         if blank_data:
             self.signals = self._blank_measurement_signal()
@@ -45,6 +50,7 @@ class StandardCurve:
 
         self.models = self._initialize_models()
         self._fit_models()
+        self._generate_model_overview()
 
     def _blank_measurement_signal(self) -> List[float]:
 
@@ -81,43 +87,40 @@ class StandardCurve:
             name="3rd degree polynominal",
             equation=poly_3,
         )
-        polye_model = CalibrationModel(
-            name="Exponential",
-            equation=poly_e,
-        )
         rational_model = CalibrationModel(
             name="Rational",
             equation=rational,
         )
-        return {
-            linear_model.name: linear_model,
-            quadratic_model.name: quadratic_model,
-            poly3_model.name: poly3_model,
-            # polye_model.name: polye_model,
-            rational_model.name: rational_model,
-        }
+        return DottedDict(
+            {
+                linear_model.name: linear_model,
+                quadratic_model.name: quadratic_model,
+                poly3_model.name: poly3_model,
+                rational_model.name: rational_model,
+            }
+        )
 
     def _fit_models(self):
         for model in self.models.values():
             model._fit(signals=self.signals,
                        concentrations=self.concentrations)
 
-        self.result_dict = self._evaluate_aic()
-
         # display(DataFrame.from_dict(self.result_dict, orient='index', columns=["AIC"]).rename(columns={0: "AIC"}).round().astype("int").style.set_table_attributes('style="font-size: 12px"'))
 
-    def _evaluate_aic(self):
-        names = []
-        aic = []
+    def _generate_model_overview(self):
+        dict_entries = []
         for model in self.models.values():
-            names.append(model.name)
-            aic.append(model.aic)
+            dict_entries.append(
+                dict(
+                    name=model.name,
+                    aic=round(model.aic, 1),
+                    r2=round(model.r_squared, 4),
+                )
+            )
 
-        result_dict = dict(zip(names, aic))
-        result_dict = dict(
-            sorted(result_dict.items(), key=lambda item: item[1]))
+            dict_entries = sorted(dict_entries, key=lambda entry: entry["aic"])
 
-        return result_dict
+        self.model_overview = pd.DataFrame(dict_entries).set_index("name")
 
     def calculate_concentration(
         self,
@@ -148,18 +151,26 @@ class StandardCurve:
         if values_only:
             return concentrations
 
+        model_result = self._get_model_result(model)
+        return Result(concentration=concentrations.tolist(), calibration_model=model_result)
+
+    def _get_model_with_lowest_aic(self) -> CalibrationModel:
+        return min(set(self.models.values()), key=lambda model: model.aic)
+
+    def _get_model_result(self, model: CalibrationModel) -> Model:
         parameters = [
             Parameter(name=key, value=float(value)) for key, value in model.params.items()
         ]  # TODO: add stddev or uncertainty to Parameter class
         model = Model(
             name=model.name, equation=model.equation_string, parameters=parameters
         )
-        return Result(concentration=concentrations.tolist(), calibration_model=model)
+
+        return model
 
     def visualize(self, model: CalibrationModel = None, model_name: str = None):
 
         if model is None and model_name is None:
-            model = self.models[next(iter(self.result_dict.keys()))]
+            model = self._get_model_with_lowest_aic()
         if model is None and model_name is True:
             model = self.models[model_name]
 
@@ -261,6 +272,23 @@ class StandardCurve:
 
         return fig.show(config=config)
 
+    def save_model(self, model: CalibrationModel = None) -> Analyte:
+
+        if not self._analyte:
+            raise ValueError(
+                "No 'Analyte' provided during initialization of 'StandardCurve'"
+            )
+
+        if not model:
+            model = self._get_model_with_lowest_aic()
+
+        standard = self._analyte.get(
+            "standard", "wavelength", self.wavelength)[0][0]
+
+        standard.model = self._get_model_result(model)
+
+        return self._analyte
+
     def apply_to_EnzymeML(
         self,
         enzmldoc: EnzymeMLDocument,
@@ -349,9 +377,9 @@ class StandardCurve:
         )
 
     @classmethod
-    def from_datamodel(
+    def from_analyte(
         cls,
-        calibration_data: Analyte,
+        analyte: Analyte,
         wavelength: float = None,
         blank_data: bool = True,
         cutoff_signal: float = None,
@@ -362,15 +390,15 @@ class StandardCurve:
             try:
                 standard = next(
                     standard
-                    for standard in calibration_data.standard
+                    for standard in analyte.standard
                     if standard.wavelength == wavelength
                 )
             except Exception as exc:
                 raise StopIteration(
-                    f"No calibration data found for calibration at {wavelength} nm. Calibration data exists for following wavelengths: {[x.wavelength for x in calibration_data.standard]}"
+                    f"No calibration data found for calibration at {wavelength} nm. Calibration data exists for following wavelengths: {[x.wavelength for x in analyte.standard]}"
                 ) from exc
         else:
-            standard = calibration_data.standard[0]
+            standard = analyte.standard[0]
             wavelength = standard.wavelength
             print(f"Found calibration data at {float(standard.wavelength)} nm")
 
@@ -384,11 +412,12 @@ class StandardCurve:
         return cls(
             concentrations=concentrations,
             signals=signals,
-            analyte_name=calibration_data.name,
+            analyte_name=analyte.name,
             cutoff_signal=cutoff_signal,
             blank_data=blank_data,
             wavelength=wavelength,
             conc_unit=standard.concentration_unit,
+            analyte=analyte
         )
 
     @staticmethod

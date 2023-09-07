@@ -1,8 +1,10 @@
 from typing import Callable, Tuple
-from lmfit import Model
+from lmfit import Model, fit_report
 import sympy as s
 from sympy import Equality, lambdify, solve
 import numpy as np
+from IPython.display import display
+import pandas as pd
 
 
 class CalibrationModel:
@@ -163,6 +165,11 @@ class CalibrationModel:
             )
 
         return solutions[np.argmax(n_values_in_calibration_range)]
+
+    def __repr__(self):
+        print(f"*** {self.name} Model ***")
+        self._lmfit_result.plot_fit()
+        return fit_report(self._lmfit_result)
 
     @staticmethod
     def _get_np_function(

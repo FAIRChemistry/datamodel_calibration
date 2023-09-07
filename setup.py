@@ -3,11 +3,11 @@ from setuptools import setup
 
 setup(
     name="CaliPytion",
-    version="0.0.3",
+    version="0.1.1",
     description="Data model and standard curve functionalities for calibration data",
     url="https://github.com/FAIRChemistry/calibration_data",
     author="Haeussler, Max",
-    author_email="st171427@stud.uni-stuttgart.de",
+    author_email="max.haeussler@ibtb.uni-stuttgart.de",
     packages=setuptools.find_packages(),
     install_requires=[
         "lmfit",

@@ -8,13 +8,13 @@ from sdRDM.base.utils import forge_signature, IDGenerator
 from pydantic import PositiveFloat
 from datetime import date as Date
 
-from .model import Model
-from .concentrationunit import ConcentrationUnit
 from .spectrum import Spectrum
 from .standard import Standard
-from .device import Device
+from .concentrationunit import ConcentrationUnit
 from .temperatureunit import TemperatureUnit
 from .series import Series
+from .device import Device
+from .model import Model
 
 
 @forge_signature
@@ -68,21 +68,21 @@ class Analyte(sdRDM.DataModel):
     )
 
     standard: List[Standard] = Field(
-        description="Standard data of a substance",
+        description="Standard data of the analyte",
         default_factory=ListPlus,
         multiple=True,
     )
 
     spectrum: Optional[Spectrum] = Field(
         default=Spectrum(),
-        description="Spectrum data of a substance",
+        description="Spectrum data of the analyte",
     )
 
     __repo__: Optional[str] = PrivateAttr(
         default="https://github.com/FAIRChemistry/CaliPytion.git"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="7cf6bf6af8bc7b1907348433652a23ac8b986360"
+        default="0afa0b34e4855e938b7282d485b3fd947bc4b7fe"
     )
 
     def add_to_standard(

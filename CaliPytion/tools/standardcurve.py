@@ -12,6 +12,7 @@ from CaliPytion.core import calibration
 from CaliPytion.core.analyte import Analyte
 
 from CaliPytion.core.calibration import Calibration
+from CaliPytion.core.standard import Standard
 from CaliPytion.tools.calibrationmodel import CalibrationModel
 from CaliPytion.core.result import Result
 from CaliPytion.core.model import Model
@@ -84,7 +85,7 @@ class StandardCurve:
             equation=quadratic,
         )
         poly3_model = CalibrationModel(
-            name="third degree polynominal",
+            name="3rd degree polynominal",
             equation=poly_3,
         )
         rational_model = CalibrationModel(
@@ -127,7 +128,8 @@ class StandardCurve:
         signals: np.ndarray,
         model_name: str = None,
         allow_extrapolation: bool = False,
-    ) -> (List[float], Model):
+        values_only: bool = False,
+    ) -> Result:
         # Check that input is provided as a list
         if not isinstance(signals, (list, np.ndarray)):
             raise ValueError("'signals' need to be provided as a list.")
@@ -138,11 +140,8 @@ class StandardCurve:
         signals = signals.astype("float")
 
         # Select calibration model (defaults to model with lowest AIC)
-        print(self.models.keys())
-        print(self.model_overview.index.values)
-
         if model_name is None:
-            model = self.models[self.model_overview.index[0].replace(" ", "_")]
+            model = self.models[next(iter(self.result_dict))]
         else:
             model = self.models[model_name]
         # calculate concentrations
@@ -150,8 +149,11 @@ class StandardCurve:
             signals=signals, allow_extrapolation=allow_extrapolation
         )
 
+        if values_only:
+            return concentrations
+
         model_result = self._get_model_result(model)
-        return concentrations.tolist(), model_result
+        return Result(concentration=concentrations.tolist(), calibration_model=model_result)
 
     def _get_model_with_lowest_aic(self) -> CalibrationModel:
         return min(set(self.models.values()), key=lambda model: model.aic)
@@ -373,6 +375,31 @@ class StandardCurve:
             wavelength=wavelength,
             conc_unit=conc_unit,
             analyte_name=analyte_name,
+        )
+
+    @classmethod
+    def from_standard(
+        cls,
+        standard: Standard,
+        blank_data=False,
+        cutoff_absorption: float = None,
+    ) -> "StandardCurve":
+
+        concentrations = np.tile(
+            standard.concentration, len(standard.absorption))
+        signals = np.array(
+            [measurement.values for measurement in standard.absorption]
+        ).flatten()
+
+        return cls(
+            concentrations=concentrations,
+            signals=signals,
+            analyte_name=analyte.name,
+            cutoff_signal=cutoff_signal,
+            blank_data=blank_data,
+            wavelength=wavelength,
+            conc_unit=standard.concentration_unit,
+            analyte=analyte
         )
 
     @classmethod

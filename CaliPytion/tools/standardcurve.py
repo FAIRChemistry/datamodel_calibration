@@ -84,7 +84,7 @@ class StandardCurve:
             equation=quadratic,
         )
         poly3_model = CalibrationModel(
-            name="3rd degree polynominal",
+            name="third degree polynominal",
             equation=poly_3,
         )
         rational_model = CalibrationModel(
@@ -127,8 +127,7 @@ class StandardCurve:
         signals: np.ndarray,
         model_name: str = None,
         allow_extrapolation: bool = False,
-        values_only: bool = False,
-    ) -> Result:
+    ) -> (List[float], Model):
         # Check that input is provided as a list
         if not isinstance(signals, (list, np.ndarray)):
             raise ValueError("'signals' need to be provided as a list.")
@@ -139,8 +138,11 @@ class StandardCurve:
         signals = signals.astype("float")
 
         # Select calibration model (defaults to model with lowest AIC)
+        print(self.models.keys())
+        print(self.model_overview.index.values)
+
         if model_name is None:
-            model = self.models[next(iter(self.result_dict))]
+            model = self.models[self.model_overview.index[0].replace(" ", "_")]
         else:
             model = self.models[model_name]
         # calculate concentrations
@@ -148,11 +150,8 @@ class StandardCurve:
             signals=signals, allow_extrapolation=allow_extrapolation
         )
 
-        if values_only:
-            return concentrations
-
         model_result = self._get_model_result(model)
-        return Result(concentration=concentrations.tolist(), calibration_model=model_result)
+        return concentrations.tolist(), model_result
 
     def _get_model_with_lowest_aic(self) -> CalibrationModel:
         return min(set(self.models.values()), key=lambda model: model.aic)

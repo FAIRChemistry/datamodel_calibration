@@ -1,7 +1,7 @@
 import sdRDM
 
 from typing import List, Optional
-from pydantic import Field, PrivateAttr
+from pydantic import Field
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 
@@ -11,6 +11,7 @@ from .parameter import Parameter
 
 @forge_signature
 class Model(sdRDM.DataModel):
+
     """"""
 
     id: Optional[str] = Field(
@@ -35,17 +36,39 @@ class Model(sdRDM.DataModel):
         multiple=True,
     )
 
-    __repo__: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion.git"
+    aic: Optional[float] = Field(
+        default=None,
+        description="Akaike information criterion",
     )
-    __commit__: Optional[str] = PrivateAttr(
-        default="0afa0b34e4855e938b7282d485b3fd947bc4b7fe"
+
+    bic: Optional[float] = Field(
+        default=None,
+        description="Bayesian information criterion",
+    )
+
+    r2: Optional[float] = Field(
+        default=None,
+        description="Coefficient of determination",
+    )
+
+    residuals: List[float] = Field(
+        description="Residuals of the calibration model",
+        default_factory=ListPlus,
+        multiple=True,
+    )
+
+    rmsd: Optional[float] = Field(
+        default=None,
+        description="Root mean square deviation",
     )
 
     def add_to_parameters(
         self,
         name: Optional[str] = None,
         value: Optional[float] = None,
+        standard_error: Optional[float] = None,
+        lower_bound: Optional[float] = None,
+        upper_bound: Optional[float] = None,
         id: Optional[str] = None,
     ) -> None:
         """
@@ -55,11 +78,17 @@ class Model(sdRDM.DataModel):
             id (str): Unique identifier of the 'Parameter' object. Defaults to 'None'.
             name (): Name of the parameter. Defaults to None
             value (): Value of the parameter. Defaults to None
+            standard_error (): Standard error of the parameter. Defaults to None
+            lower_bound (): Lower bound of the parameter. Defaults to None
+            upper_bound (): Relative error of the parameter. Defaults to None
         """
 
         params = {
             "name": name,
             "value": value,
+            "standard_error": standard_error,
+            "lower_bound": lower_bound,
+            "upper_bound": upper_bound,
         }
 
         if id is not None:

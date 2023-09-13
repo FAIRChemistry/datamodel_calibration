@@ -1,0 +1,6 @@
+# Calibration Models
+
+- linear: "a * concentration = signal"
+- quadratic: "a * concentration**2 + b * concentration = signal"
+- cubic: "a * concentration**3 + b * concentration**2 + c * concentration = signal"
+- rational: "a * concentration / (b + concentration) = signal"

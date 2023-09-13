@@ -141,6 +141,69 @@ class Model(sdRDM.DataModel):
 
         return lmfit_result
 
+    def calculate_concentrations(
+            self,
+            signals: List[float],
+            calibration_range: List[float],
+            cutoff: float,
+            allow_extrapolation: bool = False,
+    ) -> List[float]:
+
+        if not isinstance(signals, np.ndarray):
+            signals = np.array(signals)
+
+        # define calibration range of model
+        min_conc = min(calibration_range)
+        max_conc = max(calibration_range)
+
+        # get root equation
+        equality = self._get_equality()
+        root_eq = equality.lhs - equality.rhs
+
+        roots = []
+        params = {}
+        for parameter in self.parameters:
+            params[parameter.name] = parameter.value
+
+        for signal in signals:
+            if signal < cutoff:
+                params[equality.rhs] = signal
+
+                # calculate all possible real roots for equation
+                roots.append(
+                    list(sp.roots(sp.real_root(root_eq.subs(params))).keys())
+                )
+            else:
+                roots.append([float("nan")])
+
+        # reshape results, fill nan columns for signals above upper calibration range
+        matrix = np.zeros(
+            [len(roots), len(max(roots, key=lambda x: len(roots)))]) * np.nan
+
+        # replace complex solutions with nans
+        for i, j in enumerate(roots):
+            without_complex = [float("nan") if isinstance(value, sp.core.add.Add)
+                               else value for value in j]
+
+            matrix[i][0: len(without_complex)] = without_complex
+
+        roots = np.array(matrix).T
+
+        # get root alternative with most values within calibration bonds
+        n_values_in_calibration_range = []
+        for result in roots:
+            n_values_in_calibration_range.append(
+                ((min_conc < result) & (result < max_conc)).sum()
+            )
+
+        correct_roots = roots[np.nanargmax(n_values_in_calibration_range)]
+
+        if not allow_extrapolation:
+            correct_roots[(min_conc > correct_roots) |
+                          (max_conc < correct_roots)] = float("nan")
+
+        return correct_roots.tolist()
+
     def _get_model_callable(
             self,
             solve_for: str,

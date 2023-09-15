@@ -1,6 +1,8 @@
-from re import M
+import copy
+from typing import Dict
 import sdRDM
 import numpy as np
+
 
 from lmfit import Model as LmfitModel
 from lmfit.model import ModelResult
@@ -108,7 +110,7 @@ class Model(sdRDM.DataModel):
 
         return self.parameters[-1]
 
-    def fit_signals(
+    def fit(
             self,
             concentrations: List[float],
             signals: List[float],
@@ -161,9 +163,7 @@ class Model(sdRDM.DataModel):
         root_eq = equality.lhs - equality.rhs
 
         roots = []
-        params = {}
-        for parameter in self.parameters:
-            params[parameter.name] = parameter.value
+        params = copy.copy(self._params)
 
         for signal in signals:
             if signal < cutoff:
@@ -268,3 +268,7 @@ class Model(sdRDM.DataModel):
                 lower_bound=param.min,
                 upper_bound=param.max,
             )
+
+    @property
+    def _params(self) -> Dict[str, float]:
+        return {param.name: param.value for param in self.parameters}

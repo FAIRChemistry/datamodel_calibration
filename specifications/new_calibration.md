@@ -21,7 +21,7 @@ This data model structures data of standard measurements and spectra of spectros
   - Description: Measured signals, corresponding to the concentrations
   - Multiple: True
 - models
-  - Type: Model
+  - Type: CalibrationModel
   - Description: Potential models, describing the standard data
   - Multiple: True
 - cutoff
@@ -58,7 +58,7 @@ Description of a standard curve for an chemical species
   - Type: datetime
   - Description: Date when the standard curve was measured
 - model_result
-  - Type: Model
+  - Type: CalibrationModel
   - Description: Model which was used for concentration determination
 
 
@@ -74,7 +74,7 @@ Description of a standard curve for an chemical species
     - Type: float
     - Description: Measured signals at a given concentration of the species
 
-### Model
+### CalibrationModel
 
 - name
   - Type: string
@@ -86,6 +86,31 @@ Description of a standard curve for an chemical species
   - Type: Parameter
   - Description: Parameters of the calibration model equation
   - Multiple: True
+- was_fitted
+  - Type: boolean
+  - Description: Indicates if the model was fitted to the data
+- calibration_range
+  - Type: CalibrationRange
+  - Description: Concentration and signal bounds in which the calibration model is valid.
+- statistics
+  - Type: FitStatistics
+  - Description: Fit statistics of the calibration model
+
+### CalibrationRange
+- conc_lower
+  - Type: float
+  - Description: Lower concentration bound of the model
+- conc_upper
+  - Type: float
+  - Description: Upper concentration bound of the model
+- signal_lower
+  - Type: float
+  - Description: Lower signal bound of the model
+- signal_upper
+  - Type: float
+  - Description: Upper signal bound of the model
+
+### FitStatistics
 - aic
   - Type: float
   - Description: Akaike information criterion
@@ -95,10 +120,6 @@ Description of a standard curve for an chemical species
 - r2
   - Type: float
   - Description: Coefficient of determination
-- residuals
-  - Type: float
-  - Description: Residuals of the calibration model
-  - Multiple: True
 - rmsd
   - Type: float
   - Description: Root mean square deviation

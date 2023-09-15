@@ -8,7 +8,7 @@ from sdRDM.base.utils import forge_signature, IDGenerator
 from astropy.units import UnitBase
 from datetime import datetime as Datetime
 
-from .model import Model
+from .calibrationmodel import CalibrationModel
 from .sample import Sample
 
 
@@ -64,8 +64,8 @@ class Standard(sdRDM.DataModel):
         description="Date when the standard curve was measured",
     )
 
-    model_result: Optional[Model] = Field(
-        default=Model(),
+    model_result: Optional[CalibrationModel] = Field(
+        default=CalibrationModel(),
         description="Model which was used for concentration determination",
     )
 

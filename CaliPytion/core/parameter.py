@@ -26,6 +26,11 @@ class Parameter(sdRDM.DataModel):
         description="Value of the parameter",
     )
 
+    init_value: Optional[float] = Field(
+        default=None,
+        description="Initial value of the parameter",
+    )
+
     standard_error: Optional[float] = Field(
         default=None,
         description="Standard error of the parameter",

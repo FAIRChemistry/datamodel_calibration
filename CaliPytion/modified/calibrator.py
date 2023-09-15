@@ -12,8 +12,10 @@ from sdRDM.base.utils import forge_signature, IDGenerator
 from astropy.units import UnitBase
 
 from .parameter import Parameter
-from .model import Model
 from .standard import Standard
+from .calibrationmodel import CalibrationModel
+from .calibrationrange import CalibrationRange
+from .fitstatistics import FitStatistics
 from ..ioutils.parsemodel import parse_model
 
 
@@ -50,7 +52,7 @@ class Calibrator(sdRDM.DataModel):
         multiple=True,
     )
 
-    models: List[Model] = Field(
+    models: List[CalibrationModel] = Field(
         description="Potential models, describing the standard data",
         default_factory=ListPlus,
         multiple=True,
@@ -64,54 +66,48 @@ class Calibrator(sdRDM.DataModel):
         ),
     )
 
-    def __init__(self, **data: Any):
-        super().__init__(**data)
-        self._apply_cutoff()
-
     def add_to_models(
         self,
         name: Optional[str] = None,
         equation: Optional[str] = None,
         parameters: List[Parameter] = ListPlus(),
-        aic: Optional[float] = None,
-        bic: Optional[float] = None,
-        r2: Optional[float] = None,
-        residuals: List[float] = ListPlus(),
-        rmsd: Optional[float] = None,
+        was_fitted: Optional[bool] = None,
+        calibration_range: Optional[CalibrationRange] = None,
+        statistics: Optional[FitStatistics] = None,
         id: Optional[str] = None,
     ) -> None:
         """
-        This method adds an object of type 'Model' to attribute models
+        This method adds an object of type 'CalibrationModel' to attribute models
 
         Args:
-            id (str): Unique identifier of the 'Model' object. Defaults to 'None'.
+            id (str): Unique identifier of the 'CalibrationModel' object. Defaults to 'None'.
             name (): Name of the calibration model. Defaults to None
             equation (): Equation of the calibration model. Defaults to None
             parameters (): Parameters of the calibration model equation. Defaults to ListPlus()
-            aic (): Akaike information criterion. Defaults to None
-            bic (): Bayesian information criterion. Defaults to None
-            r2 (): Coefficient of determination. Defaults to None
-            residuals (): Residuals of the calibration model. Defaults to ListPlus()
-            rmsd (): Root mean square deviation. Defaults to None
+            was_fitted (): Indicates if the model was fitted to the data. Defaults to None
+            range (): Concentration and signal bounds in which the calibration model is valid.. Defaults to None
+            statistics (): Fit statistics of the calibration model. Defaults to None
         """
 
         params = {
             "name": name,
             "equation": equation,
             "parameters": parameters,
-            "aic": aic,
-            "bic": bic,
-            "r2": r2,
-            "residuals": residuals,
-            "rmsd": rmsd,
+            "was_fitted": was_fitted,
+            "calibration_range": calibration_range,
+            "statistics": statistics,
         }
 
         if id is not None:
             params["id"] = id
 
-        self.models.append(Model(**params))
+        self.models.append(CalibrationModel(**params))
 
         return self.models[-1]
+
+    def __init__(self, **data: Any):
+        super().__init__(**data)
+        self._apply_cutoff()
 
     def _apply_cutoff(self):
 
@@ -128,7 +124,7 @@ class Calibrator(sdRDM.DataModel):
         cls,
         standard: Standard,
         cutoff: float = None,
-        models: List[Model] = ListPlus(),
+        models: List[CalibrationModel] = ListPlus(),
     ):
 
         # get concentrations and corresponding signals as lists
@@ -169,21 +165,33 @@ class Calibrator(sdRDM.DataModel):
         """
 
         # check if models have been fitted
-        if not all([model.aic for model in self.models]):
+        if not all([model.was_fitted for model in self.models]):
             raise ValueError(
                 "Models have not been fitted yet. Run 'fit_models' first.")
 
         # get model statistics
         model_stats = []
         for model in self.models:
-            model_stats.append(
-                {
-                    "Model Name": model.name,
-                    "AIC": round(model.aic),
-                    "R squared": round(model.r2, 4),
-                    "RMSD": round(model.rmsd, 4),
-                }
-            )
+            print(model)
+
+            if model.was_fitted:
+                model_stats.append(
+                    {
+                        "Model Name": model.name,
+                        "AIC": round(model.statistics.aic),
+                        "R squared": round(model.statistics.r2, 4),
+                        "RMSD": round(model.statistics.rmsd, 4),
+                    }
+                )
+            else:
+                model_stats.append(
+                    {
+                        "Model Name": model.name,
+                        "AIC": "-",
+                        "R squared": "-",
+                        "RMSD": "-",
+                    }
+                )
 
         # create and format dataframe
         df = pd.DataFrame(model_stats).set_index(
@@ -201,7 +209,7 @@ class Calibrator(sdRDM.DataModel):
     def fit_statistics(self):
         return self._get_models_overview()
 
-    def visualize(self, model: Model):
+    def visualize(self, model: CalibrationModel):
 
         fig = make_subplots(
             rows=1,
@@ -234,17 +242,18 @@ class Calibrator(sdRDM.DataModel):
             len(self.concentrations) * 5,
         )
 
-        model_callable, _ = model._get_model_callable(
-            solve_for="signal", dependent_variable="concentration"
-        )
+        model_data = model.signal_callable(
+            self.concentrations, **model._params)
 
-        model_data = model_callable(
-            np.array(self.concentrations), **model._params)
-        smooth_model_data = model_callable(smooth_x, **model._params)
+        model_residuals = model._get_residuals(
+            self.concentrations, self.signals)
+
+        smooth_model_data = model.signal_callable(
+            smooth_x, **model._params)
         percentual_residuals = np.divide(
-            model.residuals,
+            model_residuals,
             model_data,
-            out=np.zeros_like(model.residuals),
+            out=np.zeros_like(model_residuals),
             where=model_data != 0,
         ) * 100
 
@@ -296,9 +305,9 @@ class Calibrator(sdRDM.DataModel):
 
         return fig.show(config=config)
 
-    def save_fitted_model(self, model: Model) -> Standard:
+    def save_fitted_model(self, model: CalibrationModel) -> Standard:
 
-        if not model.aic:
+        if not model.was_fitted:
             raise ValueError(
                 "Model has not been fitted yet. Run 'fit_models' first.")
 

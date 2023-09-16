@@ -1,11 +1,12 @@
 import sdRDM
+import toml
 import pandas as pd
 import numpy as np
 
 from plotly.subplots import make_subplots
 from plotly import graph_objects as go
 from typing import List, Optional, Any
-from pydantic import Field
+from pydantic import Field, validator
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 
@@ -16,7 +17,7 @@ from .standard import Standard
 from .calibrationmodel import CalibrationModel
 from .calibrationrange import CalibrationRange
 from .fitstatistics import FitStatistics
-from ..ioutils.parsemodel import parse_model
+from ..ioutils.parsemodel import read_models_from_toml
 
 
 @forge_signature
@@ -105,6 +106,16 @@ class Calibrator(sdRDM.DataModel):
 
         return self.models[-1]
 
+    @validator("models", pre=True, always=True)
+    def initialize_models(cls, models):
+        # If models are not provided during initialization, read from TOML
+        if not models:
+            toml_file_path = "CaliPytion/tools/models.toml"
+            models_data = toml.load(toml_file_path)["model"]
+            models = [CalibrationModel(**model_data)
+                      for model_data in models_data]
+        return models
+
     def __init__(self, **data: Any):
         super().__init__(**data)
         self._apply_cutoff()
@@ -124,7 +135,7 @@ class Calibrator(sdRDM.DataModel):
         cls,
         standard: Standard,
         cutoff: float = None,
-        models: List[CalibrationModel] = ListPlus(),
+        **kwargs,
     ):
 
         # get concentrations and corresponding signals as lists
@@ -147,7 +158,7 @@ class Calibrator(sdRDM.DataModel):
             conc_unit=conc_unit,
             signals=signals,
             cutoff=cutoff,
-            models=models,
+            **kwargs,
         )
 
     def fit_models(self, init_param_value: float = 0.1):
@@ -172,7 +183,6 @@ class Calibrator(sdRDM.DataModel):
         # get model statistics
         model_stats = []
         for model in self.models:
-            print(model)
 
             if model.was_fitted:
                 model_stats.append(

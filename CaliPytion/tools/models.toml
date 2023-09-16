@@ -1,0 +1,19 @@
+# concentration needs to be written as "concentration" in the equation
+# signal needs to be written as "signal" in the equation
+
+
+[[model]]
+name = "linear"
+equation = "a * concentration = signal"
+
+[[model]]
+name = "quadratic"
+equation = "a * concentration**2 + b * concentration = signal"
+
+[[model]]
+name = "cubic"
+equation = "a * concentration**3 + b * concentration**2 + c * concentration = signal"
+
+[[model]]
+name = "rational"
+equation = "a * concentration / (b + concentration) = signal"

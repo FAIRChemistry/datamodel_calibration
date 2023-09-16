@@ -1,27 +1,20 @@
 from typing import List
-import yaml
+import toml
+from ..modified.calibrationmodel import CalibrationModel
 
-from ..modified.model import Model
 
-
-def parse_model(
-        path: str = "CaliPytion/tools/models.yaml"
-) -> List[Model]:
-    """Parses a yaml file containing model information.
-
-    Args:
-        path (str, optional): Path to the yaml file. Defaults to "CaliPytion/tools/models.yaml".
-
-    Returns:
-        List[Model]: models parsed from yaml file
-    """
-
-    with open(path, "r") as file:
-        model_infos = yaml.safe_load_all(file)
-
+def read_models_from_toml(path: str) -> List[CalibrationModel]:
+    print("was aclled")
     models = []
-    for model_dict in model_infos:
-        for name, equation in model_dict:
-            models.append(Model(equation=equation, name=name))
+    with open(path, "r") as f:
+        data = toml.load(f)
+
+    for model_data in data["model"]:
+        name = model_data["name"]
+        equation = model_data["equation"]
+        model = CalibrationModel(name=name, equation=equation)
+        models.append(model)
+
+    print("models: ", models)
 
     return models

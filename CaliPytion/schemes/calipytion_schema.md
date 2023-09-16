@@ -1,81 +1,78 @@
 ```mermaid
 classDiagram
-    Analyte *-- TemperatureUnit
-    Analyte *-- Device
-    Analyte *-- Standard
-    Analyte *-- Spectrum
-    Standard *-- ConcentrationUnit
-    Standard *-- Model
-    Standard *-- Series
-    Spectrum *-- ConcentrationUnit
-    Spectrum *-- Series
-    Model *-- Parameter
+    Calibrator *-- Standard
+    Calibrator *-- CalibrationModel
+    Standard *-- Sample
+    Standard *-- CalibrationModel
+    CalibrationModel *-- CalibrationRange
+    CalibrationModel *-- FitStatistics
+    CalibrationModel *-- Parameter
     
-    class Analyte {
-        +string name
-        +string inchi
-        +string smiles
-        +PositiveFloat ph
-        +PositiveFloat temperature
-        +TemperatureUnit temperature_unit
-        +date date_measured
-        +Device device
-        +Standard[0..*] standard
-        +Spectrum spectrum
-    }
-    
-    class Device {
-        +string manufacturer
-        +string model
-        +string software_version
+    class Calibrator {
+        +Standard standard
+        +float[0..*] concentrations
+        +UnitClass conc_unit
+        +float[0..*] signals
+        +CalibrationModel[0..*] models
+        +float cutoff
     }
     
     class Standard {
+        +string species_id
+        +string name
         +float wavelength
-        +float[0..*] concentration
-        +ConcentrationUnit concentration_unit
-        +Series[0..*] absorption
-        +Model model
+        +Sample[0..*] samples
+        +float ph
+        +float temperature
+        +UnitClass temperature_unit
+        +datetime created
+        +CalibrationModel model_result
     }
     
-    class Spectrum {
+    class Sample {
         +float concentration
-        +float[0..*] wavelength
-        +ConcentrationUnit concentration_unit
-        +Series[0..*] absorption
+        +UnitClass conc_unit
+        +float signal
     }
     
-    class Model {
+    class CalibrationModel {
         +string name
         +string equation
         +Parameter[0..*] parameters
+        +boolean was_fitted
+        +CalibrationRange calibration_range
+        +FitStatistics statistics
+    }
+    
+    class CalibrationRange {
+        +float conc_lower
+        +float conc_upper
+        +float signal_lower
+        +float signal_upper
+    }
+    
+    class FitStatistics {
+        +float aic
+        +float bic
+        +float r2
+        +float rmsd
     }
     
     class Parameter {
         +string name
         +float value
+        +float init_value
+        +float standard_error
+        +float lower_bound
+        +float upper_bound
     }
     
-    class Series {
-        +float[0..*] values
-    }
-    
-    class TemperatureUnit {
-        << Enumeration >>
-        +CELSIUS
-        +KELVIN
-    }
-    
-    class ConcentrationUnit {
-        << Enumeration >>
-        +MOLAR
-        +MILLIMOLAR
-        +MICROMOLAR
-        +NANAMOLAR
-        +GRAMLITER
-        +MILLIGRAMLITER
-        +MICROGRAMLITER
-        +NANOGRAMLITER
+    class Spectrum {
+        +string species_id
+        +string name
+        +float concentration
+        +float[0..*] conc_unit
+        +float[0..*] signals
     }
     
 ```

@@ -51,6 +51,7 @@ class StandardCurve:
 
         self.models = self._initialize_models()
         self._fit_models()
+
         self._generate_model_overview()
 
     def _blank_measurement_signal(self) -> List[float]:
@@ -290,7 +291,13 @@ class StandardCurve:
 
         return self._analyte
 
-    def apply_to_EnzymeML(
+    def apply_to_enzymeml(
+            self,
+            enzymeml_doc
+    ):
+        pass
+
+    def apply_to_pyenzyme(
         self,
         enzmldoc: EnzymeMLDocument,
         species_id: str,

@@ -1,0 +1,213 @@
+{
+  "id": "standard1",
+  "species_id": "s0",
+  "name": "ABTS",
+  "wavelength": 340.0,
+  "samples": [
+    {
+      "id": "sample0",
+      "concentration": 0.0,
+      "conc_unit": "umol / l",
+      "signal": -0.00515377268952271
+    },
+    {
+      "id": "sample1",
+      "concentration": 0.0,
+      "conc_unit": "umol / l",
+      "signal": 0.014866087468461282
+    },
+    {
+      "id": "sample2",
+      "concentration": 0.0,
+      "conc_unit": "umol / l",
+      "signal": 0.03162713090140021
+    },
+    {
+      "id": "sample3",
+      "concentration": 20.0,
+      "conc_unit": "umol / l",
+      "signal": 0.24664646526259712
+    },
+    {
+      "id": "sample4",
+      "concentration": 20.0,
+      "conc_unit": "umol / l",
+      "signal": 0.259827302542134
+    },
+    {
+      "id": "sample5",
+      "concentration": 20.0,
+      "conc_unit": "umol / l",
+      "signal": 0.25258006108798975
+    },
+    {
+      "id": "sample6",
+      "concentration": 40.0,
+      "conc_unit": "umol / l",
+      "signal": 0.6034172458040312
+    },
+    {
+      "id": "sample7",
+      "concentration": 40.0,
+      "conc_unit": "umol / l",
+      "signal": 0.6017511398158104
+    },
+    {
+      "id": "sample8",
+      "concentration": 40.0,
+      "conc_unit": "umol / l",
+      "signal": 0.5557615837909557
+    },
+    {
+      "id": "sample9",
+      "concentration": 60.0,
+      "conc_unit": "umol / l",
+      "signal": 0.8724497643710015
+    },
+    {
+      "id": "sample10",
+      "concentration": 60.0,
+      "conc_unit": "umol / l",
+      "signal": 0.8416922823313082
+    },
+    {
+      "id": "sample11",
+      "concentration": 60.0,
+      "conc_unit": "umol / l",
+      "signal": 0.8724466389886041
+    },
+    {
+      "id": "sample12",
+      "concentration": 80.0,
+      "conc_unit": "umol / l",
+      "signal": 1.0960288284688233
+    },
+    {
+      "id": "sample13",
+      "concentration": 80.0,
+      "conc_unit": "umol / l",
+      "signal": 1.1334114601406562
+    },
+    {
+      "id": "sample14",
+      "concentration": 80.0,
+      "conc_unit": "umol / l",
+      "signal": 1.1400942167440393
+    },
+    {
+      "id": "sample15",
+      "concentration": 100.0,
+      "conc_unit": "umol / l",
+      "signal": 1.4512905604858544
+    },
+    {
+      "id": "sample16",
+      "concentration": 100.0,
+      "conc_unit": "umol / l",
+      "signal": 1.3809716636294478
+    },
+    {
+      "id": "sample17",
+      "concentration": 100.0,
+      "conc_unit": "umol / l",
+      "signal": 1.332089076326397
+    },
+    {
+      "id": "sample18",
+      "concentration": 120.0,
+      "conc_unit": "umol / l",
+      "signal": 1.708891890460119
+    },
+    {
+      "id": "sample19",
+      "concentration": 120.0,
+      "conc_unit": "umol / l",
+      "signal": 1.7220814611976492
+    },
+    {
+      "id": "sample20",
+      "concentration": 120.0,
+      "conc_unit": "umol / l",
+      "signal": 1.7294580012302858
+    },
+    {
+      "id": "sample21",
+      "concentration": 140.0,
+      "conc_unit": "umol / l",
+      "signal": 1.956104949876895
+    },
+    {
+      "id": "sample22",
+      "concentration": 140.0,
+      "conc_unit": "umol / l",
+      "signal": 1.944731474163313
+    },
+    {
+      "id": "sample23",
+      "concentration": 140.0,
+      "conc_unit": "umol / l",
+      "signal": 1.9943567829982785
+    },
+    {
+      "id": "sample24",
+      "concentration": 160.0,
+      "conc_unit": "umol / l",
+      "signal": 2.241842808073608
+    },
+    {
+      "id": "sample25",
+      "concentration": 160.0,
+      "conc_unit": "umol / l",
+      "signal": 2.207606514367272
+    },
+    {
+      "id": "sample26",
+      "concentration": 160.0,
+      "conc_unit": "umol / l",
+      "signal": 2.2054830330301547
+    },
+    {
+      "id": "sample27",
+      "concentration": 180.0,
+      "conc_unit": "umol / l",
+      "signal": 2.5558840842457218
+    },
+    {
+      "id": "sample28",
+      "concentration": 180.0,
+      "conc_unit": "umol / l",
+      "signal": 2.508067574071029
+    },
+    {
+      "id": "sample29",
+      "concentration": 180.0,
+      "conc_unit": "umol / l",
+      "signal": 2.5402716516219606
+    },
+    {
+      "id": "sample30",
+      "concentration": 200.0,
+      "conc_unit": "umol / l",
+      "signal": 2.797688329559563
+    },
+    {
+      "id": "sample31",
+      "concentration": 200.0,
+      "conc_unit": "umol / l",
+      "signal": 2.7740449822104565
+    },
+    {
+      "id": "sample32",
+      "concentration": 200.0,
+      "conc_unit": "umol / l",
+      "signal": 2.8093409489677823
+    }
+  ],
+  "ph": 2.0,
+  "temperature": 25.0,
+  "temperature_unit": "C",
+  "created": "2023-09-16 16:14:41.674034",
+  "__source__": {
+    "root": "Standard"
+  }
+}

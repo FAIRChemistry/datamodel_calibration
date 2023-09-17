@@ -166,15 +166,12 @@ class Model(sdRDM.DataModel):
         params = copy.copy(self._params)
 
         for signal in signals:
-            if signal < cutoff:
-                params[equality.rhs] = signal
+            params[equality.rhs] = signal
 
-                # calculate all possible real roots for equation
-                roots.append(
-                    list(sp.roots(sp.real_root(root_eq.subs(params))).keys())
-                )
-            else:
-                roots.append([float("nan")])
+            # calculate all possible real roots for equation
+            roots.append(
+                list(sp.roots(sp.real_root(root_eq.subs(params))).keys())
+            )
 
         # reshape results, fill nan columns for signals above upper calibration range
         matrix = np.zeros(

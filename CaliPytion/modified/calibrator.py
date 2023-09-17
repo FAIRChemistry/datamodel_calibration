@@ -18,6 +18,7 @@ from .calibrationmodel import CalibrationModel
 from .calibrationrange import CalibrationRange
 from .fitstatistics import FitStatistics
 from ..ioutils.parsemodel import read_models_from_toml
+import os
 
 
 @forge_signature
@@ -110,8 +111,13 @@ class Calibrator(sdRDM.DataModel):
     def initialize_models(cls, models):
         # If models are not provided during initialization, read from TOML
         if not models:
-            toml_file_path = "CaliPytion/tools/models.toml"
-            models_data = toml.load(toml_file_path)["model"]
+            model_path = "tools/models.toml"
+
+            __path = os.path.dirname(__file__)
+            __path = __path.strip("modified")
+            __path = __path + model_path
+
+            models_data = toml.load(__path)["model"]
             models = [CalibrationModel(**model_data)
                       for model_data in models_data]
         return models
@@ -315,7 +321,7 @@ class Calibrator(sdRDM.DataModel):
 
         return fig.show(config=config)
 
-    def save_fitted_model(self, model: CalibrationModel) -> Standard:
+    def save_model(self, model: CalibrationModel) -> Standard:
 
         if not model.was_fitted:
             raise ValueError(

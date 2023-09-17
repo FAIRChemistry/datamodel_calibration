@@ -163,15 +163,12 @@ class CalibrationModel(sdRDM.DataModel):
         params = copy.copy(self._params)
 
         for signal in signals:
-            if signal < self.calibration_range.signal_upper:
-                params[equality.rhs] = signal
+            params[equality.rhs] = signal
 
-                # calculate all possible real roots for equation
-                roots.append(
-                    list(sp.roots(sp.real_root(root_eq.subs(params))).keys())
-                )
-            else:
-                roots.append([float("nan")])
+            # calculate all possible real roots for equation
+            roots.append(
+                list(sp.roots(sp.real_root(root_eq.subs(params))).keys())
+            )
 
         # reshape results, fill nan columns for signals above upper calibration range
         matrix = np.zeros(
@@ -181,7 +178,7 @@ class CalibrationModel(sdRDM.DataModel):
         for i, j in enumerate(roots):
             without_complex = [float("nan") if isinstance(value, sp.core.add.Add)
                                else value for value in j]
-
+            
             matrix[i][0: len(without_complex)] = without_complex
 
         roots = np.array(matrix).T
@@ -201,7 +198,7 @@ class CalibrationModel(sdRDM.DataModel):
         if not allow_extrapolation:
             correct_roots[(self.calibration_range.conc_lower > correct_roots) |
                           (self.calibration_range.conc_upper < correct_roots)] = float("nan")
-
+            
         return correct_roots.tolist()
 
     def _get_model_callable(

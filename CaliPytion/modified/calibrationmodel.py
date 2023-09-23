@@ -105,7 +105,6 @@ class CalibrationModel(sdRDM.DataModel):
         signals: List[float],
         init_param_value: float = 0.1,
     ):
-
         # define calibration bounds for the model
         self.calibration_range = CalibrationRange(
             conc_lower=min(concentrations),
@@ -143,14 +142,14 @@ class CalibrationModel(sdRDM.DataModel):
         return lmfit_result
 
     def calculate(
-            self,
-            signals: List[float],
-            allow_extrapolation: bool = False,
+        self,
+        signals: List[float],
+        allow_extrapolation: bool = False,
     ) -> List[float]:
-
         if not self.was_fitted:
             raise ValueError(
-                "Model was not fitted to calibration data. Fit model first")
+                "Model was not fitted to calibration data. Fit model first"
+            )
 
         if not isinstance(signals, np.ndarray):
             signals = np.array(signals)
@@ -166,20 +165,21 @@ class CalibrationModel(sdRDM.DataModel):
             params[equality.rhs] = signal
 
             # calculate all possible real roots for equation
-            roots.append(
-                list(sp.roots(sp.real_root(root_eq.subs(params))).keys())
-            )
+            roots.append(list(sp.roots(sp.real_root(root_eq.subs(params))).keys()))
 
         # reshape results, fill nan columns for signals above upper calibration range
-        matrix = np.zeros(
-            [len(roots), len(max(roots, key=lambda x: len(roots)))]) * np.nan
+        matrix = (
+            np.zeros([len(roots), len(max(roots, key=lambda x: len(roots)))]) * np.nan
+        )
 
         # replace complex solutions with nans
         for i, j in enumerate(roots):
-            without_complex = [float("nan") if isinstance(value, sp.core.add.Add)
-                               else value for value in j]
-            
-            matrix[i][0: len(without_complex)] = without_complex
+            without_complex = [
+                float("nan") if isinstance(value, sp.core.add.Add) else value
+                for value in j
+            ]
+
+            matrix[i][0 : len(without_complex)] = without_complex
 
         roots = np.array(matrix).T
 
@@ -188,23 +188,25 @@ class CalibrationModel(sdRDM.DataModel):
         for result in roots:
             n_values_in_calibration_range.append(
                 (
-                    (self.calibration_range.conc_lower < result) &
-                    (result < self.calibration_range.conc_upper)
+                    (self.calibration_range.conc_lower < result)
+                    & (result < self.calibration_range.conc_upper)
                 ).sum()
             )
 
         correct_roots = roots[np.nanargmax(n_values_in_calibration_range)]
 
         if not allow_extrapolation:
-            correct_roots[(self.calibration_range.conc_lower > correct_roots) |
-                          (self.calibration_range.conc_upper < correct_roots)] = float("nan")
-            
+            correct_roots[
+                (self.calibration_range.conc_lower > correct_roots)
+                | (self.calibration_range.conc_upper < correct_roots)
+            ] = float("nan")
+
         return correct_roots.tolist()
 
     def _get_model_callable(
-            self,
-            solve_for: str,
-            dependent_variable: str,
+        self,
+        solve_for: str,
+        dependent_variable: str,
     ) -> Tuple[callable, List[str]]:
         """Converts the equation string to a callable function.
 
@@ -221,7 +223,7 @@ class CalibrationModel(sdRDM.DataModel):
         variables = [str(x) for x in list(equality.free_symbols)]
         variables.insert(
             0, variables.pop(variables.index(dependent_variable))
-        )   # dependent variable needs to be in first pos for lmfit --> change of variable order
+        )  # dependent variable needs to be in first pos for lmfit --> change of variable order
 
         _callable = sp.lambdify(variables, equality)
 
@@ -240,12 +242,11 @@ class CalibrationModel(sdRDM.DataModel):
         return equality
 
     def _extract_lmfit_statistics(self, lmfit_result: ModelResult):
-
         statistics = FitStatistics(
             aic=lmfit_result.aic,
             bic=lmfit_result.bic,
             r2=lmfit_result.rsquared,
-            rmsd=self._calculate_rmsd(lmfit_result.residual)
+            rmsd=self._calculate_rmsd(lmfit_result.residual),
         )
 
         self.statistics = statistics
@@ -256,10 +257,9 @@ class CalibrationModel(sdRDM.DataModel):
         return float(np.sqrt(sum(residuals**2) / len(residuals)))
 
     def _extract_parameters(
-            self,
-            lmfit_result: ModelResult,
+        self,
+        lmfit_result: ModelResult,
     ):
-
         for name, param in lmfit_result.params.items():
             self.add_to_parameters(
                 name=name,
@@ -276,7 +276,6 @@ class CalibrationModel(sdRDM.DataModel):
 
     @property
     def signal_callable(self):
-
         _callable, _ = self._get_model_callable(
             solve_for="signal",
             dependent_variable="concentration",
@@ -292,7 +291,6 @@ class CalibrationModel(sdRDM.DataModel):
 
     @property
     def concentration_callable(self):
-
         _callable, _ = self._get_model_callable(
             solve_for="concentration",
             dependent_variable="signal",
@@ -306,5 +304,7 @@ class CalibrationModel(sdRDM.DataModel):
 
         return function
 
-    def _get_residuals(self, concentrations: List[float], signals: List[float]) -> np.ndarray:
+    def _get_residuals(
+        self, concentrations: List[float], signals: List[float]
+    ) -> np.ndarray:
         return np.array(signals) - self.signal_callable(concentrations, **self._params)

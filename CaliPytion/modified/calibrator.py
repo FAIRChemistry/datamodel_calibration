@@ -9,6 +9,7 @@ from typing import List, Optional, Any
 from pydantic import Field, validator
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
+from IPython.display import display
 
 from astropy.units import UnitBase
 
@@ -118,8 +119,7 @@ class Calibrator(sdRDM.DataModel):
             __path = __path + model_path
 
             models_data = toml.load(__path)["model"]
-            models = [CalibrationModel(**model_data)
-                      for model_data in models_data]
+            models = [CalibrationModel(**model_data) for model_data in models_data]
         return models
 
     def __init__(self, **data: Any):
@@ -127,13 +127,12 @@ class Calibrator(sdRDM.DataModel):
         self._apply_cutoff()
 
     def _apply_cutoff(self):
-
         if self.cutoff:
-            below_cutoff_idx = [idx for idx,
-                                signal in enumerate(self.signals) if signal < self.cutoff]
+            below_cutoff_idx = [
+                idx for idx, signal in enumerate(self.signals) if signal < self.cutoff
+            ]
 
-            self.concentrations = [self.concentrations[idx]
-                                   for idx in below_cutoff_idx]
+            self.concentrations = [self.concentrations[idx] for idx in below_cutoff_idx]
             self.signals = [self.signals[idx] for idx in below_cutoff_idx]
 
     @classmethod
@@ -143,19 +142,20 @@ class Calibrator(sdRDM.DataModel):
         cutoff: float = None,
         **kwargs,
     ):
-
         # get concentrations and corresponding signals as lists
         concentrations = [sample.concentration for sample in standard.samples]
         signals = [sample.signal for sample in standard.samples]
         if not len(concentrations) == len(signals):
-            raise ValueError(
-                "Number of concentrations and signals must be the same"
-            )
+            raise ValueError("Number of concentrations and signals must be the same")
 
         # verify that all samples have the same concentration unit
-        if not all([sample.conc_unit == standard.samples[0].conc_unit for sample in standard.samples]):
-            raise ValueError(
-                "All samples must have the same concentration unit")
+        if not all(
+            [
+                sample.conc_unit == standard.samples[0].conc_unit
+                for sample in standard.samples
+            ]
+        ):
+            raise ValueError("All samples must have the same concentration unit")
         conc_unit = standard.samples[0].conc_unit
 
         return cls(
@@ -168,11 +168,12 @@ class Calibrator(sdRDM.DataModel):
         )
 
     def fit_models(self, init_param_value: float = 0.1):
-
         for model in self.models:
-            model.fit(self.concentrations, self.signals,
-                      init_param_value=init_param_value)
+            model.fit(
+                self.concentrations, self.signals, init_param_value=init_param_value
+            )
 
+        display(self.fit_statistics)
         return self.fit_statistics
 
     def _get_models_overview(self) -> pd.DataFrame:
@@ -183,13 +184,11 @@ class Calibrator(sdRDM.DataModel):
 
         # check if models have been fitted
         if not all([model.was_fitted for model in self.models]):
-            raise ValueError(
-                "Models have not been fitted yet. Run 'fit_models' first.")
+            raise ValueError("Models have not been fitted yet. Run 'fit_models' first.")
 
         # get model statistics
         model_stats = []
         for model in self.models:
-
             if model.was_fitted:
                 model_stats.append(
                     {
@@ -210,14 +209,9 @@ class Calibrator(sdRDM.DataModel):
                 )
 
         # create and format dataframe
-        df = pd.DataFrame(model_stats).set_index(
-            "Model Name").sort_values("AIC")
+        df = pd.DataFrame(model_stats).set_index("Model Name").sort_values("AIC")
 
-        decimal_formatting = {
-            'RMSD': '{:.4f}',
-            'R squared': '{:.4f}',
-            'AIC': '{:.0f}'
-        }
+        decimal_formatting = {"RMSD": "{:.4f}", "R squared": "{:.4f}", "AIC": "{:.0f}"}
 
         return df.style.format(decimal_formatting).background_gradient(cmap="Blues")
 
@@ -226,7 +220,6 @@ class Calibrator(sdRDM.DataModel):
         return self._get_models_overview()
 
     def visualize(self, model: CalibrationModel):
-
         fig = make_subplots(
             rows=1,
             cols=2,
@@ -258,20 +251,20 @@ class Calibrator(sdRDM.DataModel):
             len(self.concentrations) * 5,
         )
 
-        model_data = model.signal_callable(
-            self.concentrations, **model._params)
+        model_data = model.signal_callable(self.concentrations, **model._params)
 
-        model_residuals = model._get_residuals(
-            self.concentrations, self.signals)
+        model_residuals = model._get_residuals(self.concentrations, self.signals)
 
-        smooth_model_data = model.signal_callable(
-            smooth_x, **model._params)
-        percentual_residuals = np.divide(
-            model_residuals,
-            model_data,
-            out=np.zeros_like(model_residuals),
-            where=model_data != 0,
-        ) * 100
+        smooth_model_data = model.signal_callable(smooth_x, **model._params)
+        percentual_residuals = (
+            np.divide(
+                model_residuals,
+                model_data,
+                out=np.zeros_like(model_residuals),
+                where=model_data != 0,
+            )
+            * 100
+        )
 
         fig.add_trace(
             go.Scatter(
@@ -322,10 +315,8 @@ class Calibrator(sdRDM.DataModel):
         return fig.show(config=config)
 
     def save_model(self, model: CalibrationModel) -> Standard:
-
         if not model.was_fitted:
-            raise ValueError(
-                "Model has not been fitted yet. Run 'fit_models' first.")
+            raise ValueError("Model has not been fitted yet. Run 'fit_models' first.")
 
         self.standard.model_result = model
 

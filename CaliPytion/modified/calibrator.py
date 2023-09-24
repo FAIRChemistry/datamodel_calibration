@@ -167,14 +167,19 @@ class Calibrator(sdRDM.DataModel):
             **kwargs,
         )
 
-    def fit_models(self, init_param_value: float = 0.1):
+    def fit_models(
+        self, init_param_value: float = 0.1, display_statistics: bool = True
+    ):
+        models = []
         for model in self.models:
-            model.fit(
-                self.concentrations, self.signals, init_param_value=init_param_value
+            models.append(
+                model.fit(
+                    self.concentrations, self.signals, init_param_value=init_param_value
+                )
             )
-
-        display(self.fit_statistics)
-        return self.fit_statistics
+        # changes display beha
+        if display_statistics:
+            display(self.fit_statistics)
 
     def _get_models_overview(self) -> pd.DataFrame:
         """

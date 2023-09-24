@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 
 from plotly.subplots import make_subplots
+import plotly.express as px
 from plotly import graph_objects as go
 from typing import List, Optional, Any
 from pydantic import Field, validator
@@ -177,7 +178,6 @@ class Calibrator(sdRDM.DataModel):
                     self.concentrations, self.signals, init_param_value=init_param_value
                 )
             )
-        # changes display beha
         if display_statistics:
             display(self.fit_statistics)
 
@@ -224,27 +224,29 @@ class Calibrator(sdRDM.DataModel):
     def fit_statistics(self):
         return self._get_models_overview()
 
-    def visualize(self, model: CalibrationModel):
+    def visualize(self):
         fig = make_subplots(
             rows=1,
             cols=2,
-            x_title=f"{self.standard.name} concentration ({self.conc_unit})",
+            x_title=f"{self.standard.name} / {self._format_unit(str(self.conc_unit))}",
             subplot_titles=[
                 "Standard",
                 "Model Residuals",
             ],
             horizontal_spacing=0.15,
         )
+        colors = px.colors.qualitative.Plotly
 
+        buttons = []
         fig.add_trace(
             go.Scatter(
                 x=self.concentrations,
                 y=self.signals,
-                name=f"{self.standard.name}",
+                name=f"{self.standard.name} standard",
                 mode="markers",
-                marker=dict(color="#1f77b4"),
-                hoverinfo="skip",
+                marker=dict(color="#000000"),
                 visible=True,
+                customdata=[f"{self.standard.name} standard"],
             ),
             col=1,
             row=1,
@@ -255,53 +257,117 @@ class Calibrator(sdRDM.DataModel):
             self.concentrations[-1],
             len(self.concentrations) * 5,
         )
+        for model, color in zip(self.models, colors):
+            model_data = model.signal_callable(self.concentrations, **model._params)
+            model_residuals = model._get_residuals(self.concentrations, self.signals)
 
-        model_data = model.signal_callable(self.concentrations, **model._params)
-
-        model_residuals = model._get_residuals(self.concentrations, self.signals)
-
-        smooth_model_data = model.signal_callable(smooth_x, **model._params)
-        percentual_residuals = (
-            np.divide(
-                model_residuals,
-                model_data,
-                out=np.zeros_like(model_residuals),
-                where=model_data != 0,
+            smooth_model_data = model.signal_callable(smooth_x, **model._params)
+            percentual_residuals = (
+                np.divide(
+                    model_residuals,
+                    model_data,
+                    out=np.zeros_like(model_residuals),
+                    where=model_data != 0,
+                )
+                * 100
             )
-            * 100
+            # Add model traces
+            fig.add_trace(
+                go.Scatter(
+                    x=smooth_x,
+                    y=smooth_model_data,
+                    name=f"{model.name} model",
+                    mode="lines",
+                    marker=dict(color=color),
+                    visible=False,
+                    customdata=[f"{model.name} model"],
+                ),
+                col=1,
+                row=1,
+            )
+
+            # Add residual traces
+            fig.add_trace(
+                go.Scatter(
+                    x=self.concentrations,
+                    y=percentual_residuals,
+                    name="Residuals",
+                    mode="markers",
+                    marker=dict(color=color),
+                    hoverinfo="skip",
+                    visible=False,
+                    customdata=[f"{model.name} model"],
+                ),
+                col=2,
+                row=1,
+            )
+
+        buttons.append(
+            dict(
+                method="update",
+                args=[
+                    dict(
+                        visible=self._visibility_mask(
+                            visible_traces=[f"{self.standard.name} standard"],
+                            fig_data=fig.data,
+                        )
+                    )
+                ],
+                label=f"{self.standard.name} standard",
+            ),
         )
 
-        fig.add_trace(
-            go.Scatter(
-                x=smooth_x,
-                y=smooth_model_data,
-                name=f"{model.name} model",
-                mode="lines",
-                marker=dict(color="#1f77b4"),
-                # marker=dict(color=self._HEX_to_RGBA_string(color)),
-                # showlegend=show_legend,
-                # customdata=["replicates"],
-                hoverinfo="skip",
-                visible=True,
-            ),
-            col=1,
-            row=1,
+        for model in self.models:
+            buttons.append(
+                dict(
+                    method="update",
+                    args=[
+                        dict(
+                            visible=self._visibility_mask(
+                                visible_traces=[
+                                    f"{model.name} model",
+                                    f"{self.standard.name} standard",
+                                ],
+                                fig_data=fig.data,
+                            ),
+                            title=f"{model.name} model",
+                        )
+                    ],
+                    label=f"{model.name} model",
+                )
+            )
+
+        all_traces = [f"{model.name} model" for model in self.models]
+        all_traces.append(f"{self.standard.name} standard")
+        buttons.append(
+            dict(
+                method="update",
+                label="all",
+                args=[
+                    dict(
+                        visible=self._visibility_mask(
+                            visible_traces=all_traces,
+                            fig_data=fig.data,
+                        )
+                    )
+                ],
+            )
         )
-        fig.add_trace(
-            go.Scatter(
-                x=self.concentrations,
-                y=percentual_residuals,
-                name="Residuals",
-                mode="markers",
-                marker=dict(color="#d62728"),
-                hoverinfo="skip",
-                visible=True,
-            ),
-            col=2,
-            row=1,
-        )
-        fig.add_hline(
-            y=0, line_dash="dot", row=1, col=2, line_color="#000000", line_width=2
+
+        fig.update_layout(
+            updatemenus=[
+                dict(
+                    type="buttons",
+                    direction="right",
+                    active=0,
+                    x=0,
+                    y=1.2,
+                    xanchor="left",
+                    yanchor="top",
+                    buttons=buttons,
+                )
+            ],
+            margin=dict(l=20, r=20, t=100, b=60),
         )
 
         fig.update_yaxes(title_text="Signal (a.u.)", row=1, col=1)
@@ -310,7 +376,7 @@ class Calibrator(sdRDM.DataModel):
         config = {
             "toImageButtonOptions": {
                 "format": "svg",  # one of png, svg, jpeg, webp
-                "filename": f"{model.name}_calibration_curve",
+                "filename": f"{self.standard.name}_calibration_curve",
                 # "height": 600,
                 # "width": 700,
                 "scale": 1,  # Multiply title/legend/axis/canvas sizes by this factor
@@ -326,3 +392,19 @@ class Calibrator(sdRDM.DataModel):
         self.standard.model_result = model
 
         return self.standard
+
+    @staticmethod
+    def _visibility_mask(visible_traces: list, fig_data: list) -> list:
+        return [
+            any(fig["customdata"][0] == trace for trace in visible_traces)
+            for fig in fig_data
+        ]
+
+    @staticmethod
+    def _format_unit(unit: str) -> str:
+        unit = unit.replace(" / l", " L<sup>-1</sup>")
+        unit = unit.replace("1 / s", "s<sup>-1</sup>")
+        unit = unit.replace("1 / min", "min<sup>-1</sup>")
+        unit = unit.replace("umol", "µmol")
+        unit = unit.replace("ug", "µg")
+        return unit

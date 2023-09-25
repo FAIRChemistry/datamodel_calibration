@@ -3,6 +3,7 @@ import copy
 import numpy as np
 import sympy as sp
 from lmfit import Model as LmfitModel
+import math
 from lmfit.model import ModelResult
 
 from typing import List, Optional, Tuple, Dict, Any
@@ -162,6 +163,10 @@ class CalibrationModel(sdRDM.DataModel):
         params = copy.copy(self._params)
 
         for signal in signals:
+            if math.isnan(signal):
+                roots.append([float("nan")])
+                continue
+
             params[equality.rhs] = signal
 
             # calculate all possible real roots for equation

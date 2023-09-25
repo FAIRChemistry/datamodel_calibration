@@ -224,6 +224,25 @@ class Calibrator(sdRDM.DataModel):
     def fit_statistics(self):
         return self._get_models_overview()
 
+    def _traces_from_standard(self, fig: go.Figure):
+        for sample in self.standard.samples:
+            fig.add_trace(
+                go.Scatter(
+                    x=[sample.concentration],
+                    y=[sample.signal],
+                    name=sample.id,
+                    mode="markers",
+                    marker=dict(color="#000000"),
+                    visible=True,
+                    customdata=[f"{self.standard.name} standard"],
+                    showlegend=False,
+                ),
+                col=1,
+                row=1,
+            )
+
+        return fig
+
     def visualize(self):
         fig = make_subplots(
             rows=1,
@@ -238,19 +257,22 @@ class Calibrator(sdRDM.DataModel):
         colors = px.colors.qualitative.Plotly
 
         buttons = []
-        fig.add_trace(
-            go.Scatter(
-                x=self.concentrations,
-                y=self.signals,
-                name=f"{self.standard.name} standard",
-                mode="markers",
-                marker=dict(color="#000000"),
-                visible=True,
-                customdata=[f"{self.standard.name} standard"],
-            ),
-            col=1,
-            row=1,
-        )
+        if self.standard.samples:
+            fig = self._traces_from_standard(fig)
+        else:
+            fig.add_trace(
+                go.Scatter(
+                    x=self.concentrations,
+                    y=self.signals,
+                    name=f"{self.standard.name} standard",
+                    mode="markers",
+                    marker=dict(color="#000000"),
+                    visible=True,
+                    customdata=[f"{self.standard.name} standard"],
+                ),
+                col=1,
+                row=1,
+            )
 
         smooth_x = np.linspace(
             self.concentrations[0],
@@ -370,8 +392,16 @@ class Calibrator(sdRDM.DataModel):
             margin=dict(l=20, r=20, t=100, b=60),
         )
 
-        fig.update_yaxes(title_text="Signal (a.u.)", row=1, col=1)
+        if self.standard:
+            fig.update_yaxes(
+                title_text=f"E<sub>{self.standard.wavelength:.0f} nm <sub>",
+                row=1,
+                col=1,
+            )
+        else:
+            fig.update_yaxes(title_text="Signal (a.u.)", row=1, col=1)
         fig.update_yaxes(title_text="Residuals (%)", row=1, col=2)
+        fig.update_traces(hovertemplate="Signal: %{y:.2f}")
 
         config = {
             "toImageButtonOptions": {

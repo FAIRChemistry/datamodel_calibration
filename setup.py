@@ -16,9 +16,9 @@ setup(
         "pandas",
         "sympy",
         "plotly",
-        "pyenzyme",
         "pydantic==1.8.2",
         "scipy",
         "nbformat",
-        "setuptools"]
+        "setuptools",
+    ],
 )

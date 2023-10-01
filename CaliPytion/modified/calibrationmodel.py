@@ -133,7 +133,7 @@ class CalibrationModel(sdRDM.DataModel):
         parameters = dict(zip(variables, [init_param_value] * len(variables)))
         parameters["concentration"] = concentrations
 
-        lmfit_result = lmfit_model.fit(data=signals, **parameters)
+        lmfit_result = lmfit_model.fit(data=signals, **parameters, nan_policy="omit")
 
         # extract fit statistics
         self.was_fitted = lmfit_result.success

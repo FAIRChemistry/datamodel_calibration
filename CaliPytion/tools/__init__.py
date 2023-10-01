@@ -1,2 +1,1 @@
-from .calibrationmodel import CalibrationModel
-from .standardcurve import StandardCurve
+from .equations import linear, quadratic, cubic

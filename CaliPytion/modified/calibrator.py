@@ -111,17 +111,13 @@ class Calibrator(sdRDM.DataModel):
 
     @validator("models", pre=True, always=True)
     def initialize_models(cls, models):
-        # If models are not provided during initialization, read from TOML
+        # If models are not provided during initialization, import from tools.equations.py
         if not models:
-            model_path = "tools/models.toml"
+            from CaliPytion.tools.equations import linear, quadratic, cubic
 
-            __path = os.path.dirname(__file__)
-            __path = __path.strip("modified")
-            __path = __path + model_path
+            models = [linear, quadratic, cubic]
 
-            models_data = toml.load(__path)["model"]
-            models = [CalibrationModel(**model_data) for model_data in models_data]
-        return models
+            return models
 
     def __init__(self, **data: Any):
         super().__init__(**data)
@@ -135,6 +131,23 @@ class Calibrator(sdRDM.DataModel):
 
             self.concentrations = [self.concentrations[idx] for idx in below_cutoff_idx]
             self.signals = [self.signals[idx] for idx in below_cutoff_idx]
+
+    def get_model(self, model_name: str) -> CalibrationModel:
+        """
+        This method returns a model by its name
+
+        Args:
+            model_name (str): Name of the model to be returned
+
+        Returns:
+            CalibrationModel: Object of type 'CalibrationModel'
+        """
+
+        for model in self.models:
+            if model.name == model_name:
+                return model
+
+        raise ValueError(f"Model '{model_name}' not found")
 
     @classmethod
     def from_standard(

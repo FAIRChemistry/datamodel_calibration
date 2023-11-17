@@ -231,7 +231,12 @@ class Calibrator(sdRDM.DataModel):
 
         decimal_formatting = {"RMSD": "{:.4f}", "R squared": "{:.4f}", "AIC": "{:.0f}"}
 
-        return df.style.format(decimal_formatting).background_gradient(cmap="Blues")
+        return (
+            df.style.format(decimal_formatting, na_rep="")
+            .background_gradient(cmap="Blues")
+            .background_gradient(cmap="Blues", subset=["AIC"], gmap=-df["AIC"])
+            .background_gradient(cmap="Blues", subset=["RMSD"], gmap=-df["RMSD"])
+        )
 
     @property
     def fit_statistics(self):

@@ -293,8 +293,8 @@ class Calibrator(sdRDM.DataModel):
             )
 
         smooth_x = np.linspace(
-            self.concentrations[0],
-            self.concentrations[-1],
+            min(self.concentrations),
+            max(self.concentrations),
             len(self.concentrations) * 5,
         )
         for model, color in zip(self.models, colors):

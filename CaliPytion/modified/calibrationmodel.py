@@ -4,7 +4,7 @@ import numpy as np
 import sympy as sp
 from lmfit import Model as LmfitModel
 import math
-from lmfit.model import ModelResult, fit_report
+from lmfit.model import ModelResult
 
 from typing import List, Optional, Tuple, Dict, Any
 from pydantic import Field
@@ -134,8 +134,6 @@ class CalibrationModel(sdRDM.DataModel):
         parameters["concentration"] = concentrations
 
         lmfit_result = lmfit_model.fit(data=signals, **parameters, nan_policy="omit")
-
-        print(fit_report(lmfit_result))
 
         # extract fit statistics
         self.was_fitted = lmfit_result.success

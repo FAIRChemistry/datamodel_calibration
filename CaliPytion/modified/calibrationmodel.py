@@ -4,7 +4,7 @@ import numpy as np
 import sympy as sp
 from lmfit import Model as LmfitModel
 import math
-from lmfit.model import ModelResult
+from lmfit.model import ModelResult, fit_report
 
 from typing import List, Optional, Tuple, Dict, Any
 from pydantic import Field
@@ -134,6 +134,8 @@ class CalibrationModel(sdRDM.DataModel):
         parameters["concentration"] = concentrations
 
         lmfit_result = lmfit_model.fit(data=signals, **parameters, nan_policy="omit")
+
+        print(fit_report(lmfit_result))
 
         # extract fit statistics
         self.was_fitted = lmfit_result.success
@@ -265,15 +267,20 @@ class CalibrationModel(sdRDM.DataModel):
         self,
         lmfit_result: ModelResult,
     ):
+        parameters = []
         for name, param in lmfit_result.params.items():
-            self.add_to_parameters(
-                name=name,
-                value=param.value,
-                init_value=param.init_value,
-                standard_error=param.stderr,
-                lower_bound=param.min,
-                upper_bound=param.max,
+            parameters.append(
+                Parameter(
+                    name=name,
+                    value=param.value,
+                    init_value=param.init_value,
+                    standard_error=param.stderr,
+                    lower_bound=param.min,
+                    upper_bound=param.max,
+                )
             )
+
+        self.parameters = parameters
 
     @property
     def _params(self) -> Dict[str, float]:

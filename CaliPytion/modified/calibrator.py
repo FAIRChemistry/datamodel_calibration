@@ -434,6 +434,9 @@ class Calibrator(sdRDM.DataModel):
         return fig.show(config=config)
 
     def save_model(self, model: CalibrationModel) -> Standard:
+        if isinstance(model, str):
+            model = self.get_model(model)
+
         if not model.was_fitted:
             raise ValueError("Model has not been fitted yet. Run 'fit_models' first.")
 

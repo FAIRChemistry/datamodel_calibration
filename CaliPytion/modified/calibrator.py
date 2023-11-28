@@ -1,5 +1,4 @@
 import sdRDM
-import toml
 import pandas as pd
 import numpy as np
 
@@ -302,15 +301,7 @@ class Calibrator(sdRDM.DataModel):
             model_residuals = model._get_residuals(self.concentrations, self.signals)
 
             smooth_model_data = model.signal_callable(smooth_x, **model._params)
-            percentual_residuals = (
-                np.divide(
-                    model_residuals,
-                    model_data,
-                    out=np.zeros_like(model_residuals),
-                    where=model_data != 0,
-                )
-                * 100
-            )
+
             # Add model traces
             fig.add_trace(
                 go.Scatter(
@@ -330,13 +321,26 @@ class Calibrator(sdRDM.DataModel):
             fig.add_trace(
                 go.Scatter(
                     x=self.concentrations,
-                    y=percentual_residuals,
+                    y=model_residuals,
                     name="Residuals",
                     mode="markers",
                     marker=dict(color=color),
                     hoverinfo="skip",
                     visible=False,
                     customdata=[f"{model.name} model"],
+                ),
+                col=2,
+                row=1,
+            )
+
+            fig.add_trace(
+                go.Scatter(
+                    x=self.concentrations,
+                    y=np.zeros(len(self.concentrations)),
+                    line=dict(color="grey", width=2, dash="dash"),
+                    visible=True,
+                    customdata=[f"{model.name} model"],
+                    showlegend=False,
                 ),
                 col=2,
                 row=1,
@@ -408,6 +412,7 @@ class Calibrator(sdRDM.DataModel):
                 )
             ],
             margin=dict(l=20, r=20, t=100, b=60),
+            template="simple_white",
         )
 
         if self.standard:
@@ -416,9 +421,15 @@ class Calibrator(sdRDM.DataModel):
                 row=1,
                 col=1,
             )
+            fig.update_yaxes(
+                title_text=f"Residuals E<sub>{self.standard.wavelength:.0f} nm <sub>",
+                row=1,
+                col=2,
+            )
+
         else:
             fig.update_yaxes(title_text="Signal (a.u.)", row=1, col=1)
-        fig.update_yaxes(title_text="Residuals (%)", row=1, col=2)
+            fig.update_yaxes(title_text="Residuals signal (a.u.)", row=1, col=1)
         fig.update_traces(hovertemplate="Signal: %{y:.2f}")
 
         config = {

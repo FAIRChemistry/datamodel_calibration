@@ -8,7 +8,6 @@ from .parameter import Parameter
 from .spectrum import Spectrum
 
 __doc__ = ""
-
 __all__ = [
     "Calibrator",
     "Standard",

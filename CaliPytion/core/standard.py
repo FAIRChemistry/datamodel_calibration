@@ -1,20 +1,17 @@
 import sdRDM
 
 from typing import List, Optional
-from pydantic import Field
+from pydantic import Field, PrivateAttr
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
-
 from astropy.units import UnitBase
 from datetime import datetime as Datetime
-
 from .sample import Sample
 from .calibrationmodel import CalibrationModel
 
 
 @forge_signature
 class Standard(sdRDM.DataModel):
-
     """Description of a standard curve for an chemical species"""
 
     id: Optional[str] = Field(
@@ -65,8 +62,14 @@ class Standard(sdRDM.DataModel):
     )
 
     model_result: Optional[CalibrationModel] = Field(
-        default=CalibrationModel(),
         description="Model which was used for concentration determination",
+        default_factory=CalibrationModel,
+    )
+    __repo__: Optional[str] = PrivateAttr(
+        default="https://github.com/FAIRChemistry/CaliPytion"
+    )
+    __commit__: Optional[str] = PrivateAttr(
+        default="246e3b598190885c6884949bbc7ef1801bcdd0d7"
     )
 
     def add_to_samples(
@@ -85,16 +88,12 @@ class Standard(sdRDM.DataModel):
             conc_unit (): Concentration unit. Defaults to None
             signal (): Measured signals at a given concentration of the species. Defaults to None
         """
-
         params = {
             "concentration": concentration,
             "conc_unit": conc_unit,
             "signal": signal,
         }
-
         if id is not None:
             params["id"] = id
-
         self.samples.append(Sample(**params))
-
         return self.samples[-1]

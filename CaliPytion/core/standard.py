@@ -8,8 +8,8 @@ from sdRDM.base.utils import forge_signature, IDGenerator
 from astropy.units import UnitBase
 from datetime import datetime as Datetime
 
-from .sample import Sample
 from .calibrationmodel import CalibrationModel
+from .sample import Sample
 
 
 @forge_signature

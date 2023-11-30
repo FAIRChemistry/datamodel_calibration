@@ -1,9 +1,7 @@
 from .calibrator import Calibrator
 from .standard import Standard
 from .sample import Sample
-from .calibrationmodel import CalibrationModel
-from .calibrationrange import CalibrationRange
-from .fitstatistics import FitStatistics
+from .model import Model
 from .parameter import Parameter
 from .spectrum import Spectrum
 
@@ -13,9 +11,7 @@ __all__ = [
     "Calibrator",
     "Standard",
     "Sample",
-    "CalibrationModel",
-    "CalibrationRange",
-    "FitStatistics",
+    "Model",
     "Parameter",
     "Spectrum",
 ]

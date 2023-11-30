@@ -69,7 +69,7 @@ class Standard(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="a596b28dd6e7d6dc47a30341f1f04cb4b78230a4"
+        default="246e3b598190885c6884949bbc7ef1801bcdd0d7"
     )
 
     def add_to_samples(

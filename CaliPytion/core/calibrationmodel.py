@@ -10,8 +10,8 @@ from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 from lmfit import Model as LmfitModel
 from lmfit.model import ModelResult
-from .parameter import Parameter
 from .calibrationrange import CalibrationRange
+from .parameter import Parameter
 from .fitstatistics import FitStatistics
 
 
@@ -61,7 +61,7 @@ class CalibrationModel(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="a596b28dd6e7d6dc47a30341f1f04cb4b78230a4"
+        default="246e3b598190885c6884949bbc7ef1801bcdd0d7"
     )
 
     def add_to_parameters(

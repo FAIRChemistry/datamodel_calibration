@@ -4,10 +4,10 @@ from typing import List, Optional
 from pydantic import Field, PrivateAttr
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
-from astropy.units import UnitBase
 from datetime import datetime as Datetime
-from .sample import Sample
+from astropy.units import UnitBase
 from .calibrationmodel import CalibrationModel
+from .sample import Sample
 
 
 @forge_signature
@@ -69,7 +69,7 @@ class Standard(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="246e3b598190885c6884949bbc7ef1801bcdd0d7"
+        default="071fa1dc4e3cdc585116bfd2049404e9b95560c4"
     )
 
     def add_to_samples(

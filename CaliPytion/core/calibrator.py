@@ -1,28 +1,25 @@
 import sdRDM
+
 import pandas as pd
 import numpy as np
-
-from plotly.subplots import make_subplots
 import plotly.express as px
-from plotly import graph_objects as go
-from typing import List, Optional, Any
-from pydantic import Field, validator
+from typing import Any, List, Optional
+from pydantic import PrivateAttr, Field, validator
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
-from IPython.display import display
-
 from astropy.units import UnitBase
-
-from .parameter import Parameter
+from plotly.subplots import make_subplots
+from plotly import graph_objects as go
+from IPython.display import display
 from .standard import Standard
 from .calibrationmodel import CalibrationModel
+from .parameter import Parameter
 from .calibrationrange import CalibrationRange
 from .fitstatistics import FitStatistics
 
 
 @forge_signature
 class Calibrator(sdRDM.DataModel):
-
     """"""
 
     id: Optional[str] = Field(
@@ -32,8 +29,8 @@ class Calibrator(sdRDM.DataModel):
     )
 
     standard: Optional[Standard] = Field(
-        default=Standard(),
         description="Standard data of a chemical species",
+        default_factory=Standard,
     )
 
     concentrations: List[float] = Field(
@@ -66,6 +63,12 @@ class Calibrator(sdRDM.DataModel):
             " will be ignored during calibration"
         ),
     )
+    __repo__: Optional[str] = PrivateAttr(
+        default="https://github.com/FAIRChemistry/CaliPytion"
+    )
+    __commit__: Optional[str] = PrivateAttr(
+        default="a596b28dd6e7d6dc47a30341f1f04cb4b78230a4"
+    )
 
     def add_to_models(
         self,
@@ -86,10 +89,9 @@ class Calibrator(sdRDM.DataModel):
             equation (): Equation of the calibration model. Defaults to None
             parameters (): Parameters of the calibration model equation. Defaults to ListPlus()
             was_fitted (): Indicates if the model was fitted to the data. Defaults to None
-            range (): Concentration and signal bounds in which the calibration model is valid.. Defaults to None
+            calibration_range (): Concentration and signal bounds in which the calibration model is valid.. Defaults to None
             statistics (): Fit statistics of the calibration model. Defaults to None
         """
-
         params = {
             "name": name,
             "equation": equation,
@@ -98,12 +100,9 @@ class Calibrator(sdRDM.DataModel):
             "calibration_range": calibration_range,
             "statistics": statistics,
         }
-
         if id is not None:
             params["id"] = id
-
         self.models.append(CalibrationModel(**params))
-
         return self.models[-1]
 
     @validator("models", pre=True, always=True)
@@ -160,12 +159,10 @@ class Calibrator(sdRDM.DataModel):
             raise ValueError("Number of concentrations and signals must be the same")
 
         # verify that all samples have the same concentration unit
-        if not all(
-            [
-                sample.conc_unit == standard.samples[0].conc_unit
-                for sample in standard.samples
-            ]
-        ):
+        if not all([
+            sample.conc_unit == standard.samples[0].conc_unit
+            for sample in standard.samples
+        ]):
             raise ValueError("All samples must have the same concentration unit")
         conc_unit = standard.samples[0].conc_unit
 
@@ -205,23 +202,19 @@ class Calibrator(sdRDM.DataModel):
         model_stats = []
         for model in self.models:
             if model.was_fitted:
-                model_stats.append(
-                    {
-                        "Model Name": model.name,
-                        "AIC": round(model.statistics.aic),
-                        "R squared": round(model.statistics.r2, 4),
-                        "RMSD": round(model.statistics.rmsd, 4),
-                    }
-                )
+                model_stats.append({
+                    "Model Name": model.name,
+                    "AIC": round(model.statistics.aic),
+                    "R squared": round(model.statistics.r2, 4),
+                    "RMSD": round(model.statistics.rmsd, 4),
+                })
             else:
-                model_stats.append(
-                    {
-                        "Model Name": model.name,
-                        "AIC": "-",
-                        "R squared": "-",
-                        "RMSD": "-",
-                    }
-                )
+                model_stats.append({
+                    "Model Name": model.name,
+                    "AIC": "-",
+                    "R squared": "-",
+                    "RMSD": "-",
+                })
 
         # create and format dataframe
         df = pd.DataFrame(model_stats).set_index("Model Name").sort_values("AIC")

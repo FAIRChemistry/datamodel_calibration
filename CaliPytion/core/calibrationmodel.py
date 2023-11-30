@@ -1,25 +1,22 @@
 import sdRDM
+
 import copy
 import numpy as np
 import sympy as sp
-from lmfit import Model as LmfitModel
 import math
-from lmfit.model import ModelResult
-
-from typing import List, Optional, Tuple, Dict
-from pydantic import Field
+from typing import Dict, List, Optional, Tuple
+from pydantic import Field, PrivateAttr
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
-
-
-from .calibrationrange import CalibrationRange
+from lmfit import Model as LmfitModel
+from lmfit.model import ModelResult
 from .parameter import Parameter
+from .calibrationrange import CalibrationRange
 from .fitstatistics import FitStatistics
 
 
 @forge_signature
 class CalibrationModel(sdRDM.DataModel):
-
     """"""
 
     id: Optional[str] = Field(
@@ -50,15 +47,21 @@ class CalibrationModel(sdRDM.DataModel):
     )
 
     calibration_range: Optional[CalibrationRange] = Field(
-        default=CalibrationRange(),
         description=(
             "Concentration and signal bounds in which the calibration model is valid."
         ),
+        default_factory=CalibrationRange,
     )
 
     statistics: Optional[FitStatistics] = Field(
-        default=FitStatistics(),
         description="Fit statistics of the calibration model",
+        default_factory=FitStatistics,
+    )
+    __repo__: Optional[str] = PrivateAttr(
+        default="https://github.com/FAIRChemistry/CaliPytion"
+    )
+    __commit__: Optional[str] = PrivateAttr(
+        default="a596b28dd6e7d6dc47a30341f1f04cb4b78230a4"
     )
 
     def add_to_parameters(
@@ -83,7 +86,6 @@ class CalibrationModel(sdRDM.DataModel):
             lower_bound (): Lower bound of the parameter. Defaults to None
             upper_bound (): Relative error of the parameter. Defaults to None
         """
-
         params = {
             "name": name,
             "value": value,
@@ -92,12 +94,9 @@ class CalibrationModel(sdRDM.DataModel):
             "lower_bound": lower_bound,
             "upper_bound": upper_bound,
         }
-
         if id is not None:
             params["id"] = id
-
         self.parameters.append(Parameter(**params))
-
         return self.parameters[-1]
 
     def fit(

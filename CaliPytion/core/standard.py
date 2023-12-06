@@ -4,10 +4,11 @@ from typing import List, Optional
 from pydantic import Field, PrivateAttr
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
-from datetime import datetime as Datetime
 from astropy.units import UnitBase
-from .calibrationmodel import CalibrationModel
+from datetime import datetime as Datetime
+from .signaltype import SignalType
 from .sample import Sample
+from .calibrationmodel import CalibrationModel
 
 
 @forge_signature
@@ -33,6 +34,11 @@ class Standard(sdRDM.DataModel):
     wavelength: Optional[float] = Field(
         default=None,
         description="Detection wavelength in nm",
+    )
+
+    signal_type: Optional[SignalType] = Field(
+        default=None,
+        description="Quantity type of the signal intensity measured",
     )
 
     samples: List[Sample] = Field(
@@ -69,7 +75,7 @@ class Standard(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="071fa1dc4e3cdc585116bfd2049404e9b95560c4"
+        default="c3a3cdae1801d17461725162c77941fab16248d9"
     )
 
     def add_to_samples(

@@ -42,11 +42,11 @@ class Parameter(sdRDM.DataModel):
 
     upper_bound: Optional[float] = Field(
         default=None,
-        description="Relative error of the parameter",
+        description="Upper bound of the parameter",
     )
     __repo__: Optional[str] = PrivateAttr(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="071fa1dc4e3cdc585116bfd2049404e9b95560c4"
+        default="c3a3cdae1801d17461725162c77941fab16248d9"
     )

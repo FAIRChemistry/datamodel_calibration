@@ -105,7 +105,7 @@ def _map_to_sample(standard: "Standard", sample: "Sample") -> None:
         name="Temperature",
         value=standard.temperature,
         parameter_type="float",
-        unit=animl_lib.Unit(label=standard.temperature_unit),
+        unit=animl_lib.Unit(label=str(standard.temperature_unit)),
     )
 
     description_category.add_to_parameter(
@@ -157,11 +157,11 @@ def _map_sample_to_result(
     # Create the IndividualValueSet element and append the concentration
     # value
     concentration_value_set = animl_lib.IndividualValueSet()
-    concentration_value_set.values.append(sample.concentration)
+    concentration_value_set.values.append(float(sample.concentration))
 
     # Create the Unit element
     concentration_unit = animl_lib.Unit(
-        label=sample.conc_unit,
+        label=str(sample.conc_unit),
     )
 
     # Create the Series element and add both IndividualValueSet and Unit
@@ -185,7 +185,7 @@ def _map_sample_to_result(
     # Create the IndividualValueSet element and append the wavelength
     # value
     wavelength_value_set = animl_lib.IndividualValueSet()
-    wavelength_value_set.values.append(wavelength)
+    wavelength_value_set.values.append(float(wavelength))
 
     # Create the Unit element
     wavelength_unit = animl_lib.Unit(
@@ -213,7 +213,7 @@ def _map_sample_to_result(
     # Create the IndividualValueSet element and append the wavelength
     # value
     intensity_value_set = animl_lib.IndividualValueSet()
-    intensity_value_set.values.append(sample.signal)
+    intensity_value_set.values.append(float(sample.signal))
 
     # Create the Unit element
     intensity_unit = animl_lib.Unit(
@@ -344,27 +344,27 @@ def _map_calibration_model_to_result(
     for parameter in calibration_model.parameters:
         parameter_category.add_to_parameter(
             name=parameter.name,
-            value=parameter.value,
+            value=float(parameter.value),
             parameter_type="float",
         )
         parameter_category.add_to_parameter(
             name="Initial value",
-            value=parameter.init_value,
+            value=float(parameter.init_value),
             parameter_type="float",
         )
         parameter_category.add_to_parameter(
             name="Standard error",
-            value=parameter.standard_error,
+            value=float(parameter.standard_error),
             parameter_type="float",
         )
         parameter_category.add_to_parameter(
             name="Lower bound",
-            value=parameter.lower_bound,
+            value=float(parameter.lower_bound),
             parameter_type="float",
         )
         parameter_category.add_to_parameter(
             name="Upper bound",
-            value=parameter.upper_bound,
+            value=float(parameter.upper_bound),
             parameter_type="float",
         )
 
@@ -373,22 +373,22 @@ def _map_calibration_model_to_result(
 
     calibration_range.add_to_parameter(
         name="Concentration lower bound",
-        value=calibration_model.calibration_range.conc_lower,
+        value=float(calibration_model.calibration_range.conc_lower),
         parameter_type="float",
     )
     calibration_range.add_to_parameter(
         name="Concentration upper bound",
-        value=calibration_model.calibration_range.conc_upper,
+        value=float(calibration_model.calibration_range.conc_upper),
         parameter_type="float",
     )
     calibration_range.add_to_parameter(
         name="Intensity lower bound",
-        value=calibration_model.calibration_range.signal_lower,
+        value=float(calibration_model.calibration_range.signal_lower),
         parameter_type="float",
     )
     calibration_range.add_to_parameter(
         name="Intensity upper bound",
-        value=calibration_model.calibration_range.signal_upper,
+        value=float(calibration_model.calibration_range.signal_upper),
         parameter_type="float",
     )
 
@@ -397,86 +397,21 @@ def _map_calibration_model_to_result(
 
     fit_statistics.add_to_parameter(
         name="Akaike information criterion (aic)",
-        value=calibration_model.statistics.aic,
+        value=float(calibration_model.statistics.aic),
         parameter_type="float",
     )
     fit_statistics.add_to_parameter(
         name="Bayesian information criterion (bic)",
-        value=calibration_model.statistics.bic,
+        value=float(calibration_model.statistics.bic),
         parameter_type="float",
     )
     fit_statistics.add_to_parameter(
         name="Coefficient of determination (r^2)",
-        value=calibration_model.statistics.r2,
+        value=float(calibration_model.statistics.r2),
         parameter_type="float",
     )
     fit_statistics.add_to_parameter(
         name="Root mean square deviation (RMSD)",
-        value=calibration_model.statistics.rmsd,
+        value=float(calibration_model.statistics.rmsd),
         parameter_type="float",
     )
-
-
-if __name__ == "__main__":
-    import numpy as np
-    from datetime import datetime
-
-    from CaliPytion.core import Calibrator, Standard
-
-    def random(xs):
-        return xs + np.random.normal(0, 0.03, 1)
-
-    SLOPE = 0.014
-    CONC = np.linspace(0, 200, 11)
-    ABSO = CONC * SLOPE
-
-    def generate_standard():
-        # Generate standard
-        standard = Standard(
-            species_id="s0",
-            name="ABTS",
-            wavelength=340,
-            ph=2,
-            temperature=25,
-            temperature_unit="C",
-            created=datetime.now(),
-        )
-
-        # Add samples with noise
-        for conc, abso in zip(CONC, ABSO):
-            standard.add_to_samples(
-                concentration=conc,
-                conc_unit="umol / l",
-                signal=random(abso),
-            )
-            standard.add_to_samples(
-                concentration=conc,
-                conc_unit="umol / l",
-                signal=random(abso),
-            )
-            standard.add_to_samples(
-                concentration=conc,
-                conc_unit="umol / l",
-                signal=random(abso),
-            )
-
-        # initialize calibrator
-        calibrator = Calibrator.from_standard(standard, cutoff=2.5)
-
-        calibrator.add_to_models(
-            name="exponential",
-            equation="a * exp(b * concentration) = signal",
-        )
-
-        # Fit all defined models
-        calibrator.fit_models()
-
-        linear = calibrator.get_model("linear")
-
-        # Return Standard
-        return calibrator.save_model(linear)
-
-    standard = generate_standard()
-    testsample = animl_lib.Sample(name="Bla")
-    _map_to_sample(standard, testsample)
-    print(testsample)

@@ -134,7 +134,7 @@ class Standard(sdRDM.DataModel):
                 )
 
         if not out_file:
-            out_file = f"./standard_{str(Datetime.today())}.animl"
+            out_file = f"./standard_{str(Datetime.now().date())}.animl"
 
         map_standard_to_animl(standard=self, animl_document=animl_document)
 

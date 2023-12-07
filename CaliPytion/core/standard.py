@@ -1,7 +1,6 @@
-import os
-from pathlib import Path
 import sdRDM
 
+import os
 from typing import List, Optional
 from pydantic import Field, PrivateAttr
 from sdRDM import DataModel
@@ -9,9 +8,10 @@ from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
 from astropy.units import UnitBase
 from datetime import datetime as Datetime
+from pathlib import Path
 from .signaltype import SignalType
-from .sample import Sample
 from .calibrationmodel import CalibrationModel
+from .sample import Sample
 from ..ioutils import map_standard_to_animl
 
 
@@ -79,7 +79,7 @@ class Standard(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="c3a3cdae1801d17461725162c77941fab16248d9"
+        default="539faa8670f236f2cd44b3ae585825d364184c0b"
     )
 
     def add_to_samples(
@@ -108,7 +108,6 @@ class Standard(sdRDM.DataModel):
         self.samples.append(Sample(**params))
         return self.samples[-1]
 
-    ### CUSTOM METHODS ###
     def to_animl(
         self, animl_document: "AnIML" = None, out_file: str | Path | os.PathLike = None
     ) -> None:

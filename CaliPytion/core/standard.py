@@ -1,6 +1,7 @@
 import sdRDM
 
 import os
+import xml.etree.ElementTree as ET
 from typing import List, Optional
 from pydantic import Field, PrivateAttr
 from sdRDM import DataModel
@@ -12,7 +13,7 @@ from pathlib import Path
 from .signaltype import SignalType
 from .calibrationmodel import CalibrationModel
 from .sample import Sample
-from ..ioutils import map_standard_to_animl
+from ..ioutils import map_standard_to_animl, id_cleanup
 
 
 @forge_signature
@@ -139,7 +140,9 @@ class Standard(sdRDM.DataModel):
         map_standard_to_animl(standard=self, animl_document=animl_document)
 
         with open(out_file, "w") as f:
-            f.write(animl_document.xml())
+            animl_et = ET.fromstring(animl_document.xml())
+            id_cleanup(animl_et)
+            f.write(ET.tostring(animl_et).decode())
 
     @classmethod
     def from_animl(cls, path_to_animl_doc: str | Path | os.PathLike):

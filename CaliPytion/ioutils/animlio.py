@@ -415,3 +415,13 @@ def _map_calibration_model_to_result(
         value=float(calibration_model.statistics.rmsd),
         parameter_type="float",
     )
+
+
+def id_cleanup(xml_element) -> None:
+    # Check if the 'id' attribute exists and remove it
+    if "id" in xml_element.attrib:
+        del xml_element.attrib["id"]
+
+    # Recursively apply to all children
+    for child in xml_element:
+        id_cleanup(child)

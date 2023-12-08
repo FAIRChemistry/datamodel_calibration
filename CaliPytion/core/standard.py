@@ -155,10 +155,6 @@ class Standard(sdRDM.DataModel):
         Returns:
             Standard: Standard object created from AnIML document.
         """
-        raise NotImplementedError("Method `from_animl()` not yet implemented.")
-
-        animl_document = DataModel.parse(path_to_animl_doc)
-
-        ...
+        raise NotImplementedError("Method `from_animl()` is not yet implemented.")
 
         return cls

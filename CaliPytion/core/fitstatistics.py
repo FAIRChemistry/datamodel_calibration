@@ -38,5 +38,5 @@ class FitStatistics(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="3aaf24a354222900a29097170261308ff12ebff3"
+        default="9b802186da005bbd5e27a43054cf58c887d8b08b"
     )

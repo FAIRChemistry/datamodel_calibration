@@ -54,6 +54,7 @@ def map_standard_to_animl(standard: "Standard", animl_document: "AnIML") -> None
         current_series_id = _map_sample_to_result(
             sample=calipytion_sample,
             wavelength=standard.wavelength,
+            signal_type=standard.signal_type,
             experiment_step=new_experiment_step,
             current_series_id=current_series_id,
         )
@@ -127,6 +128,7 @@ def _map_to_sample(standard: "Standard", sample: "Sample") -> None:
 def _map_sample_to_result(
     sample: "Sample",
     wavelength: float,
+    signal_type: "SignalType",
     experiment_step: "ExperimentStep",
     current_series_id: int,
 ) -> int:
@@ -218,7 +220,7 @@ def _map_sample_to_result(
     # Create the Unit element
     intensity_unit = animl_lib.Unit(
         label="AU",
-        quantity="Absorbance",
+        quantity=signal_type,
     )
 
     # Create the Series element and add both IndividualValueSet and Unit

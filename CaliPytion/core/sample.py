@@ -34,5 +34,5 @@ class Sample(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="9d6569843d37a52b2ab26af6e3ee12dea54192db"
+        default="c48581a9bd1b6ecd079cb059c295f67f1f905502"
     )

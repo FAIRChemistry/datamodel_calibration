@@ -12,7 +12,10 @@ from plotly.subplots import make_subplots
 from plotly import graph_objects as go
 from IPython.display import display
 from .parameter import Parameter
+
 from .calibrationrange import CalibrationRange
+from .calibrationmodel import CalibrationModel
+from .standard import Standard
 from .fitstatistics import FitStatistics
 from .calibrationmodel import CalibrationModel
 from .standard import Standard

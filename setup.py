@@ -19,5 +19,6 @@ setup(
         "scipy",
         "nbformat",
         "setuptools",
+        "matplotlib",
     ],
 )

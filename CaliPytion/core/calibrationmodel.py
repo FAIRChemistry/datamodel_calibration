@@ -61,7 +61,7 @@ class CalibrationModel(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="5ed1b486f36ebd746d133e86e8cc1c25391be031"
+        default="014f336cb5577cf5a8c9d40f3888adaacf926cf3"
     )
 
     def add_to_parameters(
@@ -84,7 +84,7 @@ class CalibrationModel(sdRDM.DataModel):
             init_value (): Initial value of the parameter. Defaults to None
             standard_error (): Standard error of the parameter. Defaults to None
             lower_bound (): Lower bound of the parameter. Defaults to None
-            upper_bound (): Relative error of the parameter. Defaults to None
+            upper_bound (): Upper bound of the parameter. Defaults to None
         """
         params = {
             "name": name,

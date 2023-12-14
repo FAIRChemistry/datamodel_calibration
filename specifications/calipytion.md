@@ -41,6 +41,9 @@ Description of a standard curve for an chemical species
 - wavelength
   - Type: float
   - Description: Detection wavelength in nm
+- signal_type
+  - Type: SignalType
+  - Description: Quantity type of the signal intensity measured
 - samples
   - Type: Sample
   - Description: Measured signal, at a given concentration of the species
@@ -144,29 +147,16 @@ Description of a standard curve for an chemical species
 - upper_bound
   - Type: float
   - Description: Upper bound of the parameter
-relative_error
-  - Type: float
-  - Description: Relative error of the parameter
 
-### Spectrum
 
-- species_id
-  - Type: string
-  - Description: ID of the species
-- name
-  - Type: string
-  - Description: Name of the species
-- concentration
-  - Type: float
-  - Description: Concentration of the species
-- conc_unit
-  - Type: UnitClass
-  - Description: Concentration unit
-wavelengths
-  - Type: float
-  - Multiple: True
-  - Description: Wavelengths of the spectrum
-- signals
-  - Type: float
-  - Multiple: True
-  - Description: Measured signals, corresponding to detection wavelengths
+## Enumerations
+
+### SignalType
+
+Allowed quantity types of the measured signal intensities.
+
+```python
+ABSORBANCE = "Absorbance"
+TRANSMITTANCE = "Transmittance"
+REFLECTANCE = "Reflectance"
+```

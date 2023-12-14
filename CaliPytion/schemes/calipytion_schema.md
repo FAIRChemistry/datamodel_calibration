@@ -2,6 +2,7 @@
 classDiagram
     Calibrator *-- Standard
     Calibrator *-- CalibrationModel
+    Standard *-- SignalType
     Standard *-- Sample
     Standard *-- CalibrationModel
     CalibrationModel *-- CalibrationRange
@@ -21,6 +22,7 @@ classDiagram
         +string species_id
         +string name
         +float wavelength
+        +SignalType signal_type
         +Sample[0..*] samples
         +float ph
         +float temperature
@@ -67,12 +69,11 @@ classDiagram
         +float upper_bound
     }
     
-    class Spectrum {
-        +string species_id
-        +string name
-        +float concentration
-        +float[0..*] conc_unit
-        +float[0..*] signals
+    class SignalType {
+        << Enumeration >>
+        +ABSORBANCE
+        +TRANSMITTANCE
+        +REFLECTANCE
     }
     
 ```

@@ -11,11 +11,11 @@ from astropy.units import UnitBase
 from plotly.subplots import make_subplots
 from plotly import graph_objects as go
 from IPython.display import display
+from .fitstatistics import FitStatistics
+from .calibrationrange import CalibrationRange
 from .calibrationmodel import CalibrationModel
 from .parameter import Parameter
-from .calibrationrange import CalibrationRange
 from .standard import Standard
-from .fitstatistics import FitStatistics
 
 
 @forge_signature
@@ -67,7 +67,7 @@ class Calibrator(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="eadbeefc83512c032443d3ecf47db337351b94f8"
+        default="755480cc8b6ddf309d0dc3a74f7a130719dd5dab"
     )
 
     def add_to_models(
@@ -159,12 +159,10 @@ class Calibrator(sdRDM.DataModel):
             raise ValueError("Number of concentrations and signals must be the same")
 
         # verify that all samples have the same concentration unit
-        if not all(
-            [
-                sample.conc_unit == standard.samples[0].conc_unit
-                for sample in standard.samples
-            ]
-        ):
+        if not all([
+            sample.conc_unit == standard.samples[0].conc_unit
+            for sample in standard.samples
+        ]):
             raise ValueError("All samples must have the same concentration unit")
         conc_unit = standard.samples[0].conc_unit
 
@@ -207,23 +205,19 @@ class Calibrator(sdRDM.DataModel):
         model_stats = []
         for model in self.models:
             if model.was_fitted:
-                model_stats.append(
-                    {
-                        "Model Name": model.name,
-                        "AIC": round(model.statistics.aic),
-                        "R squared": round(model.statistics.r2, 4),
-                        "RMSD": round(model.statistics.rmsd, 4),
-                    }
-                )
+                model_stats.append({
+                    "Model Name": model.name,
+                    "AIC": round(model.statistics.aic),
+                    "R squared": round(model.statistics.r2, 4),
+                    "RMSD": round(model.statistics.rmsd, 4),
+                })
             else:
-                model_stats.append(
-                    {
-                        "Model Name": model.name,
-                        "AIC": "-",
-                        "R squared": "-",
-                        "RMSD": "-",
-                    }
-                )
+                model_stats.append({
+                    "Model Name": model.name,
+                    "AIC": "-",
+                    "R squared": "-",
+                    "RMSD": "-",
+                })
 
         # create and format dataframe
         df = pd.DataFrame(model_stats).set_index("Model Name").sort_values("AIC")

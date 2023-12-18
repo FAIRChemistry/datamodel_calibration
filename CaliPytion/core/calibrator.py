@@ -159,10 +159,12 @@ class Calibrator(sdRDM.DataModel):
             raise ValueError("Number of concentrations and signals must be the same")
 
         # verify that all samples have the same concentration unit
-        if not all([
-            sample.conc_unit == standard.samples[0].conc_unit
-            for sample in standard.samples
-        ]):
+        if not all(
+            [
+                sample.conc_unit == standard.samples[0].conc_unit
+                for sample in standard.samples
+            ]
+        ):
             raise ValueError("All samples must have the same concentration unit")
         conc_unit = standard.samples[0].conc_unit
 
@@ -185,6 +187,9 @@ class Calibrator(sdRDM.DataModel):
                     self.concentrations, self.signals, init_param_value=init_param_value
                 )
             )
+
+        self.models.sort(key=lambda x: x.statistics.aic)
+
         if display_statistics:
             display(self.fit_statistics)
 
@@ -202,19 +207,23 @@ class Calibrator(sdRDM.DataModel):
         model_stats = []
         for model in self.models:
             if model.was_fitted:
-                model_stats.append({
-                    "Model Name": model.name,
-                    "AIC": round(model.statistics.aic),
-                    "R squared": round(model.statistics.r2, 4),
-                    "RMSD": round(model.statistics.rmsd, 4),
-                })
+                model_stats.append(
+                    {
+                        "Model Name": model.name,
+                        "AIC": round(model.statistics.aic),
+                        "R squared": round(model.statistics.r2, 4),
+                        "RMSD": round(model.statistics.rmsd, 4),
+                    }
+                )
             else:
-                model_stats.append({
-                    "Model Name": model.name,
-                    "AIC": "-",
-                    "R squared": "-",
-                    "RMSD": "-",
-                })
+                model_stats.append(
+                    {
+                        "Model Name": model.name,
+                        "AIC": "-",
+                        "R squared": "-",
+                        "RMSD": "-",
+                    }
+                )
 
         # create and format dataframe
         df = pd.DataFrame(model_stats).set_index("Model Name").sort_values("AIC")

@@ -1,13 +1,19 @@
 import sdRDM
 
+import os
+import xml.etree.ElementTree as ET
 from typing import List, Optional
 from pydantic import Field, PrivateAttr
+from sdRDM import DataModel
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature, IDGenerator
-from datetime import datetime as Datetime
 from astropy.units import UnitBase
-from .sample import Sample
+from datetime import datetime as Datetime
+from pathlib import Path
 from .calibrationmodel import CalibrationModel
+from .sample import Sample
+from .signaltype import SignalType
+from ..ioutils import map_standard_to_animl, id_cleanup
 
 
 @forge_signature
@@ -33,6 +39,11 @@ class Standard(sdRDM.DataModel):
     wavelength: Optional[float] = Field(
         default=None,
         description="Detection wavelength in nm",
+    )
+
+    signal_type: Optional[SignalType] = Field(
+        default=None,
+        description="Quantity type of the signal intensity measured",
     )
 
     samples: List[Sample] = Field(
@@ -69,7 +80,7 @@ class Standard(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="5ed1b486f36ebd746d133e86e8cc1c25391be031"
+        default="eadbeefc83512c032443d3ecf47db337351b94f8"
     )
 
     def add_to_samples(
@@ -97,3 +108,53 @@ class Standard(sdRDM.DataModel):
             params["id"] = id
         self.samples.append(Sample(**params))
         return self.samples[-1]
+
+    def to_animl(
+        self, animl_document: "AnIML" = None, out_file: str | Path | os.PathLike = None
+    ) -> None:
+        """Map the Standard object to an AnIML document and serialize it
+        as an XML document.
+
+        Args:
+            animl_document (AnIML, optional): Pass a pre-existing AnIML document to map Standard to. Defaults to None.
+            out_file (str | Path | os.PathLike, optional): Desired path to AnIML output file. Defaults to None (current directory).
+        """
+        if not animl_document:
+            try:
+                animl_lib = DataModel.from_git(
+                    url="https://github.com/FAIRChemistry/animl-specifications",
+                    commit="0c51f12",
+                )
+                animl_document = animl_lib.AnIML()
+            except Exception as e:
+                print(
+                    f"The following unexpected error has occured while "
+                    + f"retrieving the AnIML data model from GitHub: "
+                    + f"{type(e).__name__} - Is there a working "
+                    + f"network connection?"
+                )
+
+        if not out_file:
+            out_file = f"./standard_{str(Datetime.now().date())}.animl"
+
+        map_standard_to_animl(standard=self, animl_document=animl_document)
+
+        with open(out_file, "w") as f:
+            animl_et = ET.fromstring(animl_document.xml())
+            id_cleanup(animl_et)
+            f.write(ET.tostring(animl_et).decode())
+
+    @classmethod
+    def from_animl(cls, path_to_animl_doc: str | Path | os.PathLike):
+        """Parse a Standard object from one serialized to an AnIML
+        document.
+
+        Args:
+            path_to_animl_doc (str | Path | os.PathLike): Path to an AnIML document.
+
+        Returns:
+            Standard: Standard object created from AnIML document.
+        """
+        raise NotImplementedError("Method `from_animl()` is not yet implemented.")
+
+        return cls

@@ -1,6 +1,6 @@
 from typing import List
 import toml
-from ..modified.calibrationmodel import CalibrationModel
+from ..core.calibrationmodel import CalibrationModel
 
 
 def read_models_from_toml(path: str) -> List[CalibrationModel]:

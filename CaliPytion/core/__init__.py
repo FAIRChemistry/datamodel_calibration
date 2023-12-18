@@ -5,7 +5,7 @@ from .calibrationmodel import CalibrationModel
 from .calibrationrange import CalibrationRange
 from .fitstatistics import FitStatistics
 from .parameter import Parameter
-from .spectrum import Spectrum
+from .signaltype import SignalType
 
 __doc__ = ""
 __all__ = [
@@ -16,5 +16,5 @@ __all__ = [
     "CalibrationRange",
     "FitStatistics",
     "Parameter",
-    "Spectrum",
+    "SignalType",
 ]

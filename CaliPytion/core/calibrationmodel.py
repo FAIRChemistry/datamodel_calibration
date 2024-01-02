@@ -144,7 +144,7 @@ class CalibrationModel(sdRDM.DataModel):
     def calculate(
         self,
         signals: List[float],
-        allow_extrapolation: bool = False,
+        allow_extrapolation: bool = True,
     ) -> List[float]:
         if not self.was_fitted:
             raise ValueError(
@@ -266,6 +266,11 @@ class CalibrationModel(sdRDM.DataModel):
     ):
         parameters = []
         for name, param in lmfit_result.params.items():
+            print(float(param.min))
+            if param.min == float("-inf"):
+                param.min = None
+            if param.max == float("inf"):
+                param.max = None
             parameters.append(
                 Parameter(
                     name=name,
@@ -276,6 +281,7 @@ class CalibrationModel(sdRDM.DataModel):
                     upper_bound=param.max,
                 )
             )
+            print(type(parameters[-1].lower_bound))
 
         self.parameters = parameters
 

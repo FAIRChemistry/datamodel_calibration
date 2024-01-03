@@ -266,7 +266,6 @@ class CalibrationModel(sdRDM.DataModel):
     ):
         parameters = []
         for name, param in lmfit_result.params.items():
-            print(float(param.min))
             if param.min == float("-inf"):
                 param.min = None
             if param.max == float("inf"):
@@ -281,7 +280,6 @@ class CalibrationModel(sdRDM.DataModel):
                     upper_bound=param.max,
                 )
             )
-            print(type(parameters[-1].lower_bound))
 
         self.parameters = parameters
 

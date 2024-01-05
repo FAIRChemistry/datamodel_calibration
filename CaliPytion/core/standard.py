@@ -11,8 +11,8 @@ from datetime import datetime as Datetime
 from astropy.units import UnitBase
 from pathlib import Path
 from .calibrationmodel import CalibrationModel
-from .signaltype import SignalType
 from .sample import Sample
+from .signaltype import SignalType
 from ..ioutils import map_standard_to_animl, id_cleanup
 
 
@@ -80,7 +80,7 @@ class Standard(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="75499319bdd7d6a73819ed19fde790d1d55911f7"
+        default="b6e299c9f86897111ceb284d5c95e077be9af887"
     )
 
     def add_to_samples(

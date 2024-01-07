@@ -11,11 +11,11 @@ from astropy.units import UnitBase
 from plotly.subplots import make_subplots
 from plotly import graph_objects as go
 from IPython.display import display
-from .calibrationrange import CalibrationRange
-from .fitstatistics import FitStatistics
 from .calibrationmodel import CalibrationModel
+from .calibrationrange import CalibrationRange
 from .standard import Standard
 from .parameter import Parameter
+from .fitstatistics import FitStatistics
 
 
 @forge_signature
@@ -67,7 +67,7 @@ class Calibrator(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     __commit__: Optional[str] = PrivateAttr(
-        default="b6e299c9f86897111ceb284d5c95e077be9af887"
+        default="3887064cf3fdbc876cb981bf5cbd914886ecef9d"
     )
 
     def add_to_models(

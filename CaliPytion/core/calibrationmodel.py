@@ -144,7 +144,7 @@ class CalibrationModel(sdRDM.DataModel):
     def calculate(
         self,
         signals: List[float],
-        allow_extrapolation: bool = True,
+        allow_extrapolation: bool = False,
     ) -> List[float]:
         if not self.was_fitted:
             raise ValueError(

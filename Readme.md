@@ -1,5 +1,11 @@
 # CaliPytion - Tool for Calibration Model Creation, Application, and Documentation
 
+[![Generate API](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/generate_api.yaml/badge.svg)](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/generate_api.yaml)
+[![Documentation](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/make_docs.yaml/badge.svg)](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/make_docs.yaml)
+[![Tests](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/tests.yaml/badge.svg)](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/tests.yaml)
+
+
+
 ## 🛤 What is CaliPytion?
 CaliPytion is a Python tool designed for analyzing the relationship between measured signals and concentrations using various calibration models. It operates on the `Standard` data model, contining data of calibration measurements and their respective conditions, and primarily employs the `Calibrator` object. This object is adept at fitting different polynomial models to calibration data using least-squares minimization.
 

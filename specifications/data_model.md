@@ -1,36 +1,12 @@
-# Standard and Spectrum
+# Calibration data model
 
 This data model structures data of standard measurements and spectra of spectroscopic measurements of a chemical species.
 
 ## Objects
 
-### Calibrator
-
-- standard
-  - Type: Standard
-  - Description: Standard data of a chemical species
-- concentrations
-  - Type: float
-  - Description: Concentrations of the species
-  - Multiple: True
-- conc_unit
-  - Type: UnitClass
-  - Description: Concentration unit
-- signals
-  - Type: float
-  - Description: Measured signals, corresponding to the concentrations
-  - Multiple: True
-- models
-  - Type: CalibrationModel
-  - Description: Potential models, describing the standard data
-  - Multiple: True
-- cutoff
-  - Type: float
-  - Description: Upper cutoff value for the measured signal. All signals above this value will be ignored during calibration
-
 ### Standard
 
-Description of a standard curve for an chemical species
+Description of a standard measurement for an analyte
 
 - species_id
   - Type: string
@@ -45,22 +21,21 @@ Description of a standard curve for an chemical species
   - Type: SignalType
   - Description: Quantity type of the signal intensity measured
 - samples
-  - Type: Sample
+  - Type: Sample[]
   - Description: Measured signal, at a given concentration of the species
-  - Multiple: True
-- ph
+- __ph__
   - Type: float
   - Description: pH value of the solution
-- temperature
+- __temperature__
   - Type: float
   - Description: Temperature during measurement
-- temperature_unit
-  - Type: UnitClass
+- __temperature_unit__
+  - Type: str
   - Description: Temperature unit
 - created
   - Type: datetime
   - Description: Date when the standard curve was measured
-- model_result
+- calibration_result
   - Type: CalibrationModel
   - Description: Model which was used for concentration determination
 
@@ -71,7 +46,7 @@ Description of a standard curve for an chemical species
   - Type: float
   - Description: Concentration of the species
 - conc_unit
-    - Type: UnitClass
+    - Type: str
     - Description: Concentration unit
 - signal
     - Type: float
@@ -84,11 +59,10 @@ Description of a standard curve for an chemical species
   - Description: Name of the calibration model
 - equation
   - Type: string
-  - Description: Equation of the calibration model
+  - Description: Equation for the measured signal
 - parameters
-  - Type: Parameter
-  - Description: Parameters of the calibration model equation
-  - Multiple: True
+  - Type: Parameter[]
+  - Description: Parameters of the calibration equation
 - was_fitted
   - Type: boolean
   - Description: Indicates if the model was fitted to the data

@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "calipytion"
+version = "0.1.0"
+description = "Tool for managing and analyzing data from calibration measurements for concentration calculation."
+authors = ["haeussma <83341109+haeussma@users.noreply.github.com>"]
+license = "MIT License"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">3.9 <=3.12"
+plotly = "^5.18.0"
+numpy = "^1.26.4"
+sdRDM = "^0.2.2"
+lmfit = "^1.2.2"
+sympy = "^1.12"
+
+[tool.poetry.group.dev.dependencies]
+mkdocs-material = "^9.5.8"
+pytest = "^8.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

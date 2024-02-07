@@ -1,0 +1,326 @@
+{
+  "$defs": {
+    "CalibrationRange": {
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Unique identifier of the given object.",
+          "title": "Id"
+        },
+        "conc_lower": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Lower concentration bound of the model",
+          "title": "Conc Lower"
+        },
+        "conc_upper": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Upper concentration bound of the model",
+          "title": "Conc Upper"
+        },
+        "signal_lower": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Lower signal bound of the model",
+          "title": "Signal Lower"
+        },
+        "signal_upper": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Upper signal bound of the model",
+          "title": "Signal Upper"
+        }
+      },
+      "title": "CalibrationRange",
+      "type": "object"
+    },
+    "FitStatistics": {
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Unique identifier of the given object.",
+          "title": "Id"
+        },
+        "aic": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Akaike information criterion",
+          "title": "Aic"
+        },
+        "bic": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Bayesian information criterion",
+          "title": "Bic"
+        },
+        "r2": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Coefficient of determination",
+          "title": "R2"
+        },
+        "rmsd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Root mean square deviation",
+          "title": "Rmsd"
+        }
+      },
+      "title": "FitStatistics",
+      "type": "object"
+    },
+    "Parameter": {
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Unique identifier of the given object.",
+          "title": "Id"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Name of the parameter",
+          "title": "Name"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Value of the parameter",
+          "title": "Value"
+        },
+        "init_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Initial value of the parameter",
+          "title": "Init Value"
+        },
+        "standard_error": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Standard error of the parameter",
+          "title": "Standard Error"
+        },
+        "lower_bound": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Lower bound of the parameter",
+          "title": "Lower Bound"
+        },
+        "upper_bound": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Upper bound of the parameter",
+          "title": "Upper Bound"
+        }
+      },
+      "title": "Parameter",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Unique identifier of the given object.",
+      "title": "Id"
+    },
+    "name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Name of the calibration model",
+      "title": "Name"
+    },
+    "equation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Equation for the measured signal",
+      "title": "Equation"
+    },
+    "parameters": {
+      "description": "Parameters of the calibration equation",
+      "items": {
+        "$ref": "#/$defs/Parameter"
+      },
+      "multiple": true,
+      "title": "Parameters",
+      "type": "array"
+    },
+    "was_fitted": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Indicates if the model was fitted to the data",
+      "title": "Was Fitted"
+    },
+    "calibration_range": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CalibrationRange"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Concentration and signal bounds in which the calibration model is valid."
+    },
+    "statistics": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/FitStatistics"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Fit statistics of the calibration model"
+    }
+  },
+  "title": "CalibrationModel",
+  "type": "object"
+}

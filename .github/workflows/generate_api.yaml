@@ -9,6 +9,6 @@ jobs:
       - name: Generate sdRDM library
         uses: JR-1991/generate-sdrdm-api@main
         with:
-          library_name: "CaliPytion"
-          branch: "docs-tests"
+          library_name: CaliPytion
+          branch: docs-tests
 

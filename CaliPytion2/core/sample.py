@@ -17,23 +17,20 @@ class Sample(sdRDM.DataModel):
         xml="@id",
     )
 
-    concentration: Optional[float] = element(
+    concentration: float = element(
         description="Concentration of the species",
-        default=None,
         tag="concentration",
         json_schema_extra=dict(),
     )
 
-    conc_unit: Optional[str] = element(
+    conc_unit: str = element(
         description="Concentration unit",
-        default=None,
         tag="conc_unit",
         json_schema_extra=dict(),
     )
 
-    signal: Optional[float] = element(
+    signal: float = element(
         description="Measured signals at a given concentration of the species",
-        default=None,
         tag="signal",
         json_schema_extra=dict(),
     )

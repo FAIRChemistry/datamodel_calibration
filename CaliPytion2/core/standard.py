@@ -94,9 +94,9 @@ class Standard(sdRDM.DataModel):
 
     def add_to_samples(
         self,
-        concentration: Optional[float] = None,
-        conc_unit: Optional[str] = None,
-        signal: Optional[float] = None,
+        concentration: float,
+        conc_unit: str,
+        signal: float,
         id: Optional[str] = None,
     ) -> Sample:
         """
@@ -104,9 +104,9 @@ class Standard(sdRDM.DataModel):
 
         Args:
             id (str): Unique identifier of the 'Sample' object. Defaults to 'None'.
-            concentration (): Concentration of the species. Defaults to None
-            conc_unit (): Concentration unit. Defaults to None
-            signal (): Measured signals at a given concentration of the species. Defaults to None
+            concentration (): Concentration of the species.
+            conc_unit (): Concentration unit.
+            signal (): Measured signals at a given concentration of the species.
         """
         params = {
             "concentration": concentration,

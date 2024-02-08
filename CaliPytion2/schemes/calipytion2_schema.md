@@ -21,14 +21,14 @@ classDiagram
     }
     
     class Sample {
-        +float concentration
-        +str conc_unit
-        +float signal
+        +float concentration*
+        +str conc_unit*
+        +float signal*
     }
     
     class CalibrationModel {
         +string name
-        +string equation
+        +string signal_equation
         +Parameter[0..*] parameters
         +boolean was_fitted
         +CalibrationRange calibration_range

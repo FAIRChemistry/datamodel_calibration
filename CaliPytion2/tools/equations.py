@@ -1,4 +1,4 @@
-from ..core.calibrationmodel import CalibrationModel
+from ...CaliPytion.core.calibrationmodel import CalibrationModel
 
 
 linear = CalibrationModel(name="linear", equation="a * concentration = signal")

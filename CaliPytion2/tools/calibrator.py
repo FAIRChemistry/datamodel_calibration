@@ -1,59 +1,50 @@
 import sdRDM
 
 import pandas as pd
+from pydantic import BaseModel
 import numpy as np
 import plotly.express as px
 from typing import Any, List, Optional
 from pydantic import PrivateAttr, Field, validator
-from sdRDM.base.listplus import ListPlus
-from sdRDM.base.utils import forge_signature, IDGenerator
-from astropy.units import UnitBase
 from plotly.subplots import make_subplots
 from plotly import graph_objects as go
 from IPython.display import display
-from .standard import Standard
-from .parameter import Parameter
-from .fitstatistics import FitStatistics
-from .calibrationrange import CalibrationRange
-from .calibrationmodel import CalibrationModel
+from ..core.parameter import Parameter
+from ..core.fitstatistics import FitStatistics
+from ..core.calibrationrange import CalibrationRange
+from ..core.calibrationmodel import CalibrationModel
+from ..core.standard import Standard
 
 
-@forge_signature
-class Calibrator(sdRDM.DataModel):
-    """"""
+class Calibrator(BaseModel):
 
-    id: Optional[str] = Field(
+
+    species_id: str = Field(
         description="Unique identifier of the given object.",
-        default_factory=IDGenerator("calibratorINDEX"),
-        xml="@id",
     )
 
-    standard: Optional[Standard] = Field(
-        description="Standard data of a chemical species",
-        default_factory=Standard,
+    name: Optional[str] = Field(
+        description="Name of the standard",
     )
 
     concentrations: List[float] = Field(
-        description="Concentrations of the species",
-        default_factory=ListPlus,
+        description="Concentrations of the standard",
         multiple=True,
     )
 
-    conc_unit: Optional[UnitBase] = Field(
-        default=None,
+    conc_unit: str = Field(
         description="Concentration unit",
     )
 
     signals: List[float] = Field(
         description="Measured signals, corresponding to the concentrations",
-        default_factory=ListPlus,
         multiple=True,
     )
 
     models: List[CalibrationModel] = Field(
-        description="Potential models, describing the standard data",
-        default_factory=ListPlus,
+        description="Potential models, which are used for fitting",
         multiple=True,
+        default=None,
     )
 
     cutoff: Optional[float] = Field(
@@ -63,22 +54,12 @@ class Calibrator(sdRDM.DataModel):
             " will be ignored during calibration"
         ),
     )
-    __repo__: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion"
-    )
-    __commit__: Optional[str] = PrivateAttr(
-        default="d456bfc4a46b88058ef3ad49c77d60fd366af14f"
-    )
 
-    def add_to_models(
+
+    def add_model(
         self,
         name: Optional[str] = None,
         equation: Optional[str] = None,
-        parameters: List[Parameter] = ListPlus(),
-        was_fitted: Optional[bool] = None,
-        calibration_range: Optional[CalibrationRange] = None,
-        statistics: Optional[FitStatistics] = None,
-        id: Optional[str] = None,
     ) -> None:
         """
         This method adds an object of type 'CalibrationModel' to attribute models
@@ -109,15 +90,15 @@ class Calibrator(sdRDM.DataModel):
     def initialize_models(cls, models):
         # If models are not provided during initialization, import from tools.equations.py
         if not models:
-            from CaliPytion.tools.equations import linear, quadratic, cubic
+            from CaliPytion2.tools.equations import linear, quadratic, cubic
 
             models = [linear, quadratic, cubic]
 
             return models
 
-    def __init__(self, **data: Any):
+    def __init__(self, **data):
         super().__init__(**data)
-        self._apply_cutoff()
+        self._apply_cutoff() 
 
     def _apply_cutoff(self):
         if self.cutoff:

@@ -1,1 +1,1 @@
-from .equations import linear, quadratic, cubic
+from ...CaliPytion2.tools.equations import linear, quadratic, cubic

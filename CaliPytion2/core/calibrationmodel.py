@@ -1,4 +1,5 @@
 import sdRDM
+import sympy as sp
 
 from typing import List, Optional
 from uuid import uuid4
@@ -102,3 +103,21 @@ class CalibrationModel(sdRDM.DataModel):
             params["id"] = id
         self.parameters.append(Parameter(**params))
         return self.parameters[-1]
+    
+    def _create_parameters(self, species_id: str):
+        sympy_eq = sp.sympify(self.equation)
+        symbols = [str(s) for s in list(sympy_eq.free_symbols)]
+
+
+        if "conc" not in symbols and "concentration" not in symbols:
+            raise ValueError("The equation must contain the variable 'conc' or 'concentration'")
+        return sympy_eq
+    
+    def _replace_equction_id(self, species_id: str):
+        if "conc" in self.equation:
+            self.equation = self.equation.replace("conc", f"{species_id}")
+        sympy_eq = self._create_parameters(species_id)
+        for param in self.parameters:
+            sympy_eq = sympy_eq.subs(sp.symbols(param.name), sp.symbols(f"{species_id}_{param.name}"))
+        return sympy_eq
+

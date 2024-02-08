@@ -42,13 +42,13 @@ Description of a standard measurement for an analyte
 
 ### Sample
 
-- concentration
+- __concentration__
   - Type: float
   - Description: Concentration of the species
-- conc_unit
+- __conc_unit__
     - Type: str
     - Description: Concentration unit
-- signal
+- __signal__
     - Type: float
     - Description: Measured signals at a given concentration of the species
 
@@ -57,7 +57,7 @@ Description of a standard measurement for an analyte
 - name
   - Type: string
   - Description: Name of the calibration model
-- equation
+- signal_equation
   - Type: string
   - Description: Equation for the measured signal
 - parameters
@@ -66,6 +66,7 @@ Description of a standard measurement for an analyte
 - was_fitted
   - Type: boolean
   - Description: Indicates if the model was fitted to the data
+  - dafault: False
 - calibration_range
   - Type: CalibrationRange
   - Description: Concentration and signal bounds in which the calibration model is valid.

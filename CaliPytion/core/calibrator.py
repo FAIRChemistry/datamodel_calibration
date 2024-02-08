@@ -109,7 +109,7 @@ class Calibrator(sdRDM.DataModel):
     def initialize_models(cls, models):
         # If models are not provided during initialization, import from tools.equations.py
         if not models:
-            from CaliPytion.tools.equations import linear, quadratic, cubic
+            from CaliPytion2.tools.equations import linear, quadratic, cubic
 
             models = [linear, quadratic, cubic]
 

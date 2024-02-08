@@ -2,6 +2,9 @@
 
 ## About
 
+![CaliPytion Logo](figs/logo.png "CaliPytion Logo"){{: style="height:300px;width:300px", align="left"}
+
+
 CaliPytion is a Python tool designed for analyzing the relationship between measured signals and concentrations using various calibration models. It operates on the `Standard` data model, contining data of calibration measurements and their respective conditions, and primarily employs the `Calibrator` object. This object is adept at fitting different polynomial models to calibration data using least-squares minimization.
 
 Key functionalities of CaliPytion include:

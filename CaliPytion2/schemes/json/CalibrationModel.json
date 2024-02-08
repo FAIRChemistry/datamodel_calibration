@@ -263,7 +263,7 @@
       "description": "Name of the calibration model",
       "title": "Name"
     },
-    "equation": {
+    "signal_equation": {
       "anyOf": [
         {
           "type": "string"
@@ -274,7 +274,7 @@
       ],
       "default": null,
       "description": "Equation for the measured signal",
-      "title": "Equation"
+      "title": "Signal Equation"
     },
     "parameters": {
       "description": "Parameters of the calibration equation",
@@ -294,6 +294,7 @@
           "type": "null"
         }
       ],
+      "dafault": false,
       "default": null,
       "description": "Indicates if the model was fitted to the data",
       "title": "Was Fitted"

@@ -13,45 +13,26 @@
       "title": "Id"
     },
     "concentration": {
-      "anyOf": [
-        {
-          "type": "number"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
       "description": "Concentration of the species",
-      "title": "Concentration"
+      "title": "Concentration",
+      "type": "number"
     },
     "conc_unit": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
       "description": "Concentration unit",
-      "title": "Conc Unit"
+      "title": "Conc Unit",
+      "type": "string"
     },
     "signal": {
-      "anyOf": [
-        {
-          "type": "number"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
       "description": "Measured signals at a given concentration of the species",
-      "title": "Signal"
+      "title": "Signal",
+      "type": "number"
     }
   },
+  "required": [
+    "concentration",
+    "conc_unit",
+    "signal"
+  ],
   "title": "Sample",
   "type": "object"
 }

@@ -105,7 +105,7 @@ class CalibrationModel(sdRDM.DataModel):
         return self.parameters[-1]
 
     def _create_parameters(self, species_id: str):
-        sympy_eq = sp.sympify(self.equation)
+        sympy_eq = sp.sympify(self.signal_equation)
         symbols = [str(s) for s in list(sympy_eq.free_symbols)]
 
         if "conc" not in symbols and "concentration" not in symbols:
@@ -115,11 +115,13 @@ class CalibrationModel(sdRDM.DataModel):
         return sympy_eq
 
     def _replace_equction_id(self, species_id: str):
-        if "conc" in self.equation:
-            self.equation = self.equation.replace("conc", f"{species_id}")
-        sympy_eq = self._create_parameters(species_id)
-        for param in self.parameters:
-            sympy_eq = sympy_eq.subs(
-                sp.symbols(param.name), sp.symbols(f"{species_id}_{param.name}")
-            )
-        return sympy_eq
+        if "conc" in self._symbols_list and "concentration" not in self._symbols_list:
+            self.signal_equation = self.signal_equation.replace("conc", f"{species_id}")
+
+        if "concentration" in self.signal_equation:
+            self.signal_equation = self.signal_equation.replace("concentration", f"{species_id}")
+
+    @property
+    def _symbols_list(self):
+        sympy_eq = sp.sympify(self.signal_equation)
+        return [str(s) for s in list(sympy_eq.free_symbols)]

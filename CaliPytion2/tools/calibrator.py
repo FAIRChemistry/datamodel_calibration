@@ -55,36 +55,22 @@ class Calibrator(BaseModel):
         ),
     )
 
-
     def add_model(
         self,
         name: Optional[str] = None,
         equation: Optional[str] = None,
     ) -> None:
-        """
-        This method adds an object of type 'CalibrationModel' to attribute models
+        
+        mode = CalibrationModel(
+            name=name,
+            equation=equation,
+        )
 
-        Args:
-            id (str): Unique identifier of the 'CalibrationModel' object. Defaults to 'None'.
-            name (): Name of the calibration model. Defaults to None
-            equation (): Equation of the calibration model. Defaults to None
-            parameters (): Parameters of the calibration model equation. Defaults to ListPlus()
-            was_fitted (): Indicates if the model was fitted to the data. Defaults to None
-            calibration_range (): Concentration and signal bounds in which the calibration model is valid.. Defaults to None
-            statistics (): Fit statistics of the calibration model. Defaults to None
-        """
-        params = {
-            "name": name,
-            "equation": equation,
-            "parameters": parameters,
-            "was_fitted": was_fitted,
-            "calibration_range": calibration_range,
-            "statistics": statistics,
-        }
-        if id is not None:
-            params["id"] = id
-        self.models.append(CalibrationModel(**params))
-        return self.models[-1]
+        model = model._replace_equction_id(self.species_id)
+
+        self.models.append(model)
+
+
 
     @validator("models", pre=True, always=True)
     def initialize_models(cls, models):

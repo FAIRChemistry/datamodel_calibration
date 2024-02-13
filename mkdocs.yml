@@ -2,7 +2,6 @@ site_name: CaliPytion
 repo_url: https://github.com/FAIRChemistry/CaliPytion/
 repo_name: FAIRChemistry/CaliPytion
 site_url: https://fairchemistry.github.io/CaliPytion/
-logo: figs/logo.png
 
 nav:
   - Home: index.md

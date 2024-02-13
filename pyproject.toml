@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Tool for managing and analyzing data from calibration measurements for concentration calculation."
 authors = ["haeussma <83341109+haeussma@users.noreply.github.com>"]
 license = "MIT License"
-readme = "README.md"
+readme = "Readme.md"
 
 [tool.poetry.dependencies]
 python = ">3.9 <=3.12"

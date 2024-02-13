@@ -7,16 +7,16 @@ from pydantic_xml import attr, element, wrapped
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature
 from datetime import datetime as Datetime
-from .calibrationmodel import CalibrationModel
 from .signaltype import SignalType
 from .sample import Sample
+from .calibrationmodel import CalibrationModel
 
 
 @forge_signature
 class Standard(
     sdRDM.DataModel,
     nsmap={
-        "": "https://github.com/FAIRChemistry/CaliPytion@26fef591b2c72fbebf9145b9ddec15843cb50c81#Standard"
+        "": "https://github.com/FAIRChemistry/CaliPytion@924b3091af4e6f38c131b2ab493dbb54fc04dd7c#Standard"
     },
 ):
     """Description of a standard measurement for an analyte"""
@@ -28,17 +28,33 @@ class Standard(
         xml="@id",
     )
 
-    species_id: Optional[str] = element(
+    species_id: str = element(
         description="ID of the species",
-        default=None,
         tag="species_id",
         json_schema_extra=dict(),
     )
 
-    name: Optional[str] = element(
+    name: str = element(
         description="Name of the species",
-        default=None,
         tag="name",
+        json_schema_extra=dict(),
+    )
+
+    ph: float = element(
+        description="pH value of the solution",
+        tag="ph",
+        json_schema_extra=dict(),
+    )
+
+    temperature: float = element(
+        description="Temperature during measurement",
+        tag="temperature",
+        json_schema_extra=dict(),
+    )
+
+    temperature_unit: str = element(
+        description="Temperature unit",
+        tag="temperature_unit",
         json_schema_extra=dict(),
     )
 
@@ -66,21 +82,17 @@ class Standard(
         ),
     )
 
-    ph: float = element(
-        description="pH value of the solution",
-        tag="ph",
+    smiles: Optional[str] = element(
+        description="SMILES representation of the species",
+        default=None,
+        tag="smiles",
         json_schema_extra=dict(),
     )
 
-    temperature: float = element(
-        description="Temperature during measurement",
-        tag="temperature",
-        json_schema_extra=dict(),
-    )
-
-    temperature_unit: str = element(
-        description="Temperature unit",
-        tag="temperature_unit",
+    inchi: Optional[str] = element(
+        description="InChI representation of the species",
+        default=None,
+        tag="inchi",
         json_schema_extra=dict(),
     )
 
@@ -101,7 +113,7 @@ class Standard(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="26fef591b2c72fbebf9145b9ddec15843cb50c81"
+        default="924b3091af4e6f38c131b2ab493dbb54fc04dd7c"
     )
 
     def add_to_samples(

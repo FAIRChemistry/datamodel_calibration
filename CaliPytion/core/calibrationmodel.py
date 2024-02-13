@@ -10,16 +10,16 @@ from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature
 from lmfit import Model as LmfitModel
 from lmfit.model import ModelResult
-from .calibrationrange import CalibrationRange
 from .parameter import Parameter
 from .fitstatistics import FitStatistics
+from .calibrationrange import CalibrationRange
 
 
 @forge_signature
 class CalibrationModel(
     sdRDM.DataModel,
     nsmap={
-        "": "https://github.com/FAIRChemistry/CaliPytion@26fef591b2c72fbebf9145b9ddec15843cb50c81#CalibrationModel"
+        "": "https://github.com/FAIRChemistry/CaliPytion@924b3091af4e6f38c131b2ab493dbb54fc04dd7c#CalibrationModel"
     },
 ):
     """"""
@@ -55,9 +55,9 @@ class CalibrationModel(
 
     was_fitted: Optional[bool] = element(
         description="Indicates if the model was fitted to the data",
-        default=None,
+        default=False,
         tag="was_fitted",
-        json_schema_extra=dict(dafault=False),
+        json_schema_extra=dict(),
     )
 
     calibration_range: Optional[CalibrationRange] = element(
@@ -79,7 +79,7 @@ class CalibrationModel(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="26fef591b2c72fbebf9145b9ddec15843cb50c81"
+        default="924b3091af4e6f38c131b2ab493dbb54fc04dd7c"
     )
 
     def add_to_parameters(

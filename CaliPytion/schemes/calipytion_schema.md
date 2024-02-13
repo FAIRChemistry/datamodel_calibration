@@ -8,14 +8,16 @@ classDiagram
     CalibrationModel *-- Parameter
     
     class Standard {
-        +string species_id
-        +string name
-        +float wavelength
-        +SignalType signal_type
-        +Sample[0..*] samples
+        +string species_id*
+        +string name*
         +float ph*
         +float temperature*
         +str temperature_unit*
+        +float wavelength
+        +SignalType signal_type
+        +Sample[0..*] samples
+        +string smiles
+        +string inchi
         +datetime created
         +CalibrationModel calibration_result
     }

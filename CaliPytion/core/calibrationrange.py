@@ -11,7 +11,7 @@ from sdRDM.base.utils import forge_signature
 class CalibrationRange(
     sdRDM.DataModel,
     nsmap={
-        "": "https://github.com/FAIRChemistry/CaliPytion@422b6a63c8a1df90a2828b8d46d4c005886619c2#CalibrationRange"
+        "": "https://github.com/FAIRChemistry/CaliPytion@912965496c0bc570f5064b6e11b2f41a36d3366c#CalibrationRange"
     },
 ):
     """"""
@@ -54,5 +54,5 @@ class CalibrationRange(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="422b6a63c8a1df90a2828b8d46d4c005886619c2"
+        default="912965496c0bc570f5064b6e11b2f41a36d3366c"
     )

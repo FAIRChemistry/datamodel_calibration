@@ -1,4 +1,4 @@
-from CaliPytion2.core.calibrationmodel import CalibrationModel    
+from CaliPytion.core.calibrationmodel import CalibrationModel    
 
 def test_replace_conc_with_species_id():
         model = CalibrationModel()

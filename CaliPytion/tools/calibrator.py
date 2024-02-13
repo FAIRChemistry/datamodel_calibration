@@ -1,3 +1,4 @@
+from os import name
 import sdRDM
 
 import pandas as pd
@@ -143,6 +144,8 @@ class Calibrator(BaseModel):
         conc_unit = standard.samples[0].conc_unit
 
         return cls(
+            species_id=standard.species_id,
+            name=standard.name,
             standard=standard,
             concentrations=concentrations,
             conc_unit=conc_unit,

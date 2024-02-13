@@ -8,21 +8,12 @@ This data model structures data of standard measurements and spectra of spectros
 
 Description of a standard measurement for an analyte
 
-- species_id
+- __species_id__
   - Type: string
   - Description: ID of the species
-- name
+- __name__
   - Type: string
   - Description: Name of the species
-- wavelength
-  - Type: float
-  - Description: Detection wavelength in nm
-- signal_type
-  - Type: SignalType
-  - Description: Quantity type of the signal intensity measured
-- samples
-  - Type: Sample[]
-  - Description: Measured signal, at a given concentration of the species
 - __ph__
   - Type: float
   - Description: pH value of the solution
@@ -32,6 +23,22 @@ Description of a standard measurement for an analyte
 - __temperature_unit__
   - Type: str
   - Description: Temperature unit
+- wavelength
+  - Type: float
+  - Description: Detection wavelength in nm
+- signal_type
+  - Type: SignalType
+  - Description: Quantity type of the signal intensity measured
+- samples
+  - Type: Sample[]
+  - Description: Measured signal, at a given concentration of the species
+
+- smiles
+  - Type: string
+  - Description: SMILES representation of the species
+- inchi
+  - Type: string
+  - Description: InChI representation of the species
 - created
   - Type: datetime
   - Description: Date when the standard curve was measured
@@ -66,7 +73,7 @@ Description of a standard measurement for an analyte
 - was_fitted
   - Type: boolean
   - Description: Indicates if the model was fitted to the data
-  - dafault: False
+  - default: False
 - calibration_range
   - Type: CalibrationRange
   - Description: Concentration and signal bounds in which the calibration model is valid.

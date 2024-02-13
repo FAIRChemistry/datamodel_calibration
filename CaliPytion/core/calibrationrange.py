@@ -1,13 +1,19 @@
 import sdRDM
 
 from typing import Optional
+from pydantic import PrivateAttr
 from uuid import uuid4
 from pydantic_xml import attr, element
 from sdRDM.base.utils import forge_signature
 
 
 @forge_signature
-class CalibrationRange(sdRDM.DataModel):
+class CalibrationRange(
+    sdRDM.DataModel,
+    nsmap={
+        "": "https://github.com/FAIRChemistry/CaliPytion@422b6a63c8a1df90a2828b8d46d4c005886619c2#CalibrationRange"
+    },
+):
     """"""
 
     id: Optional[str] = attr(
@@ -43,4 +49,10 @@ class CalibrationRange(sdRDM.DataModel):
         default=None,
         tag="signal_upper",
         json_schema_extra=dict(),
+    )
+    _repo: Optional[str] = PrivateAttr(
+        default="https://github.com/FAIRChemistry/CaliPytion"
+    )
+    _commit: Optional[str] = PrivateAttr(
+        default="422b6a63c8a1df90a2828b8d46d4c005886619c2"
     )

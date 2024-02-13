@@ -1,21 +1,27 @@
 import sdRDM
-import numpy as np
-from lmfit import Model as LmfitModel
-from lmfit.model import ModelResult
 
+import numpy as np
 import sympy as sp
 from typing import List, Optional, Tuple
+from pydantic import PrivateAttr
 from uuid import uuid4
 from pydantic_xml import attr, element, wrapped
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature
-from .calibrationrange import CalibrationRange
-from .fitstatistics import FitStatistics
+from lmfit import Model as LmfitModel
+from lmfit.model import ModelResult
 from .parameter import Parameter
+from .fitstatistics import FitStatistics
+from .calibrationrange import CalibrationRange
 
 
 @forge_signature
-class CalibrationModel(sdRDM.DataModel):
+class CalibrationModel(
+    sdRDM.DataModel,
+    nsmap={
+        "": "https://github.com/FAIRChemistry/CaliPytion@422b6a63c8a1df90a2828b8d46d4c005886619c2#CalibrationModel"
+    },
+):
     """"""
 
     id: Optional[str] = attr(
@@ -25,16 +31,14 @@ class CalibrationModel(sdRDM.DataModel):
         xml="@id",
     )
 
-    name: Optional[str] = element(
+    name: str = element(
         description="Name of the calibration model",
-        default=None,
         tag="name",
         json_schema_extra=dict(),
     )
 
-    signal_equation: Optional[str] = element(
+    signal_equation: str = element(
         description="Equation for the measured signal",
-        default=None,
         tag="signal_equation",
         json_schema_extra=dict(),
     )
@@ -71,6 +75,12 @@ class CalibrationModel(sdRDM.DataModel):
         tag="statistics",
         json_schema_extra=dict(),
     )
+    _repo: Optional[str] = PrivateAttr(
+        default="https://github.com/FAIRChemistry/CaliPytion"
+    )
+    _commit: Optional[str] = PrivateAttr(
+        default="422b6a63c8a1df90a2828b8d46d4c005886619c2"
+    )
 
     def add_to_parameters(
         self,
@@ -106,7 +116,7 @@ class CalibrationModel(sdRDM.DataModel):
             params["id"] = id
         self.parameters.append(Parameter(**params))
         return self.parameters[-1]
-    
+
     def add_parameter(
         self,
         name: Optional[str] = None,
@@ -117,7 +127,7 @@ class CalibrationModel(sdRDM.DataModel):
         upper_bound: Optional[float] = None,
         id: Optional[str] = None,
     ) -> Parameter:
-        
+
         params = {
             "name": name,
             "value": value,
@@ -154,15 +164,16 @@ class CalibrationModel(sdRDM.DataModel):
             self.signal_equation = self.signal_equation.replace("conc", f"{species_id}")
 
         if "concentration" in self.signal_equation:
-            self.signal_equation = self.signal_equation.replace("concentration", f"{species_id}")
-
+            self.signal_equation = self.signal_equation.replace(
+                "concentration", f"{species_id}"
+            )
 
     def get_parameter(self, name: str) -> Parameter:
         for param in self.parameters:
             if param.name == name:
                 return param
         return None
-    
+
     def fit(
         self,
         concentrations: List[float],
@@ -200,7 +211,7 @@ class CalibrationModel(sdRDM.DataModel):
         self._extract_lmfit_statistics(lmfit_result)
 
         return lmfit_result
-    
+
     def _extract_parameters(
         self,
         lmfit_result: ModelResult,
@@ -238,7 +249,7 @@ class CalibrationModel(sdRDM.DataModel):
         """Calculates root mean square deviation between measurements and fitted model."""
         residuals = np.array(residuals)
         return float(np.sqrt(sum(residuals**2) / len(residuals)))
-    
+
     def _reorder_free_symbols(self) -> List[str]:
         ordered_symbols = []
         symbols = self._symbols_list
@@ -247,8 +258,10 @@ class CalibrationModel(sdRDM.DataModel):
                 ordered_symbols.append(symbol)
 
         if len(ordered_symbols) != 1:
-            raise ValueError("The signal equation must contain only one free symbol"
-                             f" {ordered_symbols} found.")
+            raise ValueError(
+                "The signal equation must contain only one free symbol"
+                f" {ordered_symbols} found."
+            )
         for param in self.parameters:
             ordered_symbols.append(param.name)
 
@@ -258,7 +271,7 @@ class CalibrationModel(sdRDM.DataModel):
     def _symbols_list(self):
         sympy_eq = sp.sympify(self.signal_equation)
         return [str(s) for s in list(sympy_eq.free_symbols)]
-    
+
     @property
     def signal_callable(self) -> Tuple[callable, List[str]]:
         equation = sp.sympify(self.signal_equation)
@@ -266,7 +279,7 @@ class CalibrationModel(sdRDM.DataModel):
         callable = sp.lambdify(variables, equation)
 
         return callable, variables
-    
+
     @property
     def init_param_dict(self) -> dict:
         return {p.name: p.init_value for p in self.parameters}

@@ -1,6 +1,7 @@
 import sdRDM
 
 from typing import List, Optional
+from pydantic import PrivateAttr
 from uuid import uuid4
 from pydantic_xml import attr, element, wrapped
 from sdRDM.base.listplus import ListPlus
@@ -12,7 +13,12 @@ from .calibrationmodel import CalibrationModel
 
 
 @forge_signature
-class Standard(sdRDM.DataModel):
+class Standard(
+    sdRDM.DataModel,
+    nsmap={
+        "": "https://github.com/FAIRChemistry/CaliPytion@422b6a63c8a1df90a2828b8d46d4c005886619c2#Standard"
+    },
+):
     """Description of a standard measurement for an analyte"""
 
     id: Optional[str] = attr(
@@ -87,9 +93,15 @@ class Standard(sdRDM.DataModel):
 
     calibration_result: Optional[CalibrationModel] = element(
         description="Model which was used for concentration determination",
-        default_factory=CalibrationModel,
+        default=None,
         tag="calibration_result",
         json_schema_extra=dict(),
+    )
+    _repo: Optional[str] = PrivateAttr(
+        default="https://github.com/FAIRChemistry/CaliPytion"
+    )
+    _commit: Optional[str] = PrivateAttr(
+        default="422b6a63c8a1df90a2828b8d46d4c005886619c2"
     )
 
     def add_to_samples(

@@ -1,8 +1,9 @@
 # CaliPytion - Tool for Calibration Model Creation, Application, and Documentation
 
 [![Generate API](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/generate_api.yaml/badge.svg)](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/generate_api.yaml)
-[![Documentation](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/make_docs.yaml/badge.svg)](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/make_docs.yaml)
 [![Tests](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/tests.yaml/badge.svg)](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/tests.yaml)
+[![PyPI version](https://badge.fury.io/py/CaliPytion.svg)](https://badge.fury.io/py/CaliPytion)
+[![Documentation](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/make_docs.yaml/badge.svg)](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/make_docs.yaml)
 
 
 

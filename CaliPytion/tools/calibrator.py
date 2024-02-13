@@ -61,7 +61,7 @@ class Calibrator(BaseModel):
         equation: Optional[str] = None,
     ) -> None:
         
-        mode = CalibrationModel(
+        model = CalibrationModel(
             name=name,
             equation=equation,
         )

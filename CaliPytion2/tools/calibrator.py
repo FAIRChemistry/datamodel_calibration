@@ -68,15 +68,21 @@ class Calibrator(BaseModel):
 
         model = model._replace_equction_id(self.species_id)
 
+        model._create_parameters(self.species_id)
+
         self.models.append(model)
 
 
 
     @validator("models", pre=True, always=True)
-    def initialize_models(cls, models):
-        # If models are not provided during initialization, import from tools.equations.py
+    def initialize_models(cls, models, values):
+
         if not models:
+            species_id = values.get("species_id")
             from CaliPytion2.tools.equations import linear, quadratic, cubic
+
+            for model in [linear, quadratic, cubic]:
+                model.signal_equation.replace("signal", f"{species_id}")
 
             models = [linear, quadratic, cubic]
 
@@ -84,6 +90,9 @@ class Calibrator(BaseModel):
 
     def __init__(self, **data):
         super().__init__(**data)
+        for model in self.models:
+            model._replace_equction_id(self.species_id)
+            model._create_parameters(self.species_id)
         self._apply_cutoff() 
 
     def _apply_cutoff(self):
@@ -149,7 +158,7 @@ class Calibrator(BaseModel):
         for model in self.models:
             models.append(
                 model.fit(
-                    self.concentrations, self.signals, init_param_value=init_param_value
+                    concentrations=self.concentrations, signals=self.signals
                 )
             )
 

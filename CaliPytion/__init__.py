@@ -1,3 +1,3 @@
 
 __URL__ = "https://github.com/FAIRChemistry/CaliPytion"
-__COMMIT__ = "912965496c0bc570f5064b6e11b2f41a36d3366c"
+__COMMIT__ = "26fef591b2c72fbebf9145b9ddec15843cb50c81"

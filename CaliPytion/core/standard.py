@@ -1,103 +1,112 @@
 import sdRDM
 
-import os
-import xml.etree.ElementTree as ET
 from typing import List, Optional
-from pydantic import Field, PrivateAttr
-from sdRDM import DataModel
+from uuid import uuid4
+from pydantic_xml import attr, element, wrapped
 from sdRDM.base.listplus import ListPlus
-from sdRDM.base.utils import forge_signature, IDGenerator
+from sdRDM.base.utils import forge_signature
 from datetime import datetime as Datetime
-from astropy.units import UnitBase
-from pathlib import Path
+from .signaltype import SignalType
 from .sample import Sample
 from .calibrationmodel import CalibrationModel
-from .signaltype import SignalType
-from ..ioutils import map_standard_to_animl, id_cleanup
 
 
 @forge_signature
 class Standard(sdRDM.DataModel):
-    """Description of a standard curve for an chemical species"""
+    """Description of a standard measurement for an analyte"""
 
-    id: Optional[str] = Field(
+    id: Optional[str] = attr(
+        name="id",
         description="Unique identifier of the given object.",
-        default_factory=IDGenerator("standardINDEX"),
+        default_factory=lambda: str(uuid4()),
         xml="@id",
     )
 
-    species_id: Optional[str] = Field(
-        default=None,
+    species_id: Optional[str] = element(
         description="ID of the species",
+        default=None,
+        tag="species_id",
+        json_schema_extra=dict(),
     )
 
-    name: Optional[str] = Field(
-        default=None,
+    name: Optional[str] = element(
         description="Name of the species",
+        default=None,
+        tag="name",
+        json_schema_extra=dict(),
     )
 
-    wavelength: Optional[float] = Field(
-        default=None,
+    wavelength: Optional[float] = element(
         description="Detection wavelength in nm",
+        default=None,
+        tag="wavelength",
+        json_schema_extra=dict(),
     )
 
-    signal_type: Optional[SignalType] = Field(
-        default=None,
+    signal_type: Optional[SignalType] = element(
         description="Quantity type of the signal intensity measured",
-    )
-
-    samples: List[Sample] = Field(
-        description="Measured signal, at a given concentration of the species",
-        default_factory=ListPlus,
-        multiple=True,
-    )
-
-    ph: Optional[float] = Field(
         default=None,
+        tag="signal_type",
+        json_schema_extra=dict(),
+    )
+
+    samples: List[Sample] = wrapped(
+        "samples",
+        element(
+            description="Measured signal, at a given concentration of the species",
+            default_factory=ListPlus,
+            tag="Sample",
+            json_schema_extra=dict(multiple=True),
+        ),
+    )
+
+    ph: float = element(
         description="pH value of the solution",
+        tag="ph",
+        json_schema_extra=dict(),
     )
 
-    temperature: Optional[float] = Field(
-        default=None,
+    temperature: float = element(
         description="Temperature during measurement",
+        tag="temperature",
+        json_schema_extra=dict(),
     )
 
-    temperature_unit: Optional[UnitBase] = Field(
-        default=None,
+    temperature_unit: str = element(
         description="Temperature unit",
+        tag="temperature_unit",
+        json_schema_extra=dict(),
     )
 
-    created: Optional[Datetime] = Field(
-        default=None,
+    created: Optional[Datetime] = element(
         description="Date when the standard curve was measured",
+        default=None,
+        tag="created",
+        json_schema_extra=dict(),
     )
 
-    model_result: Optional[CalibrationModel] = Field(
+    calibration_result: Optional[CalibrationModel] = element(
         description="Model which was used for concentration determination",
         default_factory=CalibrationModel,
-    )
-    __repo__: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion"
-    )
-    __commit__: Optional[str] = PrivateAttr(
-        default="d456bfc4a46b88058ef3ad49c77d60fd366af14f"
+        tag="calibration_result",
+        json_schema_extra=dict(),
     )
 
     def add_to_samples(
         self,
-        concentration: Optional[float] = None,
-        conc_unit: Optional[UnitBase] = None,
-        signal: Optional[float] = None,
+        concentration: float,
+        conc_unit: str,
+        signal: float,
         id: Optional[str] = None,
-    ) -> None:
+    ) -> Sample:
         """
         This method adds an object of type 'Sample' to attribute samples
 
         Args:
             id (str): Unique identifier of the 'Sample' object. Defaults to 'None'.
-            concentration (): Concentration of the species. Defaults to None
-            conc_unit (): Concentration unit. Defaults to None
-            signal (): Measured signals at a given concentration of the species. Defaults to None
+            concentration (): Concentration of the species.
+            conc_unit (): Concentration unit.
+            signal (): Measured signals at a given concentration of the species.
         """
         params = {
             "concentration": concentration,
@@ -108,53 +117,3 @@ class Standard(sdRDM.DataModel):
             params["id"] = id
         self.samples.append(Sample(**params))
         return self.samples[-1]
-
-    def to_animl(
-        self, animl_document: "AnIML" = None, out_file: str | Path | os.PathLike = None
-    ) -> None:
-        """Map the Standard object to an AnIML document and serialize it
-        as an XML document.
-
-        Args:
-            animl_document (AnIML, optional): Pass a pre-existing AnIML document to map Standard to. Defaults to None.
-            out_file (str | Path | os.PathLike, optional): Desired path to AnIML output file. Defaults to None (current directory).
-        """
-        if not animl_document:
-            try:
-                animl_lib = DataModel.from_git(
-                    url="https://github.com/FAIRChemistry/animl-specifications",
-                    commit="0c51f12",
-                )
-                animl_document = animl_lib.AnIML()
-            except Exception as e:
-                print(
-                    f"The following unexpected error has occured while "
-                    + f"retrieving the AnIML data model from GitHub: "
-                    + f"{type(e).__name__} - Is there a working "
-                    + f"network connection?"
-                )
-
-        if not out_file:
-            out_file = f"./standard_{str(Datetime.now().date())}.animl"
-
-        map_standard_to_animl(standard=self, animl_document=animl_document)
-
-        with open(out_file, "w") as f:
-            animl_et = ET.fromstring(animl_document.xml())
-            id_cleanup(animl_et)
-            f.write(ET.tostring(animl_et).decode())
-
-    @classmethod
-    def from_animl(cls, path_to_animl_doc: str | Path | os.PathLike):
-        """Parse a Standard object from one serialized to an AnIML
-        document.
-
-        Args:
-            path_to_animl_doc (str | Path | os.PathLike): Path to an AnIML document.
-
-        Returns:
-            Standard: Standard object created from AnIML document.
-        """
-        raise NotImplementedError("Method `from_animl()` is not yet implemented.")
-
-        return cls

@@ -1,42 +1,46 @@
 import sdRDM
 
 from typing import Optional
-from pydantic import Field, PrivateAttr
-from sdRDM.base.utils import forge_signature, IDGenerator
+from uuid import uuid4
+from pydantic_xml import attr, element
+from sdRDM.base.utils import forge_signature
 
 
 @forge_signature
 class FitStatistics(sdRDM.DataModel):
     """"""
 
-    id: Optional[str] = Field(
+    id: Optional[str] = attr(
+        name="id",
         description="Unique identifier of the given object.",
-        default_factory=IDGenerator("fitstatisticsINDEX"),
+        default_factory=lambda: str(uuid4()),
         xml="@id",
     )
 
-    aic: Optional[float] = Field(
-        default=None,
+    aic: Optional[float] = element(
         description="Akaike information criterion",
+        default=None,
+        tag="aic",
+        json_schema_extra=dict(),
     )
 
-    bic: Optional[float] = Field(
-        default=None,
+    bic: Optional[float] = element(
         description="Bayesian information criterion",
+        default=None,
+        tag="bic",
+        json_schema_extra=dict(),
     )
 
-    r2: Optional[float] = Field(
-        default=None,
+    r2: Optional[float] = element(
         description="Coefficient of determination",
+        default=None,
+        tag="r2",
+        json_schema_extra=dict(),
     )
 
-    rmsd: Optional[float] = Field(
-        default=None,
+    rmsd: Optional[float] = element(
         description="Root mean square deviation",
-    )
-    __repo__: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion"
-    )
-    __commit__: Optional[str] = PrivateAttr(
-        default="d456bfc4a46b88058ef3ad49c77d60fd366af14f"
+        default=None,
+        tag="rmsd",
+        json_schema_extra=dict(),
     )

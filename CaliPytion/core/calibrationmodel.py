@@ -1,67 +1,75 @@
 import sdRDM
-
-import copy
 import numpy as np
-import sympy as sp
-import math
-from typing import Dict, List, Optional, Tuple
-from pydantic import Field, PrivateAttr
-from sdRDM.base.listplus import ListPlus
-from sdRDM.base.utils import forge_signature, IDGenerator
 from lmfit import Model as LmfitModel
 from lmfit.model import ModelResult
-from .parameter import Parameter
-from .fitstatistics import FitStatistics
+
+import sympy as sp
+from typing import List, Optional, Tuple
+from uuid import uuid4
+from pydantic_xml import attr, element, wrapped
+from sdRDM.base.listplus import ListPlus
+from sdRDM.base.utils import forge_signature
 from .calibrationrange import CalibrationRange
+from .fitstatistics import FitStatistics
+from .parameter import Parameter
 
 
 @forge_signature
 class CalibrationModel(sdRDM.DataModel):
     """"""
 
-    id: Optional[str] = Field(
+    id: Optional[str] = attr(
+        name="id",
         description="Unique identifier of the given object.",
-        default_factory=IDGenerator("calibrationmodelINDEX"),
+        default_factory=lambda: str(uuid4()),
         xml="@id",
     )
 
-    name: Optional[str] = Field(
-        default=None,
+    name: Optional[str] = element(
         description="Name of the calibration model",
-    )
-
-    equation: Optional[str] = Field(
         default=None,
-        description="Equation of the calibration model",
+        tag="name",
+        json_schema_extra=dict(),
     )
 
-    parameters: List[Parameter] = Field(
-        description="Parameters of the calibration model equation",
-        default_factory=ListPlus,
-        multiple=True,
-    )
-
-    was_fitted: Optional[bool] = Field(
+    signal_equation: Optional[str] = element(
+        description="Equation for the measured signal",
         default=None,
+        tag="signal_equation",
+        json_schema_extra=dict(),
+    )
+
+    parameters: List[Parameter] = wrapped(
+        "parameters",
+        element(
+            description="Parameters of the calibration equation",
+            default_factory=ListPlus,
+            tag="Parameter",
+            json_schema_extra=dict(multiple=True),
+        ),
+    )
+
+    was_fitted: Optional[bool] = element(
         description="Indicates if the model was fitted to the data",
+        default=None,
+        tag="was_fitted",
+        json_schema_extra=dict(dafault=False),
     )
 
-    calibration_range: Optional[CalibrationRange] = Field(
+    calibration_range: Optional[CalibrationRange] = element(
         description=(
             "Concentration and signal bounds in which the calibration model is valid."
         ),
         default_factory=CalibrationRange,
+        tag="calibration_range",
+        json_schema_extra=dict(),
     )
 
-    statistics: Optional[FitStatistics] = Field(
+    statistics: Optional[FitStatistics] = element(
         description="Fit statistics of the calibration model",
         default_factory=FitStatistics,
-    )
-    __repo__: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion"
-    )
-    __commit__: Optional[str] = PrivateAttr(
-        default="d456bfc4a46b88058ef3ad49c77d60fd366af14f"
+        tag="statistics",
+        json_schema_extra=dict(),
     )
 
     def add_to_parameters(
@@ -73,7 +81,7 @@ class CalibrationModel(sdRDM.DataModel):
         lower_bound: Optional[float] = None,
         upper_bound: Optional[float] = None,
         id: Optional[str] = None,
-    ) -> None:
+    ) -> Parameter:
         """
         This method adds an object of type 'Parameter' to attribute parameters
 
@@ -98,12 +106,67 @@ class CalibrationModel(sdRDM.DataModel):
             params["id"] = id
         self.parameters.append(Parameter(**params))
         return self.parameters[-1]
+    
+    def add_parameter(
+        self,
+        name: Optional[str] = None,
+        value: Optional[float] = None,
+        init_value: Optional[float] = None,
+        standard_error: Optional[float] = None,
+        lower_bound: Optional[float] = None,
+        upper_bound: Optional[float] = None,
+        id: Optional[str] = None,
+    ) -> Parameter:
+        
+        params = {
+            "name": name,
+            "value": value,
+            "init_value": init_value,
+            "standard_error": standard_error,
+            "lower_bound": lower_bound,
+            "upper_bound": upper_bound,
+        }
 
+        if not self.parameters:
+            self.parameters.append(Parameter(**params))
+            return self.parameters[-1]
+
+        else:
+            if name in [p.name for p in self.parameters]:
+                param = self.get_parameter(name)
+                param.value = value
+                param.init_value = init_value
+                param.standard_error = standard_error
+                param.lower_bound = lower_bound
+                param.upper_bound = upper_bound
+                return param
+            else:
+                self.parameters.append(Parameter(**params))
+                return self.parameters[-1]
+
+    def _create_parameters(self, species_id: str):
+        for symbol in self._symbols_list:
+            if symbol != species_id:
+                self.add_parameter(name=symbol, init_value=0.1)
+
+    def _replace_equction_id(self, species_id: str):
+        if "conc" in self._symbols_list and "concentration" not in self._symbols_list:
+            self.signal_equation = self.signal_equation.replace("conc", f"{species_id}")
+
+        if "concentration" in self.signal_equation:
+            self.signal_equation = self.signal_equation.replace("concentration", f"{species_id}")
+
+
+    def get_parameter(self, name: str) -> Parameter:
+        for param in self.parameters:
+            if param.name == name:
+                return param
+        return None
+    
     def fit(
         self,
         concentrations: List[float],
         signals: List[float],
-        init_param_value: float = 0.1,
     ):
         # define calibration bounds for the model
         self.calibration_range = CalibrationRange(
@@ -120,17 +183,14 @@ class CalibrationModel(sdRDM.DataModel):
         if not isinstance(signals, np.ndarray):
             signals = np.array(signals)
 
-        _callable, variables = self._get_model_callable(
-            solve_for="signal",
-            dependent_variable="concentration",
-        )
+        _callable, variables = self.signal_callable
 
         # initialize lmfit model
-        lmfit_model = LmfitModel(_callable, name=self.equation)
+        lmfit_model = LmfitModel(_callable, name=self.name)
 
         # initialize parameter dict
-        parameters = dict(zip(variables, [init_param_value] * len(variables)))
-        parameters["concentration"] = concentrations
+        parameters = self.init_param_dict
+        parameters[self.species_id] = concentrations
 
         lmfit_result = lmfit_model.fit(data=signals, **parameters, nan_policy="omit")
 
@@ -140,126 +200,7 @@ class CalibrationModel(sdRDM.DataModel):
         self._extract_lmfit_statistics(lmfit_result)
 
         return lmfit_result
-
-    def calculate(
-        self,
-        signals: List[float],
-        allow_extrapolation: bool = False,
-    ) -> List[float]:
-        if not self.was_fitted:
-            raise ValueError(
-                "Model was not fitted to calibration data. Fit model first"
-            )
-
-        if not isinstance(signals, np.ndarray):
-            signals = np.array(signals)
-
-        # get root equation
-        equality = self._get_equality()
-        root_eq = equality.lhs - equality.rhs
-
-        roots = []
-        params = copy.copy(self._params)
-
-        for signal in signals:
-            if math.isnan(signal):
-                roots.append([float("nan")])
-                continue
-
-            params[equality.rhs] = signal
-
-            # calculate all possible real roots for equation
-            roots.append(list(sp.roots(sp.real_root(root_eq.subs(params))).keys()))
-
-        # reshape results, fill nan columns for signals above upper calibration range
-        matrix = (
-            np.zeros([len(roots), len(max(roots, key=lambda x: len(roots)))]) * np.nan
-        )
-
-        # replace complex solutions with nans
-        for i, j in enumerate(roots):
-            without_complex = [
-                float("nan") if isinstance(value, sp.core.add.Add) else value
-                for value in j
-            ]
-
-            matrix[i][0 : len(without_complex)] = without_complex
-
-        roots = np.array(matrix).T
-
-        # get root alternative with most values within calibration bonds
-        n_values_in_calibration_range = []
-        for result in roots:
-            n_values_in_calibration_range.append(
-                (
-                    (self.calibration_range.conc_lower < result)
-                    & (result < self.calibration_range.conc_upper)
-                ).sum()
-            )
-
-        correct_roots = roots[np.nanargmax(n_values_in_calibration_range)]
-
-        if not allow_extrapolation:
-            correct_roots[
-                (self.calibration_range.conc_lower > correct_roots)
-                | (self.calibration_range.conc_upper < correct_roots)
-            ] = float("nan")
-
-        return correct_roots.tolist()
-
-    def _get_model_callable(
-        self,
-        solve_for: str,
-        dependent_variable: str,
-    ) -> Tuple[callable, List[str]]:
-        """Converts the equation string to a callable function.
-
-        Args:
-            solve_for (str): Independent variable to solve for
-            dependent_variable (str): Dependent variable
-
-        Returns:
-            callable: Callable function based on the model string
-        """
-
-        equality = self._get_equality()
-        equality = sp.solve(equality, solve_for)[0]
-        variables = [str(x) for x in list(equality.free_symbols)]
-        variables.insert(
-            0, variables.pop(variables.index(dependent_variable))
-        )  # dependent variable needs to be in first pos for lmfit --> change of variable order
-
-        _callable = sp.lambdify(variables, equality)
-
-        return _callable, variables
-
-    def _get_equality(self) -> sp.Equality:
-        """Converts the equation string to a sympy equality.
-
-        Returns:
-            sp.Equality: Sympy equality
-        """
-
-        lhs, rhs = self.equation.split("=")
-        equality = sp.Equality(sp.sympify(lhs), sp.sympify(rhs))
-
-        return equality
-
-    def _extract_lmfit_statistics(self, lmfit_result: ModelResult):
-        statistics = FitStatistics(
-            aic=lmfit_result.aic,
-            bic=lmfit_result.bic,
-            r2=lmfit_result.rsquared,
-            rmsd=self._calculate_rmsd(lmfit_result.residual),
-        )
-
-        self.statistics = statistics
-
-    def _calculate_rmsd(self, residuals: np.ndarray) -> float:
-        """Calculates root mean square deviation between measurements and fitted model."""
-        residuals = np.array(residuals)
-        return float(np.sqrt(sum(residuals**2) / len(residuals)))
-
+    
     def _extract_parameters(
         self,
         lmfit_result: ModelResult,
@@ -283,41 +224,53 @@ class CalibrationModel(sdRDM.DataModel):
 
         self.parameters = parameters
 
-    @property
-    def _params(self) -> Dict[str, float]:
-        return {param.name: param.value for param in self.parameters}
-
-    @property
-    def signal_callable(self):
-        _callable, _ = self._get_model_callable(
-            solve_for="signal",
-            dependent_variable="concentration",
+    def _extract_lmfit_statistics(self, lmfit_result: ModelResult):
+        statistics = FitStatistics(
+            aic=lmfit_result.aic,
+            bic=lmfit_result.bic,
+            r2=lmfit_result.rsquared,
+            rmsd=self._calculate_rmsd(lmfit_result.residual),
         )
 
-        def function(concentration: List[float], **params):
-            if not isinstance(concentration, np.ndarray):
-                concentration = np.array(concentration)
+        self.statistics = statistics
 
-            return _callable(concentration, **params)
+    def _calculate_rmsd(self, residuals: np.ndarray) -> float:
+        """Calculates root mean square deviation between measurements and fitted model."""
+        residuals = np.array(residuals)
+        return float(np.sqrt(sum(residuals**2) / len(residuals)))
+    
+    def _reorder_free_symbols(self) -> List[str]:
+        ordered_symbols = []
+        symbols = self._symbols_list
+        for symbol in symbols:
+            if symbol not in [param.name for param in self.parameters]:
+                ordered_symbols.append(symbol)
 
-        return function
+        if len(ordered_symbols) != 1:
+            raise ValueError("The signal equation must contain only one free symbol"
+                             f" {ordered_symbols} found.")
+        for param in self.parameters:
+            ordered_symbols.append(param.name)
+
+        return ordered_symbols
 
     @property
-    def concentration_callable(self):
-        _callable, _ = self._get_model_callable(
-            solve_for="concentration",
-            dependent_variable="signal",
-        )
+    def _symbols_list(self):
+        sympy_eq = sp.sympify(self.signal_equation)
+        return [str(s) for s in list(sympy_eq.free_symbols)]
+    
+    @property
+    def signal_callable(self) -> Tuple[callable, List[str]]:
+        equation = sp.sympify(self.signal_equation)
+        variables = self._reorder_free_symbols()
+        callable = sp.lambdify(variables, equation)
 
-        def function(signal: List[float], **params):
-            if not isinstance(signal, np.ndarray):
-                signal = np.array(signal)
+        return callable, variables
+    
+    @property
+    def init_param_dict(self) -> dict:
+        return {p.name: p.init_value for p in self.parameters}
 
-            return _callable(signal, **params)
-
-        return function
-
-    def _get_residuals(
-        self, concentrations: List[float], signals: List[float]
-    ) -> np.ndarray:
-        return np.array(signals) - self.signal_callable(concentrations, **self._params)
+    @property
+    def species_id(self) -> str:
+        return self._reorder_free_symbols()[0]

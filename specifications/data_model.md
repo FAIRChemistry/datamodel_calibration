@@ -54,10 +54,10 @@ Description of a standard measurement for an analyte
 
 ### CalibrationModel
 
-- name
+- __name__
   - Type: string
   - Description: Name of the calibration model
-- signal_equation
+- __signal_equation__
   - Type: string
   - Description: Equation for the measured signal
 - parameters

@@ -1,52 +1,60 @@
 import sdRDM
 
 from typing import Optional
-from pydantic import Field, PrivateAttr
-from sdRDM.base.utils import forge_signature, IDGenerator
+from uuid import uuid4
+from pydantic_xml import attr, element
+from sdRDM.base.utils import forge_signature
 
 
 @forge_signature
 class Parameter(sdRDM.DataModel):
     """"""
 
-    id: Optional[str] = Field(
+    id: Optional[str] = attr(
+        name="id",
         description="Unique identifier of the given object.",
-        default_factory=IDGenerator("parameterINDEX"),
+        default_factory=lambda: str(uuid4()),
         xml="@id",
     )
 
-    name: Optional[str] = Field(
-        default=None,
+    name: Optional[str] = element(
         description="Name of the parameter",
+        default=None,
+        tag="name",
+        json_schema_extra=dict(),
     )
 
-    value: Optional[float] = Field(
-        default=None,
+    value: Optional[float] = element(
         description="Value of the parameter",
+        default=None,
+        tag="value",
+        json_schema_extra=dict(),
     )
 
-    init_value: Optional[float] = Field(
-        default=None,
+    init_value: Optional[float] = element(
         description="Initial value of the parameter",
+        default=None,
+        tag="init_value",
+        json_schema_extra=dict(),
     )
 
-    standard_error: Optional[float] = Field(
-        default=None,
+    standard_error: Optional[float] = element(
         description="Standard error of the parameter",
+        default=None,
+        tag="standard_error",
+        json_schema_extra=dict(),
     )
 
-    lower_bound: Optional[float] = Field(
-        default=None,
+    lower_bound: Optional[float] = element(
         description="Lower bound of the parameter",
+        default=None,
+        tag="lower_bound",
+        json_schema_extra=dict(),
     )
 
-    upper_bound: Optional[float] = Field(
-        default=None,
+    upper_bound: Optional[float] = element(
         description="Upper bound of the parameter",
-    )
-    __repo__: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion"
-    )
-    __commit__: Optional[str] = PrivateAttr(
-        default="d456bfc4a46b88058ef3ad49c77d60fd366af14f"
+        default=None,
+        tag="upper_bound",
+        json_schema_extra=dict(),
     )

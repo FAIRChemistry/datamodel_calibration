@@ -1,38 +1,36 @@
 import sdRDM
 
 from typing import Optional
-from pydantic import Field, PrivateAttr
-from sdRDM.base.utils import forge_signature, IDGenerator
-from astropy.units import UnitBase
+from uuid import uuid4
+from pydantic_xml import attr, element
+from sdRDM.base.utils import forge_signature
 
 
 @forge_signature
 class Sample(sdRDM.DataModel):
     """"""
 
-    id: Optional[str] = Field(
+    id: Optional[str] = attr(
+        name="id",
         description="Unique identifier of the given object.",
-        default_factory=IDGenerator("sampleINDEX"),
+        default_factory=lambda: str(uuid4()),
         xml="@id",
     )
 
-    concentration: Optional[float] = Field(
-        default=None,
+    concentration: float = element(
         description="Concentration of the species",
+        tag="concentration",
+        json_schema_extra=dict(),
     )
 
-    conc_unit: Optional[UnitBase] = Field(
-        default=None,
+    conc_unit: str = element(
         description="Concentration unit",
+        tag="conc_unit",
+        json_schema_extra=dict(),
     )
 
-    signal: Optional[float] = Field(
-        default=None,
+    signal: float = element(
         description="Measured signals at a given concentration of the species",
-    )
-    __repo__: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion"
-    )
-    __commit__: Optional[str] = PrivateAttr(
-        default="d456bfc4a46b88058ef3ad49c77d60fd366af14f"
+        tag="signal",
+        json_schema_extra=dict(),
     )

@@ -79,7 +79,7 @@ class Calibrator(BaseModel):
 
         if not models:
             species_id = values.get("species_id")
-            from CaliPytion2.tools.equations import linear, quadratic, cubic
+            from CaliPytion.tools.equations import linear, quadratic, cubic
 
             for model in [linear, quadratic, cubic]:
                 model.signal_equation.replace("signal", f"{species_id}")
@@ -152,7 +152,7 @@ class Calibrator(BaseModel):
         )
 
     def fit_models(
-        self, init_param_value: float = 0.1, display_statistics: bool = True
+        self, display_statistics: bool = True
     ):
         models = []
         for model in self.models:

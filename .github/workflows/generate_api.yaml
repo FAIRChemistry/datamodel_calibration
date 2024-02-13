@@ -10,4 +10,5 @@ jobs:
         uses: JR-1991/generate-sdrdm-api@main
         with:
           library_name: CaliPytion
+          branch: optional-json-schemes
 

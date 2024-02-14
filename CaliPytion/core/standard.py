@@ -7,16 +7,16 @@ from pydantic_xml import attr, element, wrapped
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature
 from datetime import datetime as Datetime
+from .calibrationmodel import CalibrationModel
 from .sample import Sample
 from .signaltype import SignalType
-from .calibrationmodel import CalibrationModel
 
 
 @forge_signature
 class Standard(
     sdRDM.DataModel,
     nsmap={
-        "": "https://github.com/FAIRChemistry/CaliPytion@11d0c1cf1f8ad18a28adb5f134021df88c54667a#Standard"
+        "": "https://github.com/FAIRChemistry/CaliPytion@0daea0e64ce2613de44d9c6c855c26093c755d38#Standard"
     },
 ):
     """Description of a standard measurement for an analyte"""
@@ -113,7 +113,7 @@ class Standard(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="11d0c1cf1f8ad18a28adb5f134021df88c54667a"
+        default="0daea0e64ce2613de44d9c6c855c26093c755d38"
     )
 
     def add_to_samples(

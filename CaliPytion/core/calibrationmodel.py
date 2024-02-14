@@ -1,4 +1,6 @@
+import copy
 import sdRDM
+import math
 
 import numpy as np
 import sympy as sp
@@ -159,15 +161,6 @@ class CalibrationModel(
             if symbol != species_id:
                 self.add_parameter(name=symbol, init_value=0.1)
 
-    def _replace_equction_id(self, species_id: str):
-        if "conc" in self._symbols_list and "concentration" not in self._symbols_list:
-            self.signal_equation = self.signal_equation.replace("conc", f"{species_id}")
-
-        if "concentration" in self.signal_equation:
-            self.signal_equation = self.signal_equation.replace(
-                "concentration", f"{species_id}"
-            )
-
     def get_parameter(self, name: str) -> Parameter:
         for param in self.parameters:
             if param.name == name:
@@ -211,6 +204,83 @@ class CalibrationModel(
         self._extract_lmfit_statistics(lmfit_result)
 
         return lmfit_result
+    
+    def calculate_signals(self, concentrations: List[float]) -> List[float]:
+
+        if not self.was_fitted:
+            raise ValueError("The model has not been fitted yet.")
+        
+        concentrations = self._arrayify_input(concentrations)
+        callable, _ = self.signal_callable
+
+        return callable(concentrations, **self.param_dict).tolist()
+    
+    def calculate_concentrations(self, signals: List[float], extrapolate: bool = False) -> List[float]:
+        """
+        Calculates the concentrations corresponding to a given list of signals using the calibration model.
+    
+        Args:
+            signals (List[float]): A list of signal values for which concentrations need to be calculated.
+            extrapolate (bool): A flag indicating whether to extrapolate concentrations for signals outside the calibration range. Defaults to False.
+    
+        Returns:
+            List[float]: A list of concentrations corresponding to the input list of signals.
+    
+        Raises:
+            ValueError: If the model has not been fitted yet.
+        """
+        if not self.was_fitted:
+            raise ValueError("The model has not been fitted yet.")
+    
+        conc_eq_string = f"{self.signal_equation} - signal"
+        conc_eq = sp.sympify(conc_eq_string)
+    
+        roots = []
+        params = self.param_dict.copy()
+    
+        for signal in signals:
+            if np.isnan(signal):
+                roots.append([np.nan])
+                continue
+        
+            params["signal"] = signal
+            roots.append(list(sp.roots(sp.real_root(conc_eq.subs(params))).keys()))
+    
+        matrix = np.full((len(roots), len(max(roots, key=lambda x: len(x)))), np.nan)
+    
+        for i, root in enumerate(roots):
+            without_complex = [float("nan") if isinstance(value, sp.core.add.Add) else value for value in root]
+            matrix[i, :len(without_complex)] = without_complex
+    
+        roots = np.array(matrix).T
+    
+        n_values_in_calibration_range = [
+            ((self.calibration_range.conc_lower < result) & (result < self.calibration_range.conc_upper)).sum()
+            for result in roots
+        ]
+    
+        correct_roots = roots[np.nanargmax(n_values_in_calibration_range)]
+    
+        if not extrapolate:
+            correct_roots[
+                (self.calibration_range.conc_lower > correct_roots) | (self.calibration_range.conc_upper < correct_roots)
+            ] = float("nan")
+
+        print([type(x) for x in correct_roots.tolist()])
+    
+        return correct_roots.tolist()
+
+
+
+    def _arrayify_input(self, input: List[float]) -> np.ndarray:
+        if not isinstance(input, np.ndarray):
+            input = np.array(input)
+        return input
+    
+    def _replace_equation_symbols(self, old: str, new: str):
+        eq = self.signal_equation.replace(old, new)
+        self.signal_equation = eq
+
 
     def _extract_parameters(
         self,
@@ -287,3 +357,7 @@ class CalibrationModel(
     @property
     def species_id(self) -> str:
         return self._reorder_free_symbols()[0]
+    
+    @property
+    def param_dict(self):
+        return {p.name: p.value for p in self.parameters}

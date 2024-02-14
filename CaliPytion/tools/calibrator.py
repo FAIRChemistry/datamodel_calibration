@@ -56,6 +56,11 @@ class Calibrator(BaseModel):
         ),
     )
 
+    standard: Optional[Standard] = Field(
+        default=None,
+        description="Standard object",
+    )
+
     def add_model(
         self,
         name: Optional[str] = None,
@@ -72,7 +77,6 @@ class Calibrator(BaseModel):
         model._create_parameters(self.species_id)
 
         self.models.append(model)
-
 
 
     @validator("models", pre=True, always=True)
@@ -270,7 +274,8 @@ class Calibrator(BaseModel):
             len(self.concentrations) * 5,
         )
         for model, color in zip(self.models, colors):
-            model_data = model.signal_callable(self.concentrations, **model._params)
+            model_callable, _ = model.signal_callable
+            model_data = model_callable(np.array(self.concentrations), **model.param_dict)
             model_residuals = model._get_residuals(self.concentrations, self.signals)
 
             smooth_model_data = model.signal_callable(smooth_x, **model._params)

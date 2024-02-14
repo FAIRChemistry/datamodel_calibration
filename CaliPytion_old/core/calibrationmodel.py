@@ -141,7 +141,7 @@ class CalibrationModel(sdRDM.DataModel):
 
         return lmfit_result
 
-    def calculate(
+    def calculate_concentrations(
         self,
         signals: List[float],
         allow_extrapolation: bool = False,

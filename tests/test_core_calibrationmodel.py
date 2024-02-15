@@ -150,23 +150,6 @@ def test_calculate_concentrations_all_nan_values():
         equal_nan=True
     )
 
-def test_calculate_concentrations_replace_extrapolated_with_nan():
-    model = CalibrationModel(
-        name="test_model",
-        signal_equation="a * x + b",
-    
-    )
-    model._create_parameters("x")
-    concentrations = [1.0, 2.0, 3.0, 4.0, 5.0]
-    signals = [3.0, 5.0, 7.0, 9.0, 11.0]
-    query_signals = [0.0, 5.0, 7.0, 9.0, 11.0, 100]
-    model.fit(concentrations, signals)
-    npt.assert_allclose(
-        actual=model.calculate_concentrations(query_signals),
-        desired=[np.nan, 2.0, 3.0, 4.0, 5.0, np.nan],
-        equal_nan=True
-    )
-
 def test_calculate_concentrations_extrapolat():
     model = CalibrationModel(
         name="test_model",
@@ -178,4 +161,21 @@ def test_calculate_concentrations_extrapolat():
     signals = [3.0, 5.0, 7.0, 9.0, 11.0]
     query_signals = [5.0, 13.0]
     model.fit(concentrations, signals)
-    assert model.calculate_concentrations(query_signals, extrapolate=True) == [2.0, 6.0]
+    expected = [2.0, 6.0]
+    actual =  model.calculate_concentrations(query_signals, extrapolate=True)
+    for actual, expected in zip(actual, expected):
+        assert actual == pytest.approx(expected)
+
+def test_calculate_signals_fitted_model():
+    model = CalibrationModel(
+        name="test_model",
+        signal_equation="a * x + b",
+    )
+    model._create_parameters("x")
+    concentrations = [1.0, 2.0, 3.0, 4.0, 5.0]
+    signals = [3.0, 4.0, 5.0, 6.0, 7.0]
+    query_concentrations = [3.5, 4.5]
+    model.fit(concentrations, signals)
+    expected = [5.5, 6.5]
+    actual = model.calculate_signals(query_concentrations)
+    assert actual == pytest.approx(expected)

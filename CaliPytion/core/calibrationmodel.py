@@ -204,6 +204,18 @@ class CalibrationModel(
         return lmfit_result
 
     def calculate_signals(self, concentrations: List[float]) -> List[float]:
+        """
+        Calculates the signals corresponding to a given list of concentrations using the fitted calibration model.
+
+        Args:
+            concentrations (List[float]): A list of concentration values for which signals need to be calculated.
+
+        Returns:
+            List[float]: A list of signals corresponding to the input list of concentrations.
+
+        Raises:
+            ValueError: If the model has not been fitted yet.
+        """
 
         if not self.was_fitted:
             raise ValueError("The model has not been fitted yet.")
@@ -272,8 +284,6 @@ class CalibrationModel(
                 (self.calibration_range.conc_lower > correct_roots)
                 | (self.calibration_range.conc_upper < correct_roots)
             ] = float("nan")
-
-        print([type(x) for x in correct_roots.tolist()])
 
         return correct_roots.tolist()
 

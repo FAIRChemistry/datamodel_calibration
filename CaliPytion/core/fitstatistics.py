@@ -11,7 +11,7 @@ from sdRDM.base.utils import forge_signature
 class FitStatistics(
     sdRDM.DataModel,
     nsmap={
-        "": "https://github.com/FAIRChemistry/CaliPytion@0daea0e64ce2613de44d9c6c855c26093c755d38#FitStatistics"
+        "": "https://github.com/FAIRChemistry/CaliPytion@4c403396592200024d422afa3f3bf0dec46801df#FitStatistics"
     },
 ):
     """"""
@@ -54,5 +54,5 @@ class FitStatistics(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="0daea0e64ce2613de44d9c6c855c26093c755d38"
+        default="4c403396592200024d422afa3f3bf0dec46801df"
     )

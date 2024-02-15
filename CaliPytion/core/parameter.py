@@ -11,7 +11,7 @@ from sdRDM.base.utils import forge_signature
 class Parameter(
     sdRDM.DataModel,
     nsmap={
-        "": "https://github.com/FAIRChemistry/CaliPytion@4c403396592200024d422afa3f3bf0dec46801df#Parameter"
+        "": "https://github.com/FAIRChemistry/CaliPytion@1d0d0d1a6421920c62594c440d8515e6c93b02b0#Parameter"
     },
 ):
     """"""
@@ -68,5 +68,5 @@ class Parameter(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="4c403396592200024d422afa3f3bf0dec46801df"
+        default="1d0d0d1a6421920c62594c440d8515e6c93b02b0"
     )

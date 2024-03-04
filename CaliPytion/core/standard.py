@@ -1,24 +1,21 @@
 import sdRDM
 
-from typing import List, Optional
-from pydantic import PrivateAttr
+from typing import Dict, List, Optional
+from pydantic import PrivateAttr, model_validator
 from uuid import uuid4
-from pydantic_xml import attr, element, wrapped
+from pydantic_xml import attr, element
+from lxml.etree import _Element
 from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature
+from sdRDM.tools.utils import elem2dict
 from datetime import datetime as Datetime
 from .signaltype import SignalType
-from .calibrationmodel import CalibrationModel
 from .sample import Sample
+from .calibrationmodel import CalibrationModel
 
 
 @forge_signature
-class Standard(
-    sdRDM.DataModel,
-    nsmap={
-        "": "https://github.com/FAIRChemistry/CaliPytion@1d0d0d1a6421920c62594c440d8515e6c93b02b0#Standard"
-    },
-):
+class Standard(sdRDM.DataModel):
     """Description of a standard measurement for an analyte"""
 
     id: Optional[str] = attr(
@@ -72,14 +69,11 @@ class Standard(
         json_schema_extra=dict(),
     )
 
-    samples: List[Sample] = wrapped(
-        "samples",
-        element(
-            description="Measured signal, at a given concentration of the species",
-            default_factory=ListPlus,
-            tag="Sample",
-            json_schema_extra=dict(multiple=True),
-        ),
+    samples: List[Sample] = element(
+        description="Measured signal, at a given concentration of the species",
+        default_factory=ListPlus,
+        tag="samples",
+        json_schema_extra=dict(multiple=True),
     )
 
     smiles: Optional[str] = element(
@@ -113,8 +107,20 @@ class Standard(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="1d0d0d1a6421920c62594c440d8515e6c93b02b0"
+        default="d78203c1ca34dfe9ce1fa85f82e900fa210912dd"
     )
+    _raw_xml_data: Dict = PrivateAttr(default_factory=dict)
+
+    @model_validator(mode="after")
+    def _parse_raw_xml_data(self):
+        for attr, value in self:
+            if isinstance(value, (ListPlus, list)) and all(
+                (isinstance(i, _Element) for i in value)
+            ):
+                self._raw_xml_data[attr] = [elem2dict(i) for i in value]
+            elif isinstance(value, _Element):
+                self._raw_xml_data[attr] = elem2dict(value)
+        return self
 
     def add_to_samples(
         self,

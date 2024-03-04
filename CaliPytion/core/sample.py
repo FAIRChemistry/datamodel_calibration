@@ -42,7 +42,7 @@ class Sample(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="d78203c1ca34dfe9ce1fa85f82e900fa210912dd"
+        default="470255259a720ba5b86308722d687855cdd9ccbf"
     )
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)
 

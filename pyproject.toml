@@ -12,7 +12,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">3.9 <=3.12"
+python = "^3.9"
 plotly = "^5.18.0"
 numpy = "^1.26.4"
 sdRDM = "^0.2.2"

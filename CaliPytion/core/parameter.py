@@ -11,7 +11,7 @@ from sdRDM.tools.utils import elem2dict
 
 
 @forge_signature
-class Parameter(sdRDM.DataModel):
+class Parameter(sdRDM.DataModel, search_mode="unordered"):
     """"""
 
     id: Optional[str] = attr(
@@ -66,7 +66,7 @@ class Parameter(sdRDM.DataModel):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="470255259a720ba5b86308722d687855cdd9ccbf"
+        default="0ca7437dca0a3d1a815da91afa87e79e752287d9"
     )
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)
 

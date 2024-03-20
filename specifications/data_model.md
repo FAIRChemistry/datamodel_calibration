@@ -44,7 +44,7 @@ Description of a standard measurement for an analyte
   - Description: Date when the standard curve was measured
 - calibration_result
   - Type: CalibrationModel
-  - Description: Model which was used for concentration determination
+  - Description: The model which was used for concentration determination
 
 
 ### Sample

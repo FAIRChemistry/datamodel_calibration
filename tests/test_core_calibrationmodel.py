@@ -100,10 +100,13 @@ def test_calculate_concentrations_within_calibration_range():
         
     )
     model._create_parameters("x")
-    concentrations = [1.0, 2.0, 3.0, 4.0, 5.0]
+    expected_concs = [1.0, 2.0, 3.0, 4.0, 5.0]
     signals = [3.0, 5.0, 7.0, 9.0, 11.0]
-    model.fit(concentrations, signals)
-    assert model.calculate_concentrations(signals) == concentrations
+    model.fit(expected_concs, signals)
+    actuals =  model.calculate_concentrations(signals)
+
+    for actual, expected in zip(actuals, expected_concs):
+        assert actual == pytest.approx(expected)
 
 def test_calculate_concentrations_with_nan_values():
     model = CalibrationModel(

@@ -52,7 +52,7 @@ class CalibrationRange(sdRDM.DataModel, search_mode="unordered"):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="0ca7437dca0a3d1a815da91afa87e79e752287d9"
+        default="4ed3b05df7c2193f65a5458ec8db278a965ab7b0"
     )
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)
 

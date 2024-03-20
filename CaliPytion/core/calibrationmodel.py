@@ -12,9 +12,9 @@ from sdRDM.base.utils import forge_signature
 from sdRDM.tools.utils import elem2dict
 from lmfit import Model as LmfitModel
 from lmfit.model import ModelResult
+from .fitstatistics import FitStatistics
 from .calibrationrange import CalibrationRange
 from .parameter import Parameter
-from .fitstatistics import FitStatistics
 
 
 @forge_signature
@@ -73,7 +73,7 @@ class CalibrationModel(sdRDM.DataModel, search_mode="unordered"):
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="0ca7437dca0a3d1a815da91afa87e79e752287d9"
+        default="4ed3b05df7c2193f65a5458ec8db278a965ab7b0"
     )
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)
 

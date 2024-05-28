@@ -1,15 +1,11 @@
 [tool.poetry]
-name = "CaliPytion"
-version = "0.2.0"
+name = "calipytion"
+version = "0.2.1"
 description = "Tool for managing and analyzing data from calibration measurements for concentration calculation."
 authors = ["haeussma <83341109+haeussma@users.noreply.github.com>"]
 license = "MIT License"
 readme = "Readme.md"
-packages = [
-    { include = "CaliPytion/core" },
-    { include = "CaliPytion/ioutils" },
-    { include = "CaliPytion/tools" },
-]
+packages = [{include = "chromatopy"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"

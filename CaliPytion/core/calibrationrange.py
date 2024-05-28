@@ -48,12 +48,6 @@ class CalibrationRange(sdRDM.DataModel, search_mode="unordered"):
         tag="signal_upper",
         json_schema_extra=dict(),
     )
-    _repo: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion"
-    )
-    _commit: Optional[str] = PrivateAttr(
-        default="4ed3b05df7c2193f65a5458ec8db278a965ab7b0"
-    )
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)
 
     @model_validator(mode="after")

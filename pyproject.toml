@@ -15,7 +15,7 @@ packages = [
 python = "^3.10"
 plotly = "^5.18.0"
 numpy = "^1.26.4"
-sdRDM = { git = "https://github.com/JR-1991/software-driven-rdm.git" }
+sdRDM = { git = "https://github.com/JR-1991/software-driven-rdm.git", branch = "63-terms-and-external-model-handling" }
 lmfit = "^1.2.2"
 sympy = "^1.12"
 matplotlib = "^3.8.2"

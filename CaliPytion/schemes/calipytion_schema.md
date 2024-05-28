@@ -8,7 +8,6 @@ classDiagram
     CalibrationModel *-- Parameter
     
     class Standard {
-        +string species_id*
         +string name*
         +float ph*
         +float temperature*
@@ -16,21 +15,21 @@ classDiagram
         +float wavelength
         +SignalType signal_type
         +Sample[0..*] samples
-        +string smiles
-        +string inchi
         +datetime created
+        +datetime modified
         +CalibrationModel calibration_result
     }
     
     class Sample {
+        +string species_id*
         +float concentration*
-        +str conc_unit*
+        +str unit*
         +float signal*
     }
     
     class CalibrationModel {
         +string name*
-        +string signal_equation*
+        +MathML signal_law*
         +Parameter[0..*] parameters
         +boolean was_fitted
         +CalibrationRange calibration_range
@@ -55,7 +54,7 @@ classDiagram
         +string name
         +float value
         +float init_value
-        +float standard_error
+        +float stderr
         +float lower_bound
         +float upper_bound
     }

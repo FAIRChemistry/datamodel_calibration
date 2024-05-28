@@ -12,9 +12,11 @@ from sdRDM.base.utils import forge_signature
 from sdRDM.tools.utils import elem2dict
 from lmfit import Model as LmfitModel
 from lmfit.model import ModelResult
-from .fitstatistics import FitStatistics
-from .calibrationrange import CalibrationRange
-from .parameter import Parameter
+from sdRDM.base.datatypes import MathML
+
+from calipytion.core.calibrationrange import CalibrationRange
+from calipytion.core.fitstatistics import FitStatistics
+from calipytion.core.parameter import Parameter
 
 
 @forge_signature
@@ -34,9 +36,11 @@ class CalibrationModel(sdRDM.DataModel, search_mode="unordered"):
         json_schema_extra=dict(),
     )
 
-    signal_equation: str = element(
-        description="Equation for the measured signal",
-        tag="signal_equation",
+    signal_law: MathML = element(
+        description=(
+            "Law describing the signal intensity as a function of the concentration"
+        ),
+        tag="math",
         json_schema_extra=dict(),
     )
 
@@ -69,12 +73,6 @@ class CalibrationModel(sdRDM.DataModel, search_mode="unordered"):
         tag="statistics",
         json_schema_extra=dict(),
     )
-    _repo: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion"
-    )
-    _commit: Optional[str] = PrivateAttr(
-        default="4ed3b05df7c2193f65a5458ec8db278a965ab7b0"
-    )
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)
 
     @model_validator(mode="after")
@@ -93,7 +91,7 @@ class CalibrationModel(sdRDM.DataModel, search_mode="unordered"):
         name: Optional[str] = None,
         value: Optional[float] = None,
         init_value: Optional[float] = None,
-        standard_error: Optional[float] = None,
+        stderr: Optional[float] = None,
         lower_bound: Optional[float] = None,
         upper_bound: Optional[float] = None,
         id: Optional[str] = None,
@@ -106,7 +104,7 @@ class CalibrationModel(sdRDM.DataModel, search_mode="unordered"):
             name (): Name of the parameter. Defaults to None
             value (): Value of the parameter. Defaults to None
             init_value (): Initial value of the parameter. Defaults to None
-            standard_error (): Standard error of the parameter. Defaults to None
+            stderr (): 1-sigma standard error of the parameter. Defaults to None
             lower_bound (): Lower bound of the parameter. Defaults to None
             upper_bound (): Upper bound of the parameter. Defaults to None
         """
@@ -114,7 +112,7 @@ class CalibrationModel(sdRDM.DataModel, search_mode="unordered"):
             "name": name,
             "value": value,
             "init_value": init_value,
-            "standard_error": standard_error,
+            "stderr": stderr,
             "lower_bound": lower_bound,
             "upper_bound": upper_bound,
         }
@@ -381,3 +379,27 @@ class CalibrationModel(sdRDM.DataModel, search_mode="unordered"):
     @property
     def param_dict(self):
         return {p.name: p.value for p in self.parameters}
+
+
+if __name__ == "__main__":
+    instance = CalibrationModel(
+        name="sdf",
+        signal_law="a*x+b",
+        calibration_range=CalibrationRange(conc_lower=0, conc_upper=10),
+        parameters=[
+            Parameter(name="a", value=1, lower_bound=0, upper_bound=10),
+            Parameter(name="b", value=0, lower_bound=0, upper_bound=10),
+        ],
+    )
+
+    # sympols = instance.signal_law.symbols
+    # print(f"ths symbols are: {sympols}")
+
+    params = dict(a=1, b=2, x=4)
+    print(f"the result is: {instance.signal_law(**params)}")
+
+    sympy_exp = instance.signal_law.to_sympy()
+    print(f"the sympy expression is: {sympy_exp}")
+    print(f"the type is {type(sympy_exp)}")
+
+    print(f"the result is: {instance}")

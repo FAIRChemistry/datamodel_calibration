@@ -9,9 +9,9 @@ from sdRDM.base.listplus import ListPlus
 from sdRDM.base.utils import forge_signature
 from sdRDM.tools.utils import elem2dict
 from datetime import datetime as Datetime
+from .calibrationmodel import CalibrationModel
 from .signaltype import SignalType
 from .sample import Sample
-from .calibrationmodel import CalibrationModel
 
 
 @forge_signature
@@ -23,12 +23,6 @@ class Standard(sdRDM.DataModel, search_mode="unordered"):
         description="Unique identifier of the given object.",
         default_factory=lambda: str(uuid4()),
         xml="@id",
-    )
-
-    species_id: str = element(
-        description="ID of the species",
-        tag="species_id",
-        json_schema_extra=dict(),
     )
 
     name: str = element(
@@ -76,24 +70,17 @@ class Standard(sdRDM.DataModel, search_mode="unordered"):
         json_schema_extra=dict(multiple=True),
     )
 
-    smiles: Optional[str] = element(
-        description="SMILES representation of the species",
-        default=None,
-        tag="smiles",
-        json_schema_extra=dict(),
-    )
-
-    inchi: Optional[str] = element(
-        description="InChI representation of the species",
-        default=None,
-        tag="inchi",
-        json_schema_extra=dict(),
-    )
-
     created: Optional[Datetime] = element(
-        description="Date when the standard curve was measured",
+        description="Date when the this file was created",
         default=None,
         tag="created",
+        json_schema_extra=dict(),
+    )
+
+    modified: Optional[Datetime] = element(
+        description="Date when the this file was last modified",
+        default=None,
+        tag="modified",
         json_schema_extra=dict(),
     )
 
@@ -102,12 +89,6 @@ class Standard(sdRDM.DataModel, search_mode="unordered"):
         default=None,
         tag="calibration_result",
         json_schema_extra=dict(),
-    )
-    _repo: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion"
-    )
-    _commit: Optional[str] = PrivateAttr(
-        default="4ed3b05df7c2193f65a5458ec8db278a965ab7b0"
     )
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)
 
@@ -124,8 +105,9 @@ class Standard(sdRDM.DataModel, search_mode="unordered"):
 
     def add_to_samples(
         self,
+        species_id: str,
         concentration: float,
-        conc_unit: str,
+        unit: str,
         signal: float,
         id: Optional[str] = None,
     ) -> Sample:
@@ -134,13 +116,15 @@ class Standard(sdRDM.DataModel, search_mode="unordered"):
 
         Args:
             id (str): Unique identifier of the 'Sample' object. Defaults to 'None'.
+            species_id (): ID of the species.
             concentration (): Concentration of the species.
-            conc_unit (): Concentration unit.
+            unit (): Concentration unit.
             signal (): Measured signals at a given concentration of the species.
         """
         params = {
+            "species_id": species_id,
             "concentration": concentration,
-            "conc_unit": conc_unit,
+            "unit": unit,
             "signal": signal,
         }
         if id is not None:

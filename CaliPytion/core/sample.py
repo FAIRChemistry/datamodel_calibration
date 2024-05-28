@@ -21,15 +21,21 @@ class Sample(sdRDM.DataModel, search_mode="unordered"):
         xml="@id",
     )
 
+    species_id: str = element(
+        description="ID of the species",
+        tag="species_id",
+        json_schema_extra=dict(),
+    )
+
     concentration: float = element(
         description="Concentration of the species",
         tag="concentration",
         json_schema_extra=dict(),
     )
 
-    conc_unit: str = element(
+    unit: str = element(
         description="Concentration unit",
-        tag="conc_unit",
+        tag="unit",
         json_schema_extra=dict(),
     )
 
@@ -37,12 +43,6 @@ class Sample(sdRDM.DataModel, search_mode="unordered"):
         description="Measured signals at a given concentration of the species",
         tag="signal",
         json_schema_extra=dict(),
-    )
-    _repo: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion"
-    )
-    _commit: Optional[str] = PrivateAttr(
-        default="4ed3b05df7c2193f65a5458ec8db278a965ab7b0"
     )
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)
 

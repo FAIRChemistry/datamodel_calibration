@@ -42,10 +42,10 @@ class Parameter(sdRDM.DataModel, search_mode="unordered"):
         json_schema_extra=dict(),
     )
 
-    standard_error: Optional[float] = element(
-        description="Standard error of the parameter",
+    stderr: Optional[float] = element(
+        description="1-sigma standard error of the parameter",
         default=None,
-        tag="standard_error",
+        tag="stderr",
         json_schema_extra=dict(),
     )
 
@@ -61,12 +61,6 @@ class Parameter(sdRDM.DataModel, search_mode="unordered"):
         default=None,
         tag="upper_bound",
         json_schema_extra=dict(),
-    )
-    _repo: Optional[str] = PrivateAttr(
-        default="https://github.com/FAIRChemistry/CaliPytion"
-    )
-    _commit: Optional[str] = PrivateAttr(
-        default="4ed3b05df7c2193f65a5458ec8db278a965ab7b0"
     )
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)
 

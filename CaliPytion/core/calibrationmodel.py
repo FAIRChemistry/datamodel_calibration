@@ -1,33 +1,36 @@
-import sdRDM
+from typing import Dict, List, Optional, Tuple
+from uuid import uuid4
 
 import numpy as np
+import sdRDM
 import sympy as sp
-from typing import Dict, List, Optional, Tuple
-from pydantic import PrivateAttr, model_validator
-from uuid import uuid4
-from pydantic_xml import attr, element
-from lxml.etree import _Element
-from sdRDM.base.listplus import ListPlus
-from sdRDM.base.utils import forge_signature
-from sdRDM.tools.utils import elem2dict
-from lmfit import Model as LmfitModel
-from lmfit.model import ModelResult
-from sdRDM.base.datatypes import MathML
-
 from calipytion.core.calibrationrange import CalibrationRange
 from calipytion.core.fitstatistics import FitStatistics
 from calipytion.core.parameter import Parameter
+from lmfit import Model as LmfitModel
+from lmfit.model import ModelResult
+from lxml.etree import _Element
+from pydantic import PrivateAttr, model_validator
+from pydantic_xml import attr, element
+from sdRDM.base.listplus import ListPlus
+from sdRDM.tools.utils import elem2dict
+
+from .calibrationrange import CalibrationRange
+from .fitstatistics import FitStatistics
+from .parameter import Parameter
 
 
-@forge_signature
-class CalibrationModel(sdRDM.DataModel, search_mode="unordered"):
+class CalibrationModel(
+    sdRDM.DataModel,
+    search_mode="unordered",
+):
     """"""
 
     id: Optional[str] = attr(
         name="id",
+        alias="@id",
         description="Unique identifier of the given object.",
         default_factory=lambda: str(uuid4()),
-        xml="@id",
     )
 
     name: str = element(
@@ -36,11 +39,11 @@ class CalibrationModel(sdRDM.DataModel, search_mode="unordered"):
         json_schema_extra=dict(),
     )
 
-    signal_law: MathML = element(
+    signal_law: str = element(
         description=(
             "Law describing the signal intensity as a function of the concentration"
         ),
-        tag="math",
+        tag="signal_law",
         json_schema_extra=dict(),
     )
 
@@ -48,7 +51,9 @@ class CalibrationModel(sdRDM.DataModel, search_mode="unordered"):
         description="Parameters of the calibration equation",
         default_factory=ListPlus,
         tag="parameters",
-        json_schema_extra=dict(multiple=True),
+        json_schema_extra=dict(
+            multiple=True,
+        ),
     )
 
     was_fitted: Optional[bool] = element(
@@ -73,17 +78,26 @@ class CalibrationModel(sdRDM.DataModel, search_mode="unordered"):
         tag="statistics",
         json_schema_extra=dict(),
     )
+
+    _repo: Optional[str] = PrivateAttr(
+        default="https://github.com/FAIRChemistry/CaliPytion"
+    )
+    _commit: Optional[str] = PrivateAttr(
+        default="6f0989db7cb73dc84b32fd3c4cdd72d759832e0a"
+    )
+
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)
 
     @model_validator(mode="after")
     def _parse_raw_xml_data(self):
         for attr, value in self:
             if isinstance(value, (ListPlus, list)) and all(
-                (isinstance(i, _Element) for i in value)
+                isinstance(i, _Element) for i in value
             ):
                 self._raw_xml_data[attr] = [elem2dict(i) for i in value]
             elif isinstance(value, _Element):
                 self._raw_xml_data[attr] = elem2dict(value)
+
         return self
 
     def add_to_parameters(
@@ -95,6 +109,7 @@ class CalibrationModel(sdRDM.DataModel, search_mode="unordered"):
         lower_bound: Optional[float] = None,
         upper_bound: Optional[float] = None,
         id: Optional[str] = None,
+        **kwargs,
     ) -> Parameter:
         """
         This method adds an object of type 'Parameter' to attribute parameters
@@ -108,6 +123,7 @@ class CalibrationModel(sdRDM.DataModel, search_mode="unordered"):
             lower_bound (): Lower bound of the parameter. Defaults to None
             upper_bound (): Upper bound of the parameter. Defaults to None
         """
+
         params = {
             "name": name,
             "value": value,
@@ -116,9 +132,14 @@ class CalibrationModel(sdRDM.DataModel, search_mode="unordered"):
             "lower_bound": lower_bound,
             "upper_bound": upper_bound,
         }
+
         if id is not None:
             params["id"] = id
-        self.parameters.append(Parameter(**params))
+
+        obj = Parameter(**params)
+
+        self.parameters.append(obj)
+
         return self.parameters[-1]
 
     def add_parameter(

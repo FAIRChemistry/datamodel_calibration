@@ -29,7 +29,7 @@ classDiagram
     
     class CalibrationModel {
         +string name*
-        +MathML signal_law*
+        +string signal_law*
         +Parameter[0..*] parameters
         +boolean was_fitted
         +CalibrationRange calibration_range

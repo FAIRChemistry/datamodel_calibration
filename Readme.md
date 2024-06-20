@@ -1,6 +1,5 @@
 # CaliPytion - Tool for Calibration Model Creation, Application, and Documentation
 
-[![Generate API](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/generate_api.yaml/badge.svg)](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/generate_api.yaml)
 [![Tests](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/tests.yaml/badge.svg)](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/tests.yaml)
 [![PyPI version](https://badge.fury.io/py/CaliPytion.svg)](https://badge.fury.io/py/CaliPytion)
 [![Documentation](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/make_docs.yaml/badge.svg)](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/make_docs.yaml)
@@ -14,7 +13,7 @@ Key functionalities of CaliPytion include:
 - **Model Fitting and Visualization**: Automatically fits different polynomial models to the data and provides interactive plots for visual comparison of these models.
 - **Detailed Reporting**: Generates reports including the Akaike Information Criterion (AIC) and root-mean-square deviation (RMSD), aiding in the comparison of models based on fit quality.
 - **Model Selection and Application**: Integrates the chosen model into the Standard object, using it for precise concentration calculations from measured signals. Signals outside the valid calibration are replaced with NaN values if model extrapolation is disabled.
-- **Export and Documentation**: Allows for the export of calibration models in multiple formats like Analytical Information Markup Language (AnIML), YAML, JSON, or XML, facilitating documentation and sharing.
+- **Export and Documentation**: Allows for the export of calibration models in multiple formats like Analytical Information Markup Language YAML, JSON, or XML, facilitating documentation and sharing.
 
 ## ⚡️ Quick Start
 

@@ -6,16 +6,14 @@ from lxml.etree import _Element
 from pydantic import PrivateAttr, model_validator
 from pydantic_xml import attr, element
 from sdRDM.base.listplus import ListPlus
-from sdRDM.base.utils import forge_signature
 from sdRDM.tools.utils import elem2dict
 
 
-@forge_signature
 class Parameter(
     sdRDM.DataModel,
     search_mode="unordered",
 ):
-    """"""
+    """The Parameter describes the parameters of the calibration equation."""
 
     id: Optional[str] = attr(
         name="id",
@@ -24,10 +22,10 @@ class Parameter(
         default_factory=lambda: str(uuid4()),
     )
 
-    name: Optional[str] = element(
+    symbol: Optional[str] = element(
         description="Name of the parameter",
         default=None,
-        tag="name",
+        tag="symbol",
         json_schema_extra=dict(),
     )
 
@@ -53,14 +51,14 @@ class Parameter(
     )
 
     lower_bound: Optional[float] = element(
-        description="Lower bound of the parameter",
+        description="Lower bound of the parameter prior to fitting",
         default=None,
         tag="lower_bound",
         json_schema_extra=dict(),
     )
 
     upper_bound: Optional[float] = element(
-        description="Upper bound of the parameter",
+        description="Upper bound of the parameter prior to fitting",
         default=None,
         tag="upper_bound",
         json_schema_extra=dict(),
@@ -70,7 +68,7 @@ class Parameter(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="adb1e995a49616fd3776b8b29a9a80b51ace21cd"
+        default="765acf119025b1be619bbd841fc9a7e73c718fcc"
     )
 
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)

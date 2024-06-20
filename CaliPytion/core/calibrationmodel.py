@@ -6,7 +6,6 @@ from lxml.etree import _Element
 from pydantic import PrivateAttr, model_validator
 from pydantic_xml import attr, element
 from sdRDM.base.listplus import ListPlus
-from sdRDM.base.utils import forge_signature
 from sdRDM.tools.utils import elem2dict
 
 from .calibrationrange import CalibrationRange
@@ -14,12 +13,11 @@ from .fitstatistics import FitStatistics
 from .parameter import Parameter
 
 
-@forge_signature
 class CalibrationModel(
     sdRDM.DataModel,
     search_mode="unordered",
 ):
-    """"""
+    """The CalibrationModel describes the calibration model which was fitted to the calibration data. The calibration model consists of the signal law and harbors the parameters of the calibration equation. The calibration range defines the concentration and signal bounds in which the calibration model is valid."""
 
     id: Optional[str] = attr(
         name="id",
@@ -34,10 +32,18 @@ class CalibrationModel(
         json_schema_extra=dict(),
     )
 
-    signal_law: str = element(
+    molecule_id: Optional[str] = element(
+        description="ID of the molecule like ChEBI ID.",
+        default=None,
+        tag="molecule_id",
+        json_schema_extra=dict(),
+    )
+
+    signal_law: Optional[str] = element(
         description=(
             "Law describing the signal intensity as a function of the concentration"
         ),
+        default=None,
         tag="signal_law",
         json_schema_extra=dict(),
     )
@@ -49,6 +55,13 @@ class CalibrationModel(
         json_schema_extra=dict(
             multiple=True,
         ),
+    )
+
+    molecule_symbol: Optional[str] = element(
+        description="Symbol representing the molecule in the signal law",
+        default=None,
+        tag="molecule_symbol",
+        json_schema_extra=dict(),
     )
 
     was_fitted: Optional[bool] = element(
@@ -78,7 +91,7 @@ class CalibrationModel(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="adb1e995a49616fd3776b8b29a9a80b51ace21cd"
+        default="765acf119025b1be619bbd841fc9a7e73c718fcc"
     )
 
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)
@@ -97,7 +110,7 @@ class CalibrationModel(
 
     def add_to_parameters(
         self,
-        name: Optional[str] = None,
+        symbol: Optional[str] = None,
         value: Optional[float] = None,
         init_value: Optional[float] = None,
         stderr: Optional[float] = None,
@@ -111,16 +124,16 @@ class CalibrationModel(
 
         Args:
             id (str): Unique identifier of the 'Parameter' object. Defaults to 'None'.
-            name (): Name of the parameter. Defaults to None
+            symbol (): Name of the parameter. Defaults to None
             value (): Value of the parameter. Defaults to None
             init_value (): Initial value of the parameter. Defaults to None
             stderr (): 1-sigma standard error of the parameter. Defaults to None
-            lower_bound (): Lower bound of the parameter. Defaults to None
-            upper_bound (): Upper bound of the parameter. Defaults to None
+            lower_bound (): Lower bound of the parameter prior to fitting. Defaults to None
+            upper_bound (): Upper bound of the parameter prior to fitting. Defaults to None
         """
 
         params = {
-            "name": name,
+            "symbol": symbol,
             "value": value,
             "init_value": init_value,
             "stderr": stderr,

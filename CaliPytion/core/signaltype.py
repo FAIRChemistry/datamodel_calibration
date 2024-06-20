@@ -3,6 +3,6 @@ from enum import Enum
 
 class SignalType(Enum):
 
-    ABSORBANCE = "Absorbance"
-    TRANSMITTANCE = "Transmittance"
-    REFLECTANCE = "Reflectance"
+    ABSORBANCE = "absorbance"
+    TRANSMITTANCE = "transmittance"
+    REFLECTANCE = "reflectance"

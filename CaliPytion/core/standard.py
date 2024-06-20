@@ -7,7 +7,6 @@ from lxml.etree import _Element
 from pydantic import PrivateAttr, model_validator
 from pydantic_xml import attr, element
 from sdRDM.base.listplus import ListPlus
-from sdRDM.base.utils import forge_signature
 from sdRDM.tools.utils import elem2dict
 
 from .calibrationmodel import CalibrationModel
@@ -15,12 +14,11 @@ from .sample import Sample
 from .signaltype import SignalType
 
 
-@forge_signature
 class Standard(
     sdRDM.DataModel,
     search_mode="unordered",
 ):
-    """Description of a standard measurement for an analyte"""
+    """The Standard describes the calibration data and the calibration model. The calibration data consists of the measured signal intensities at different concentrations of the molecule. The calibration model describes the relationship between the signal intensity and the concentration of the molecule. Furthermore, the valid concentration range defined by the underlying data is given."""
 
     id: Optional[str] = attr(
         name="id",
@@ -29,27 +27,33 @@ class Standard(
         default_factory=lambda: str(uuid4()),
     )
 
-    name: str = element(
-        description="Name of the species",
-        tag="name",
+    molecule_id: str = element(
+        description="URI of the molecule (e.g. PubChem or ChEBI).",
+        tag="molecule_id",
+        json_schema_extra=dict(),
+    )
+
+    molecule_symbol: str = element(
+        description="Symbol representing the molecule in the calibration equation.",
+        tag="molecule_symbol",
         json_schema_extra=dict(),
     )
 
     ph: float = element(
-        description="pH value of the solution",
+        description="pH value of the solution.",
         tag="ph",
         json_schema_extra=dict(),
     )
 
     temperature: float = element(
-        description="Temperature during measurement",
+        description="Temperature during calibration.",
         tag="temperature",
         json_schema_extra=dict(),
     )
 
-    temperature_unit: str = element(
-        description="Temperature unit",
-        tag="temperature_unit",
+    temp_unit: str = element(
+        description="Temperature unit.",
+        tag="temp_unit",
         json_schema_extra=dict(),
     )
 
@@ -57,6 +61,13 @@ class Standard(
         description="Detection wavelength in nm",
         default=None,
         tag="wavelength",
+        json_schema_extra=dict(),
+    )
+
+    molecule_name: Optional[str] = element(
+        description="Name of the molecule",
+        default=None,
+        tag="molecule_name",
         json_schema_extra=dict(),
     )
 
@@ -68,7 +79,7 @@ class Standard(
     )
 
     samples: List[Sample] = element(
-        description="Measured signal, at a given concentration of the species",
+        description="Measured signal, at a given concentration of the molecule",
         default_factory=ListPlus,
         tag="samples",
         json_schema_extra=dict(
@@ -77,23 +88,16 @@ class Standard(
     )
 
     created: Optional[Datetime] = element(
-        description="Date when the this file was created",
+        description="Date when this file was created",
         default=None,
         tag="created",
         json_schema_extra=dict(),
     )
 
-    modified: Optional[Datetime] = element(
-        description="Date when the this file was last modified",
-        default=None,
-        tag="modified",
-        json_schema_extra=dict(),
-    )
-
-    calibration_result: Optional[CalibrationModel] = element(
+    result: Optional[CalibrationModel] = element(
         description="The model which was used for concentration determination",
         default=None,
-        tag="calibration_result",
+        tag="result",
         json_schema_extra=dict(),
     )
 
@@ -101,7 +105,7 @@ class Standard(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="adb1e995a49616fd3776b8b29a9a80b51ace21cd"
+        default="765acf119025b1be619bbd841fc9a7e73c718fcc"
     )
 
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)
@@ -120,9 +124,8 @@ class Standard(
 
     def add_to_samples(
         self,
-        species_id: str,
         concentration: float,
-        unit: str,
+        conc_unit: str,
         signal: float,
         id: Optional[str] = None,
         **kwargs,
@@ -132,16 +135,14 @@ class Standard(
 
         Args:
             id (str): Unique identifier of the 'Sample' object. Defaults to 'None'.
-            species_id (): ID of the species.
-            concentration (): Concentration of the species.
-            unit (): Concentration unit.
-            signal (): Measured signals at a given concentration of the species.
+            concentration (): Concentration of the molecule..
+            conc_unit (): Concentration unit.
+            signal (): Measured signals at a given concentration of the molecule.
         """
 
         params = {
-            "species_id": species_id,
             "concentration": concentration,
-            "unit": unit,
+            "conc_unit": conc_unit,
             "signal": signal,
         }
 

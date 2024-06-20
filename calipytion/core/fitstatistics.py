@@ -50,6 +50,13 @@ class FitStatistics(
         json_schema_extra=dict(),
     )
 
+    _repo: Optional[str] = PrivateAttr(
+        default="https://github.com/FAIRChemistry/CaliPytion"
+    )
+    _commit: Optional[str] = PrivateAttr(
+        default="a585b33c1c23f94d0f82ae18fd86ca3a2eb9188b"
+    )
+
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)
 
     @model_validator(mode="after")

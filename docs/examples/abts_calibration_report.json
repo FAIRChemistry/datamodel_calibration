@@ -1,0 +1,103 @@
+{
+  "@id": "353d0326-02e4-41a6-807c-abd2f9a5ad88",
+  "molecule_id": "https://pubchem.ncbi.nlm.nih.gov/compound/5464076",
+  "molecule_symbol": "ABTS",
+  "ph": 3.0,
+  "temperature": 25.0,
+  "temp_unit": "C",
+  "samples": [
+    {
+      "@id": "8420e586-6c09-41b9-8ec7-176d894f19a1",
+      "concentration": 0.0,
+      "conc_unit": "\u00b5mol/l",
+      "signal": 0.0011
+    },
+    {
+      "@id": "64e5ef82-0a39-40a9-bed2-216b875c9c7c",
+      "concentration": 5.0,
+      "conc_unit": "\u00b5mol/l",
+      "signal": 0.079
+    },
+    {
+      "@id": "ef995c2f-c402-4810-b7b4-2edeafba477a",
+      "concentration": 10.0,
+      "conc_unit": "\u00b5mol/l",
+      "signal": 0.1652
+    },
+    {
+      "@id": "f7c9a5b0-9483-41ea-b872-cf97dbc432fc",
+      "concentration": 15.0,
+      "conc_unit": "\u00b5mol/l",
+      "signal": 0.2502
+    },
+    {
+      "@id": "db4d4042-b586-42c6-b794-e601809e2bfe",
+      "concentration": 25.0,
+      "conc_unit": "\u00b5mol/l",
+      "signal": 0.4306
+    },
+    {
+      "@id": "c6e754a9-02cd-480c-b33d-0df0c82241fc",
+      "concentration": 50.0,
+      "conc_unit": "\u00b5mol/l",
+      "signal": 0.9713
+    },
+    {
+      "@id": "1da4c29d-dce3-49de-a273-85a6344ec630",
+      "concentration": 75.0,
+      "conc_unit": "\u00b5mol/l",
+      "signal": 1.4482
+    },
+    {
+      "@id": "7d054839-8f58-412e-99e6-f1fe0e84c15c",
+      "concentration": 100.0,
+      "conc_unit": "\u00b5mol/l",
+      "signal": 1.9507
+    },
+    {
+      "@id": "1a798f88-3d95-47ca-a036-7a065b9b70de",
+      "concentration": 150.0,
+      "conc_unit": "\u00b5mol/l",
+      "signal": 2.8796
+    },
+    {
+      "@id": "de3ef107-de5e-4acf-a0f2-049215eb516c",
+      "concentration": 200.0,
+      "conc_unit": "\u00b5mol/l",
+      "signal": 3.5045
+    }
+  ],
+  "result": {
+    "@id": "d2d211f5-4acf-4484-a087-69f5ec24e86c",
+    "name": "linear",
+    "molecule_id": "https://pubchem.ncbi.nlm.nih.gov/compound/5464076",
+    "signal_law": "a * ABTS",
+    "parameters": [
+      {
+        "@id": "bca79452-c0b7-4729-929e-5530657b9840",
+        "symbol": "a",
+        "value": 0.01840267954609242,
+        "init_value": 1.0,
+        "stderr": 0.0002928673614116712,
+        "lower_bound": -1e-09,
+        "upper_bound": 1000000.0
+      }
+    ],
+    "molecule_symbol": "ABTS",
+    "was_fitted": true,
+    "calibration_range": {
+      "@id": "76c7e3ab-26ec-48d5-aa78-f4028e937c16",
+      "conc_lower": 0.0,
+      "conc_upper": 200.0,
+      "signal_lower": 0.0011,
+      "signal_upper": 3.5045
+    },
+    "statistics": {
+      "@id": "5087cae4-c4d0-4377-afc3-3e434561b873",
+      "aic": -48.10211678626328,
+      "bic": -47.79953169326924,
+      "r2": 0.9952557084776232,
+      "rmsd": 0.08166695395354767
+    }
+  }
+}

@@ -8,29 +8,31 @@ classDiagram
     CalibrationModel *-- Parameter
     
     class Standard {
-        +string name*
+        +string molecule_id*
+        +string molecule_symbol*
         +float ph*
         +float temperature*
-        +str temperature_unit*
+        +str temp_unit*
         +float wavelength
+        +string molecule_name
         +SignalType signal_type
         +Sample[0..*] samples
         +datetime created
-        +datetime modified
-        +CalibrationModel calibration_result
+        +CalibrationModel result
     }
     
     class Sample {
-        +string species_id*
         +float concentration*
-        +str unit*
+        +str conc_unit*
         +float signal*
     }
     
     class CalibrationModel {
         +string name*
-        +string signal_law*
+        +string molecule_id
+        +string signal_law
         +Parameter[0..*] parameters
+        +string molecule_symbol
         +boolean was_fitted
         +CalibrationRange calibration_range
         +FitStatistics statistics
@@ -51,7 +53,7 @@ classDiagram
     }
     
     class Parameter {
-        +string name
+        +string symbol
         +float value
         +float init_value
         +float stderr

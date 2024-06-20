@@ -1,0 +1,70 @@
+{
+  "properties": {
+    "id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Unique identifier of the given object.",
+      "title": "Id"
+    },
+    "aic": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Akaike information criterion",
+      "title": "Aic"
+    },
+    "bic": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Bayesian information criterion",
+      "title": "Bic"
+    },
+    "r2": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Coefficient of determination",
+      "title": "R2"
+    },
+    "rmsd": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Root mean square deviation",
+      "title": "Rmsd"
+    }
+  },
+  "title": "FitStatistics",
+  "type": "object"
+}

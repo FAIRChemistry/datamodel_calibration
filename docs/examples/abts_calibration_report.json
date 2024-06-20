@@ -1,0 +1,193 @@
+{
+  "@context": {
+    "Standard": "https://github.com/FAIRChemistry/CaliPytion/Standard"
+  },
+  "@id": "68669d6c-2e16-466e-8977-f47cde1c34ea",
+  "@type": [
+    "Standard"
+  ],
+  "molecule_id": "https://pubchem.ncbi.nlm.nih.gov/compound/5464076",
+  "molecule_symbol": "ABTS",
+  "ph": 3.0,
+  "result": {
+    "@context": {
+      "CalibrationModel": "https://github.com/FAIRChemistry/CaliPytion/CalibrationModel"
+    },
+    "@id": "6f5e23b0-4ea3-447f-bdbe-459602b6ee15",
+    "@type": [
+      "CalibrationModel"
+    ],
+    "calibration_range": {
+      "@context": {
+        "CalibrationRange": "https://github.com/FAIRChemistry/CaliPytion/CalibrationRange"
+      },
+      "@id": "9a43b7a4-4c14-42cd-b7f6-d0079272ba71",
+      "@type": [
+        "CalibrationRange"
+      ],
+      "conc_lower": 0.0,
+      "conc_upper": 200.0,
+      "signal_lower": 0.0011,
+      "signal_upper": 3.5045
+    },
+    "molecule_id": "https://pubchem.ncbi.nlm.nih.gov/compound/5464076",
+    "molecule_symbol": "ABTS",
+    "name": "linear",
+    "parameters": [
+      {
+        "@context": {
+          "Parameter": "https://github.com/FAIRChemistry/CaliPytion/Parameter"
+        },
+        "@id": "5c9dc1bb-dccc-4713-9892-f636f1ee6f08",
+        "@type": [
+          "Parameter"
+        ],
+        "init_value": 1.0,
+        "lower_bound": -1e-09,
+        "stderr": 0.0002928673614116712,
+        "symbol": "a",
+        "upper_bound": 1000000.0,
+        "value": 0.01840267954609242
+      }
+    ],
+    "signal_law": "a * ABTS",
+    "statistics": {
+      "@context": {
+        "FitStatistics": "https://github.com/FAIRChemistry/CaliPytion/FitStatistics"
+      },
+      "@id": "d5d85564-21b8-482d-ade0-bd4b188a97b5",
+      "@type": [
+        "FitStatistics"
+      ],
+      "aic": -48.10211678626328,
+      "bic": -47.79953169326924,
+      "r2": 0.9952557084776232,
+      "rmsd": 0.08166695395354767
+    },
+    "was_fitted": true
+  },
+  "samples": [
+    {
+      "@context": {
+        "Sample": "https://github.com/FAIRChemistry/CaliPytion/Sample"
+      },
+      "@id": "76be6482-ad6a-4e5a-ba7d-a4af6b04f1bd",
+      "@type": [
+        "Sample"
+      ],
+      "conc_unit": "\u00b5mol/l",
+      "concentration": 0.0,
+      "signal": 0.0011
+    },
+    {
+      "@context": {
+        "Sample": "https://github.com/FAIRChemistry/CaliPytion/Sample"
+      },
+      "@id": "7933d47d-0c4a-4930-9390-749a96b0ca63",
+      "@type": [
+        "Sample"
+      ],
+      "conc_unit": "\u00b5mol/l",
+      "concentration": 5.0,
+      "signal": 0.079
+    },
+    {
+      "@context": {
+        "Sample": "https://github.com/FAIRChemistry/CaliPytion/Sample"
+      },
+      "@id": "983a1010-6e2c-4031-b903-3e0e6d5d0aa1",
+      "@type": [
+        "Sample"
+      ],
+      "conc_unit": "\u00b5mol/l",
+      "concentration": 10.0,
+      "signal": 0.1652
+    },
+    {
+      "@context": {
+        "Sample": "https://github.com/FAIRChemistry/CaliPytion/Sample"
+      },
+      "@id": "3c8f04c1-99be-4cf9-9659-07fdb47886a7",
+      "@type": [
+        "Sample"
+      ],
+      "conc_unit": "\u00b5mol/l",
+      "concentration": 15.0,
+      "signal": 0.2502
+    },
+    {
+      "@context": {
+        "Sample": "https://github.com/FAIRChemistry/CaliPytion/Sample"
+      },
+      "@id": "bb71f32d-3ac9-4de2-91c4-0bb251c9dd1b",
+      "@type": [
+        "Sample"
+      ],
+      "conc_unit": "\u00b5mol/l",
+      "concentration": 25.0,
+      "signal": 0.4306
+    },
+    {
+      "@context": {
+        "Sample": "https://github.com/FAIRChemistry/CaliPytion/Sample"
+      },
+      "@id": "9348865b-225d-4318-96ea-cf4743f42c33",
+      "@type": [
+        "Sample"
+      ],
+      "conc_unit": "\u00b5mol/l",
+      "concentration": 50.0,
+      "signal": 0.9713
+    },
+    {
+      "@context": {
+        "Sample": "https://github.com/FAIRChemistry/CaliPytion/Sample"
+      },
+      "@id": "722588ed-e804-4782-b99a-2691bafba519",
+      "@type": [
+        "Sample"
+      ],
+      "conc_unit": "\u00b5mol/l",
+      "concentration": 75.0,
+      "signal": 1.4482
+    },
+    {
+      "@context": {
+        "Sample": "https://github.com/FAIRChemistry/CaliPytion/Sample"
+      },
+      "@id": "2c66bab8-eee8-493e-ae6d-5e6b3825c12e",
+      "@type": [
+        "Sample"
+      ],
+      "conc_unit": "\u00b5mol/l",
+      "concentration": 100.0,
+      "signal": 1.9507
+    },
+    {
+      "@context": {
+        "Sample": "https://github.com/FAIRChemistry/CaliPytion/Sample"
+      },
+      "@id": "d520b8e7-f271-4666-8fb4-9ac1cd5f6952",
+      "@type": [
+        "Sample"
+      ],
+      "conc_unit": "\u00b5mol/l",
+      "concentration": 150.0,
+      "signal": 2.8796
+    },
+    {
+      "@context": {
+        "Sample": "https://github.com/FAIRChemistry/CaliPytion/Sample"
+      },
+      "@id": "d8d1c8b5-7c91-4dcd-b887-63f7a444c89c",
+      "@type": [
+        "Sample"
+      ],
+      "conc_unit": "\u00b5mol/l",
+      "concentration": 200.0,
+      "signal": 3.5045
+    }
+  ],
+  "temp_unit": "C",
+  "temperature": 25.0
+}

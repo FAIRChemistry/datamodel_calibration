@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+title: CaliPytion
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Max
+    family-names: Häussler
+    email: max.haeussler@ibtb.uni-stuttgart.de
+    affiliation: >-
+      Institute of Technical Biochemistry and Technical
+      Biochemistry, University of Stuttgart
+    orcid: 'https://orcid.org/0000-0001-7306-7503'
+repository-code: 'https://github.com/FAIRChemistry/CaliPytion'
+url: 'https://fairchemistry.github.io/CaliPytion/'
+abstract: >-
+  CaliPytion is a Python tool designed for analyzing the
+  relationship between measured signals and concentrations
+  using various calibration models. It operates on the
+  Standard data model, contining data of calibration
+  measurements and their respective conditions.
+keywords:
+  - calibration
+license: MIT
+commit: 304fbf276f7c7275584b817ca5318eff63198473
+version: 0.0.3
+date-released: '2024-02-13'

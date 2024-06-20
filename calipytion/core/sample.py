@@ -44,7 +44,7 @@ class Sample(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="43cb1091a78359e13950bd46231ef68e20360dfc"
+        default="33fc645c7b23ce854e54dbff3b19a7adb6bba08b"
     )
 
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)

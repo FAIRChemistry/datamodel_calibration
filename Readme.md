@@ -1,4 +1,4 @@
-# CaliPytion - Tool for Calibration Model Creation, Application, and Documentation
+# CaliPytion - Tool for creating and applying standard curves
 
 [![Tests](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/tests.yaml/badge.svg)](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/tests.yaml)
 [![PyPI version](https://badge.fury.io/py/CaliPytion.svg)](https://badge.fury.io/py/CaliPytion)

@@ -376,14 +376,9 @@ class Calibrator(BaseModel):
 
         console.print(table)
 
-    def visualize(self, _static: bool = False) -> None:
+    def visualize(self) -> None:
         """
         Visualizes the calibration curve and the residuals of the models.
-
-        Args:
-            path (str): Path to save the plot.
-            _static (bool, optional): Whether to show the plot in a static mode.
-                Defaults to False.
         """
         fig = make_subplots(
             rows=1,
@@ -557,7 +552,7 @@ class Calibrator(BaseModel):
 
         config = {
             "toImageButtonOptions": {
-                "format": "svg",  # one of png, svg, jpeg, webp
+                "format": "png",  # one of png, svg, jpeg, webp
                 "filename": f"{self.molecule_name}_calibration_curve",
                 # "height": 600,
                 # "width": 700,

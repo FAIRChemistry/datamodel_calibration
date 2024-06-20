@@ -3,9 +3,12 @@ repo_url: https://github.com/FAIRChemistry/CaliPytion/
 repo_name: FAIRChemistry/CaliPytion
 site_url: https://fairchemistry.github.io/CaliPytion/
 
+plugins:
+  - mkdocs-jupyter
+
 nav:
   - Home: index.md
-  - Getting Started: getting_started.md
+  - Getting Started: examples/quickstart.ipynb
   - Examples: examples.md
 
 theme:

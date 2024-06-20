@@ -54,7 +54,7 @@ class CalibrationRange(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="33fc645c7b23ce854e54dbff3b19a7adb6bba08b"
+        default="54236e63a3cb220e970932135023351830f03bf4"
     )
 
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)

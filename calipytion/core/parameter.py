@@ -68,7 +68,7 @@ class Parameter(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="5e12e8b638f992b5d868e0494b6290c620de6530"
+        default="465463be9525f12d8ed0776ebedc62b2044e9daf"
     )
 
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)

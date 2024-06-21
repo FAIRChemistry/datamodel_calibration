@@ -23,4 +23,8 @@ jobs:
           path: .cache
           key: ${{ github.ref }}
       - run: pip install mkdocs-material jupyter nbconvert mkdocs-jupyter
+<<<<<<< Updated upstream
       - run: mkdocs gh-deploy --force
+=======
+      - run: mkdocs gh-deploy --force
+>>>>>>> Stashed changes

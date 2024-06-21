@@ -54,7 +54,7 @@ class FitStatistics(
         default="https://github.com/FAIRChemistry/CaliPytion"
     )
     _commit: Optional[str] = PrivateAttr(
-        default="980959e98487dee71a92138065112ffc402baf1c"
+        default="eeccaa21fa7a42eb3ea92b0b70da21475a72206d"
     )
 
     _raw_xml_data: Dict = PrivateAttr(default_factory=dict)

@@ -1,8 +1,13 @@
-# Calibration Data Model
+---
+repo: "https://github.com/FAIRChemistry/CaliPytion"
+prefix: "calipy"
+---
+
+# Calibration Standard Data Model
 
 This data model structures data of standard measurements and spectra of spectroscopic measurements of a molecule.
 
-## Objects
+## Root objects
 
 ### Standard
 
@@ -21,7 +26,7 @@ The Standard describes the calibration data and the calibration model. The calib
   - Type: float
   - Description: Temperature during calibration.
 - **temp_unit**
-  - Type: str
+  - Type: UnitDefinition
   - Description: Temperature unit.
 - wavelength
   - Type: float
@@ -36,7 +41,7 @@ The Standard describes the calibration data and the calibration model. The calib
   - Type: Sample[]
   - Description: Measured signal, at a given concentration of the molecule
 - created
-  - Type: datetime
+  - Type: string
   - Description: Date when this file was created
 - result
   - Type: CalibrationModel
@@ -50,7 +55,7 @@ The Sample describes one measured signal-concentration pair.
   - Type: float
   - Description: Concentration of the molecule.
 - **conc_unit**
-  - Type: str
+  - Type: UnitDefinition
   - Description: Concentration unit
 - **signal**
   - Type: float

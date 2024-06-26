@@ -21,6 +21,7 @@ nbformat = "^5.10.4"
 mkdocs-material = "^9.5.8"
 pytest = "^8.0.0"
 mkdocs-jupyter = "^0.24.7"
+devtools = "^0.12.2"
 
 [build-system]
 requires = ["poetry-core"]

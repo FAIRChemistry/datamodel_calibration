@@ -1,4 +1,4 @@
-from calipytion.model import CalibrationModel
+from calipytion.core.calibrationmodel import CalibrationModel
 
 lower_bound = -1e-9
 upper_bound = 1e6

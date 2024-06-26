@@ -1,8 +1,6 @@
 """Module containing functions for mapping CaliPytion to AnIML"""
 
-
 from sdRDM import DataModel
-
 
 try:
     animl_lib = DataModel.from_git(

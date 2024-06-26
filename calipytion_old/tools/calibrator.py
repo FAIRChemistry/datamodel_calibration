@@ -1,20 +1,21 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
 
 import numpy as np
 import plotly.express as px
 import sympy as sp
 from plotly import graph_objects as go
 from plotly.subplots import make_subplots
-from pydantic import BaseModel, Field, ValidationInfo, field_validator, validator
+from pydantic import BaseModel, Field, validator
 from rich.console import Console
 from rich.table import Table
 
-from calipytion.model import CalibrationModel, CalibrationRange, Standard
+from calipytion.core.calibrationrange import CalibrationRange
 
-from calipytion.tools.fitter import Fitter
+from ..core.calibrationmodel import CalibrationModel
+from ..core.standard import Standard
+from ..tools.fit_model import CalModel
 
 LOGGER = logging.getLogger(__name__)
 
@@ -40,6 +41,7 @@ class Calibrator(BaseModel):
 
     concentrations: list[float] = Field(
         description="Concentrations of the standard",
+        multiple=True,
     )
 
     wavelength: float | None = Field(
@@ -53,12 +55,13 @@ class Calibrator(BaseModel):
 
     signals: list[float] = Field(
         description="Measured signals, corresponding to the concentrations",
+        multiple=True,
     )
 
     models: list[CalibrationModel] = Field(
         description="Models used for fitting",
-        default=[],
-        validate_default=True
+        multiple=True,
+        default=None,
     )
 
     cutoff: float | None = Field(
@@ -74,16 +77,15 @@ class Calibrator(BaseModel):
         description="Result oriented object, representing the data and the chosen model.",
     )
 
-    @field_validator("models")
-    @classmethod
-    def initialize_models(cls, v: list[CalibrationModel], info: ValidationInfo):
+    @validator("models", pre=True, always=True)
+    def initialize_models(cls, models, values):
         """
         Loads the default models if no models are provided and initializes the models
         with the according 'molecule_symbol' and 'molecule_id'.
         """
-        if not v:
-            molecule_symbol = info.data["molecule_symbol"]
-            molecule_id = info.data["molecule_id"]
+        if not models:
+            molecule_symbol = values.get("molecule_symbol")
+            molecule_id = values.get("molecule_id")
             from calipytion.tools.equations import (
                 cubic_model,
                 linear_model,
@@ -97,11 +99,12 @@ class Calibrator(BaseModel):
                 model.molecule_symbol = molecule_symbol
                 model.molecule_id = molecule_id
 
-            v = [linear_model, quadratic_model, cubic_model]
+            models = [linear_model, quadratic_model, cubic_model]
 
-            return v
+            return models
 
-    def model_post_init(self, __context: Any) -> None:
+    def __init__(self, **data):
+        super().__init__(**data)
         self._apply_cutoff()
 
     def add_model(
@@ -109,7 +112,7 @@ class Calibrator(BaseModel):
         name: str,
         equation: str,
         init_value: float = 1,
-        lower_bound: float = -1e-6,
+        lower_bound: float = 1e-9,
         upper_bound: float = 1e6,
     ) -> CalibrationModel:
         """Add a model to the list of models used for calibration."""
@@ -160,7 +163,18 @@ class Calibrator(BaseModel):
             self.signals = [self.signals[idx] for idx in below_cutoff_idx]
 
     def get_model(self, model_name: str) -> CalibrationModel:
-        """Returns a model by its name."""
+        """
+        Returns a model by its name.
+
+        Args:
+            model_name (str): Name of the model to be returned
+
+        Returns:
+            CalibrationModel: The model with the given name
+
+        Raises:
+            ValueError: If the model with the given name is not found
+        """
 
         for model in self.models:
             if model.name == model_name:
@@ -191,12 +205,13 @@ class Calibrator(BaseModel):
                 calibration range. Defaults to False.
 
         Returns:
-            list[float]: The calculated concentrations.
+            list[float]: _description_
         """
         if not isinstance(model, CalibrationModel):
             model = self.get_model(model)
 
-        np_signals = np.array(signals)
+        if not isinstance(signals, np.ndarray):
+            signals = np.array(signals)
 
         lower_bond = min(self.concentrations)
         upper_bond = max(self.concentrations)
@@ -211,9 +226,9 @@ class Calibrator(BaseModel):
                 f"{lower_bond} and {upper_bond} {self.conc_unit}."
             )
 
-        cal_model = Fitter.from_calibration_model(model)
+        cal_model = CalModel.from_calibration_model(model)
         concs = cal_model.calculate_roots(
-            y=np_signals,
+            y=signals,
             lower_bond=lower_bond,
             upper_bond=upper_bond,
             extrapolate=extrapolate,
@@ -232,12 +247,11 @@ class Calibrator(BaseModel):
         if self.standard:
             self._update_model_of_standard(model)
 
-        return concs.tolist()
+        return concs
 
     def _update_model_of_standard(self, model: CalibrationModel) -> None:
         """Updates the model of the standard object with the given model."""
 
-        assert self.standard, "No standard object found."
         assert (
             self.molecule_id == self.standard.molecule_id
         ), "The molecule id of the Calibrator and the Standard object must be the same."
@@ -629,17 +643,3 @@ class Calibrator(BaseModel):
         unit = unit.replace("umol", "µmol")
         unit = unit.replace("ug", "µg")
         return unit
-
-
-if __name__ == "__main__":
-    cal = Calibrator(
-        molecule_id="CHEBI:29103",
-        molecule_symbol="NADH",
-        molecule_name="Nicotinamide adenine dinucleotide",
-        conc_unit="µM",
-        concentrations=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-        signals=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-    )
-
-    from devtools import pprint
-    print(cal)

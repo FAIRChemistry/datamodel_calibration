@@ -3,13 +3,15 @@ repo_url: https://github.com/FAIRChemistry/CaliPytion/
 repo_name: FAIRChemistry/CaliPytion
 site_url: https://fairchemistry.github.io/CaliPytion/
 
-plugins:
-  - mkdocs-jupyter
-
 nav:
   - Home: index.md
   - Getting Started: examples/quickstart.ipynb
+  - Calibration Data Model: model.md
   - Examples: examples.md
+
+plugins:
+  - mkdocs-jupyter:
+    include_requirejs: true
 
 theme:
   name: material
@@ -25,11 +27,11 @@ theme:
     - content.code.select
     - content.code.copy
     - content.code.annotation
-  palette: 
+  palette:
     # Palette toggle for light mode
     - scheme: default
       toggle:
-        icon: material/brightness-7 
+        icon: material/brightness-7
         name: Switch to dark mode
 
     # Palette toggle for dark mode
@@ -37,7 +39,6 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
-
 
 markdown_extensions:
   - pymdownx.highlight:

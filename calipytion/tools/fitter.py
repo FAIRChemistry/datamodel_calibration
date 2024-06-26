@@ -156,7 +156,7 @@ class Fitter:
                 aic=lmfit_result.aic,  # type: ignore
                 bic=lmfit_result.bic,  # type: ignore
                 r2=lmfit_result.rsquared,
-                rmsd=rmsd
+                rmsd=rmsd,
             )
 
         raise ValueError("Model did not converge.")

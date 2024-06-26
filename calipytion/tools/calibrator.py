@@ -13,7 +13,6 @@ from rich.console import Console
 from rich.table import Table
 
 from calipytion.model import CalibrationModel, CalibrationRange, Standard
-
 from calipytion.tools.fitter import Fitter
 
 LOGGER = logging.getLogger(__name__)
@@ -56,9 +55,7 @@ class Calibrator(BaseModel):
     )
 
     models: list[CalibrationModel] = Field(
-        description="Models used for fitting",
-        default=[],
-        validate_default=True
+        description="Models used for fitting", default=[], validate_default=True
     )
 
     cutoff: float | None = Field(
@@ -642,4 +639,5 @@ if __name__ == "__main__":
     )
 
     from devtools import pprint
+
     print(cal)

@@ -92,16 +92,17 @@ class Standard(BaseModel):
 
     # JSON-LD fields
     ld_id: str = Field(
-        alias="@id", default_factory=lambda: "calipy:Standard/" + str(uuid4())
+        serialization_alias="@id",
+        default_factory=lambda: "calipy:Standard/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
-        alias="@type",
+        serialization_alias="@type",
         default_factory=lambda: [
             "calipy:Standard",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
-        alias="@context",
+        serialization_alias="@context",
         default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
         },
@@ -216,16 +217,17 @@ class Sample(BaseModel):
 
     # JSON-LD fields
     ld_id: str = Field(
-        alias="@id", default_factory=lambda: "calipy:Sample/" + str(uuid4())
+        serialization_alias="@id",
+        default_factory=lambda: "calipy:Sample/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
-        alias="@type",
+        serialization_alias="@type",
         default_factory=lambda: [
             "calipy:Sample",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
-        alias="@context",
+        serialization_alias="@context",
         default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
         },
@@ -313,16 +315,17 @@ class CalibrationModel(BaseModel):
 
     # JSON-LD fields
     ld_id: str = Field(
-        alias="@id", default_factory=lambda: "calipy:CalibrationModel/" + str(uuid4())
+        serialization_alias="@id",
+        default_factory=lambda: "calipy:CalibrationModel/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
-        alias="@type",
+        serialization_alias="@type",
         default_factory=lambda: [
             "calipy:CalibrationModel",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
-        alias="@context",
+        serialization_alias="@context",
         default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
         },
@@ -444,16 +447,17 @@ class CalibrationRange(BaseModel):
 
     # JSON-LD fields
     ld_id: str = Field(
-        alias="@id", default_factory=lambda: "calipy:CalibrationRange/" + str(uuid4())
+        serialization_alias="@id",
+        default_factory=lambda: "calipy:CalibrationRange/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
-        alias="@type",
+        serialization_alias="@type",
         default_factory=lambda: [
             "calipy:CalibrationRange",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
-        alias="@context",
+        serialization_alias="@context",
         default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
         },
@@ -537,16 +541,17 @@ class FitStatistics(BaseModel):
 
     # JSON-LD fields
     ld_id: str = Field(
-        alias="@id", default_factory=lambda: "calipy:FitStatistics/" + str(uuid4())
+        serialization_alias="@id",
+        default_factory=lambda: "calipy:FitStatistics/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
-        alias="@type",
+        serialization_alias="@type",
         default_factory=lambda: [
             "calipy:FitStatistics",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
-        alias="@context",
+        serialization_alias="@context",
         default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
         },
@@ -632,16 +637,17 @@ class Parameter(BaseModel):
 
     # JSON-LD fields
     ld_id: str = Field(
-        alias="@id", default_factory=lambda: "calipy:Parameter/" + str(uuid4())
+        serialization_alias="@id",
+        default_factory=lambda: "calipy:Parameter/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
-        alias="@type",
+        serialization_alias="@type",
         default_factory=lambda: [
             "calipy:Parameter",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
-        alias="@context",
+        serialization_alias="@context",
         default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
         },
@@ -724,16 +730,17 @@ class UnitDefinition(BaseModel):
 
     # JSON-LD fields
     ld_id: str = Field(
-        alias="@id", default_factory=lambda: "calipy:UnitDefinition/" + str(uuid4())
+        serialization_alias="@id",
+        default_factory=lambda: "calipy:UnitDefinition/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
-        alias="@type",
+        serialization_alias="@type",
         default_factory=lambda: [
             "calipy:UnitDefinition",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
-        alias="@context",
+        serialization_alias="@context",
         default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
         },
@@ -851,16 +858,17 @@ class BaseUnit(BaseModel):
 
     # JSON-LD fields
     ld_id: str = Field(
-        alias="@id", default_factory=lambda: "calipy:BaseUnit/" + str(uuid4())
+        serialization_alias="@id",
+        default_factory=lambda: "calipy:BaseUnit/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
-        alias="@type",
+        serialization_alias="@type",
         default_factory=lambda: [
             "calipy:BaseUnit",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
-        alias="@context",
+        serialization_alias="@context",
         default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
         },
@@ -943,6 +951,7 @@ class UnitType(Enum):
     AVOGADRO = "avogadro"
     BECQUEREL = "becquerel"
     CANDELA = "candela"
+    CELSIUS = "celsius"
     COULOMB = "coulomb"
     DIMENSIONLESS = "dimensionless"
     FARAD = "farad"

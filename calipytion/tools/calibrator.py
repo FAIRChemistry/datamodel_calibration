@@ -8,11 +8,11 @@ import plotly.express as px
 import sympy as sp
 from plotly import graph_objects as go
 from plotly.subplots import make_subplots
-from pydantic import BaseModel, Field, ValidationInfo, field_validator, validator
+from pydantic import BaseModel, Field, ValidationInfo, field_validator
 from rich.console import Console
 from rich.table import Table
 
-from calipytion.model import CalibrationModel, CalibrationRange, Standard
+from calipytion.model import CalibrationModel, Standard, CalibrationRange
 from calipytion.tools.fitter import Fitter
 
 LOGGER = logging.getLogger(__name__)
@@ -104,7 +104,7 @@ class Calibrator(BaseModel):
     def add_model(
         self,
         name: str,
-        equation: str,
+        signal_law: str,
         init_value: float = 1,
         lower_bound: float = -1e-6,
         upper_bound: float = 1e6,
@@ -112,16 +112,16 @@ class Calibrator(BaseModel):
         """Add a model to the list of models used for calibration."""
 
         assert (
-            self.molecule_symbol in equation
+            self.molecule_symbol in signal_law
         ), f"Equation must contain the symbol of the molecule to be calibrated ('{self.molecule_symbol}')"
 
         model = CalibrationModel(
             molecule_id=self.molecule_id,
             name=name,
-            signal_law=equation,
+            signal_law=signal_law,
         )
 
-        for symbol in self._get_free_symbols(equation):
+        for symbol in self._get_free_symbols(signal_law):
             if symbol == self.molecule_symbol:
                 model.molecule_symbol = symbol
                 continue
@@ -205,7 +205,7 @@ class Calibrator(BaseModel):
 
             LOGGER.warn(
                 f"⚠️ Extrapolation is enabled. Allowing extrapolation in range between "
-                f"{lower_bond} and {upper_bond} {self.conc_unit}."
+                f"{lower_bond:.2f} and {upper_bond:.2f} {self.conc_unit}."
             )
 
         cal_model = Fitter.from_calibration_model(model)
@@ -307,10 +307,13 @@ class Calibrator(BaseModel):
                 signal_upper=max(self.signals),
             )
 
+            y_data = np.array(self.signals)
+            x_data = np.array(self.concentrations)
+
             # Fit model
-            fitter = CalModel.from_calibration_model(model)
+            fitter = Fitter.from_calibration_model(model)
             statisctics = fitter.fit(
-                self.signals, self.concentrations, model.molecule_symbol
+                y=y_data, x=x_data, indep_var_symbol=self.molecule_symbol
             )
 
             # Set the fit statistics
@@ -394,7 +397,7 @@ class Calibrator(BaseModel):
             )
 
         for model, color in zip(self.models, colors):
-            fitter = CalModel.from_calibration_model(model)
+            fitter = Fitter.from_calibration_model(model)
             smooth_x = np.linspace(
                 min(self.concentrations), max(self.concentrations), 100
             )
@@ -638,6 +641,5 @@ if __name__ == "__main__":
         signals=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
     )
 
-    from devtools import pprint
 
     print(cal)

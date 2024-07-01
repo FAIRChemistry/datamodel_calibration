@@ -17,27 +17,26 @@ LOGGER = logging.getLogger(__name__)
 class Fitter:
     signal_var = "SIGNAL_PLACEHOLDER"
 
-    def __init__(self, equation: str, dep_var: str, params: list[Parameter]):
+    def __init__(self, equation: str, indep_var: str, params: list[Parameter]):
         self.equation = equation
         self.params = params
-        self.dep_var = dep_var
-        self.indep_vars = [param.symbol for param in params if param.symbol != dep_var]
+        self.indep_var = indep_var
+        self.dep_vars = [param.symbol for param in params if param.symbol != indep_var]
         self.model_callable = self._get_model_callable()
         self.lmfit_model: LMFitModel = self._prepare_model()
         self.lmfit_params: Parameters = self._prepare_params()
         self.lmfit_result: ModelResult | None = None
 
-    def fit(self, y: np.ndarray, x: np.ndarray, dep_var_symbol: str) -> FitStatistics:
+    def fit(self, y: np.ndarray, x: np.ndarray, indep_var_symbol: str) -> FitStatistics:
         if not isinstance(x, np.ndarray):
             x = np.array(x)
         if not isinstance(y, np.ndarray):
             y = np.array(y)
 
-        dep_var = {dep_var_symbol: x}
-        print(dep_var)
+        kwargs = {indep_var_symbol: x}
 
         self.lmfit_result = self.lmfit_model.fit(
-            data=y, params=self.lmfit_params, **dep_var
+            data=y, params=self.lmfit_params, **kwargs
         )
 
         self.lmfit_params = self.lmfit_result.params
@@ -46,14 +45,42 @@ class Fitter:
 
         return self.extract_fit_statistics(self.lmfit_result)
 
+
     def calculate_roots(
         self, y: np.ndarray, lower_bond: float, upper_bond: float, extrapolate: bool
     ) -> np.ndarray:
-        """
-        Calculate the roots of the model equation within a given interval.
+        """ "
+        Calculate the roots of the equation for the given signals.
+
+        Parameters
+        ----------
+        y : np.ndarray
+            The signals for which the roots should be calculated.
+        lower_bond : float
+            The lower bond for the root search.
+        upper_bond : float
+            The upper bond for the root search.
+        extrapolate : bool
+            If True, the function will evaluate the equation for the given signals that are outside
+            the bounds.
+
+        Returns
+        -------
+        np.ndarray
+            The roots of the equation for the given signals.
+
+        Raises
+        ------
+        ValueError
+            If a parameter has no value set.
         """
 
         root_eq = self._get_root_eq()
+
+        for param in self.params:
+            if param.value is None:
+                raise ValueError(f"Parameter '{param.symbol}' has no value set.")
+
         params = [{param.symbol: param.value for param in self.params}] * len(y)
         params = [
             {**param, self.signal_var: signal} for param, signal in zip(params, y)
@@ -89,25 +116,27 @@ class Fitter:
 
         return cls(
             equation=calibration_model.signal_law,
-            dep_var=calibration_model.molecule_symbol,
+            indep_var=calibration_model.molecule_symbol,
             params=calibration_model.parameters,
         )
 
     def _get_model_callable(self) -> Callable[..., float]:
         sp_expression = sp.sympify(self.equation)
-        variables = [self.dep_var] + self.indep_vars
+        variables = [self.indep_var] + self.dep_vars
 
         return sp.lambdify(variables, sp_expression)
 
     def _prepare_model(self) -> LMFitModel:
         callable_ = self.model_callable
 
-        return LMFitModel(callable_)
+        model = LMFitModel(callable_, independent_vars=[self.indep_var])
 
-    def _get_param_dict(self, dep_var_values: np.ndarray):
+        return model
+
+    def _get_param_dict(self, indep_var_values: np.ndarray):
         values_dict = self.lmfit_params.valuesdict()
         print(self.lmfit_params["a"])
-        values_dict[self.dep_var] = dep_var_values
+        values_dict[self.indep_var] = indep_var_values
 
         return values_dict
 
@@ -125,7 +154,7 @@ class Fitter:
 
     def _get_root_eq(self):
         eq = self.equation + " - " + self.signal_var
-        variables = [self.dep_var] + self.indep_vars + [self.signal_var]
+        variables = [self.indep_var] + self.dep_vars + [self.signal_var]
         return sp.lambdify(variables, eq)
 
     def _update_result_params(
@@ -160,3 +189,41 @@ class Fitter:
             )
 
         raise ValueError("Model did not converge.")
+
+
+if __name__ == "__main__":
+    import numpy as np
+    from calipytion.model import Parameter
+
+    params = []
+    params.append(Parameter(
+        symbol="a",
+        init_value=1.0,
+        lower_bound=-1e6,
+        upper_bound=1e6,
+        )
+    )
+    params.append(Parameter(
+        symbol="b",
+        init_value=1.0,
+        lower_bound=-1e6,
+        upper_bound=1e6,
+        )
+    )
+
+    equation = "a * Meth + b"
+
+    model = Fitter(
+        equation=equation,
+        indep_var="Meth",
+        params=params,
+    )
+
+    print(model.indep_var)
+    print(model.equation)
+    print(model.lmfit_params)
+
+    x= [0, 2,4,6]
+    y= [1,2,3,4]
+
+    res = model.fit(y, x, "Meth")

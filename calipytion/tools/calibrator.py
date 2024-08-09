@@ -37,10 +37,6 @@ class Calibrator(BaseModel):
         description="Name of the molecule",
     )
 
-    molecule_symbol: str = Field(
-        description="Symbol of the molecule representing the molecule in the signal law",
-    )
-
     concentrations: list[float] = Field(
         description="Concentrations of the standard",
     )
@@ -80,10 +76,9 @@ class Calibrator(BaseModel):
     def initialize_models(cls, v: list[CalibrationModel], info: ValidationInfo):
         """
         Loads the default models if no models are provided and initializes the models
-        with the according 'molecule_symbol' and 'molecule_id'.
+        with the according 'molecule_id'.
         """
         if not v:
-            molecule_symbol = info.data["molecule_symbol"]
             molecule_id = info.data["molecule_id"]
             from calipytion.tools.equations import (
                 cubic_model,
@@ -93,9 +88,8 @@ class Calibrator(BaseModel):
 
             for model in [linear_model, quadratic_model, cubic_model]:
                 model.signal_law = model.signal_law.replace(
-                    "concentration", molecule_symbol
+                    "concentration", molecule_id
                 )
-                model.molecule_symbol = molecule_symbol
                 model.molecule_id = molecule_id
 
             v = [linear_model, quadratic_model, cubic_model]
@@ -116,8 +110,8 @@ class Calibrator(BaseModel):
         """Add a model to the list of models used for calibration."""
 
         assert (
-            self.molecule_symbol in signal_law
-        ), f"Equation must contain the symbol of the molecule to be calibrated ('{self.molecule_symbol}')"
+            self.molecule_id in signal_law
+        ), f"Equation must contain the symbol of the molecule to be calibrated ('{self.molecule_id}')"
 
         model = CalibrationModel(
             molecule_id=self.molecule_id,
@@ -126,8 +120,8 @@ class Calibrator(BaseModel):
         )
 
         for symbol in self._get_free_symbols(signal_law):
-            if symbol == self.molecule_symbol:
-                model.molecule_symbol = symbol
+            if symbol == self.molecule_id:
+                model.molecule_id = symbol
                 continue
 
             model.add_to_parameters(
@@ -286,7 +280,6 @@ class Calibrator(BaseModel):
         return cls(
             molecule_id=standard.molecule_id,
             molecule_name=standard.molecule_name,
-            molecule_symbol=standard.result.molecule_symbol,
             concentrations=concs,
             signals=signals,
             conc_unit=conc_unit,
@@ -317,7 +310,7 @@ class Calibrator(BaseModel):
             # Fit model
             fitter = Fitter.from_calibration_model(model)
             statisctics = fitter.fit(
-                y=y_data, x=x_data, indep_var_symbol=self.molecule_symbol
+                y=y_data, x=x_data, indep_var_symbol=self.molecule_id
             )
 
             # Set the fit statistics
@@ -407,11 +400,11 @@ class Calibrator(BaseModel):
             )
 
             params = {param.symbol: param.value for param in model.parameters}
-            params[model.molecule_symbol] = smooth_x
+            params[model.molecule_id] = smooth_x
 
             model_pred = fitter.lmfit_model.eval(**params)
 
-            fitter.fit(self.signals, self.concentrations, model.molecule_symbol)
+            fitter.fit(self.signals, self.concentrations, model.molecule_id)
             residuals = fitter.lmfit_result.residual
 
             # Add model traces
@@ -598,7 +591,6 @@ class Calibrator(BaseModel):
 
         standard = Standard(
             molecule_id=self.molecule_id,
-            molecule_symbol=self.molecule_symbol,
             name=self.molecule_name,
             wavelength=self.wavelength,
             ph=ph,
@@ -636,11 +628,12 @@ class Calibrator(BaseModel):
 
 
 if __name__ == "__main__":
+    from calipytion.units import mM
+
     cal = Calibrator(
-        molecule_id="CHEBI:29103",
-        molecule_symbol="NADH",
+        molecule_id="s1",
         molecule_name="Nicotinamide adenine dinucleotide",
-        conc_unit="µM",
+        conc_unit=mM,
         concentrations=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
         signals=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
     )

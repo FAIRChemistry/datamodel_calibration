@@ -79,7 +79,6 @@ class Standard(BaseModel):
     )  # type: ignore
 
     molecule_id: str
-    molecule_symbol: str
     ph: float
     temperature: float
     temp_unit: UnitDefinition
@@ -311,7 +310,6 @@ class CalibrationModel(BaseModel):
     molecule_id: Optional[str] = Field(default=None)
     signal_law: Optional[str] = Field(default=None)
     parameters: list[Parameter] = Field(default_factory=list)
-    molecule_symbol: Optional[str] = Field(default=None)
     was_fitted: bool = False
     calibration_range: Optional[CalibrationRange] = Field(default=None)
     statistics: Optional[FitStatistics] = Field(default=None)

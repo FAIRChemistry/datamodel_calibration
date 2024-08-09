@@ -22,7 +22,7 @@ def apply_standard(standard: Standard, enzmldoc: EnzymeMLDocument) -> EnzymeMLDo
     except ValueError:
         try:
             small_molecule_id = get_small_molecule_id_by_id(
-                enzmldoc.small_molecules, standard.molecule_symbol
+                enzmldoc.small_molecules, standard.molecule_id
             )
         except ValueError:
             raise ValueError(f"""
@@ -69,9 +69,9 @@ def get_small_molecule_id_by_ld_id(
 
 
 def get_small_molecule_id_by_id(
-    small_molecules: list[SmallMolecule], molecule_symbol: str
+    small_molecules: list[SmallMolecule], molecule_id: str
 ) -> str:
-    """Returns the `id` of the small_molecule which is consistent with the molecule_symbol in the standard
+    """Returns the `id` of the small_molecule which is consistent with the molecule_id in the standard
     based on the `id` field of the small_molecule in the EnzymeML document.
 
     Args:
@@ -87,11 +87,11 @@ def get_small_molecule_id_by_id(
     """
 
     for molecule in small_molecules:
-        if molecule.id == molecule_symbol:
+        if molecule.id == molecule_id:
             return molecule.id
 
     raise ValueError(
-        f"Could not find a matching id in the EnzymeML document for {molecule_symbol}"
+        f"Could not find a matching id in the EnzymeML document for {molecule_id}"
     )
 
 

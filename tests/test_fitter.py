@@ -1,5 +1,3 @@
-import copy
-
 import numpy as np
 import pytest
 from lmfit import Parameters
@@ -9,7 +7,7 @@ from calipytion.tools.fitter import Fitter
 
 # Mock data for testing
 equation = "a * x + b"
-dep_var = "x"
+indep_var = "x"
 params = [
     Parameter(symbol="a", init_value=1, lower_bound=-10, upper_bound=10),
     Parameter(symbol="b", init_value=1, lower_bound=-10, upper_bound=10),
@@ -18,7 +16,7 @@ params = [
 
 @pytest.fixture
 def fitter() -> Fitter:
-    return Fitter(equation, dep_var, params)
+    return Fitter(equation, indep_var, params)
 
 
 def test_fit(fitter):
@@ -26,7 +24,7 @@ def test_fit(fitter):
     y = np.array([2, 4, 6, 8, 10])
     dep_var_name = "x"
     fit_stats = fitter.fit(y, x, dep_var_name)
-    assert fitter.lmfit_result.success == True
+    assert fitter.lmfit_result.success
     assert isinstance(fit_stats, FitStatistics)
     assert fit_stats.r2 > 0.99
     assert round(fitter.params[0].value) == pytest.approx(2, abs=0.1)
@@ -48,13 +46,13 @@ def test_from_calibration_model():
     calibration_model = CalibrationModel(
         signal_law=equation,
         name="linear_model",
-        molecule_symbol=dep_var,
+        molecule_id=indep_var,
         parameters=params,
     )
     fitter_instance = Fitter.from_calibration_model(calibration_model)
     assert isinstance(fitter_instance, Fitter)
     assert fitter_instance.equation == equation
-    assert fitter_instance.dep_var == dep_var
+    assert fitter_instance.indep_var == indep_var
 
 
 def test_prepare_params(fitter):

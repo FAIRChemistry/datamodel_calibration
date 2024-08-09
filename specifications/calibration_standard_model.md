@@ -16,9 +16,6 @@ The Standard describes the calibration data and the calibration model. The calib
 - **molecule_id**
   - Type: string
   - Description: URI of the molecule (e.g. PubChem or ChEBI).
-- **molecule_symbol**
-  - Type: string
-  - Description: Symbol representing the molecule in the calibration equation.
 - **ph**
   - Type: float
   - Description: pH value of the solution.
@@ -80,9 +77,6 @@ The CalibrationModel describes the calibration model which was fitted to the cal
 - parameters
   - Type: Parameter[]
   - Description: Parameters of the calibration equation
-- molecule_symbol
-  - Type: string
-  - Description: Symbol representing the molecule in the signal law
 - was_fitted
   - Type: boolean
   - Description: Indicates if the model was fitted to the data

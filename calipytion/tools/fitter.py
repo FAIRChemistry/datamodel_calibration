@@ -45,7 +45,6 @@ class Fitter:
 
         return self.extract_fit_statistics(self.lmfit_result)
 
-
     def calculate_roots(
         self, y: np.ndarray, lower_bond: float, upper_bond: float, extrapolate: bool
     ) -> np.ndarray:
@@ -111,12 +110,12 @@ class Fitter:
             calibration_model.signal_law is not None
         ), "Calibration model has no signal law."
         assert (
-            calibration_model.molecule_symbol is not None
+            calibration_model.molecule_id is not None
         ), "Calibration model has no molecule symbol."
 
         return cls(
             equation=calibration_model.signal_law,
-            indep_var=calibration_model.molecule_symbol,
+            indep_var=calibration_model.molecule_id,
             params=calibration_model.parameters,
         )
 
@@ -193,21 +192,24 @@ class Fitter:
 
 if __name__ == "__main__":
     import numpy as np
+
     from calipytion.model import Parameter
 
     params = []
-    params.append(Parameter(
-        symbol="a",
-        init_value=1.0,
-        lower_bound=-1e6,
-        upper_bound=1e6,
+    params.append(
+        Parameter(
+            symbol="a",
+            init_value=1.0,
+            lower_bound=-1e6,
+            upper_bound=1e6,
         )
     )
-    params.append(Parameter(
-        symbol="b",
-        init_value=1.0,
-        lower_bound=-1e6,
-        upper_bound=1e6,
+    params.append(
+        Parameter(
+            symbol="b",
+            init_value=1.0,
+            lower_bound=-1e6,
+            upper_bound=1e6,
         )
     )
 
@@ -223,7 +225,7 @@ if __name__ == "__main__":
     print(model.equation)
     print(model.lmfit_params)
 
-    x= [0, 2,4,6]
-    y= [1,2,3,4]
+    x = [0, 2, 4, 6]
+    y = [1, 2, 3, 4]
 
     res = model.fit(y, x, "Meth")

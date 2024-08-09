@@ -12,7 +12,12 @@ from pydantic import BaseModel, Field, ValidationInfo, field_validator
 from rich.console import Console
 from rich.table import Table
 
-from calipytion.model import CalibrationModel, Standard, CalibrationRange
+from calipytion.model import (
+    CalibrationModel,
+    CalibrationRange,
+    Standard,
+    UnitDefinition,
+)
 from calipytion.tools.fitter import Fitter
 
 LOGGER = logging.getLogger(__name__)
@@ -34,7 +39,6 @@ class Calibrator(BaseModel):
 
     molecule_symbol: str = Field(
         description="Symbol of the molecule representing the molecule in the signal law",
-        pattern=r"^[a-zA-Z_]+$",
     )
 
     concentrations: list[float] = Field(
@@ -46,7 +50,7 @@ class Calibrator(BaseModel):
         default=None,
     )
 
-    conc_unit: str = Field(
+    conc_unit: UnitDefinition = Field(
         description="Concentration unit",
     )
 
@@ -281,7 +285,7 @@ class Calibrator(BaseModel):
 
         return cls(
             molecule_id=standard.molecule_id,
-            molecule_name=standard.name,
+            molecule_name=standard.molecule_name,
             molecule_symbol=standard.result.molecule_symbol,
             concentrations=concs,
             signals=signals,
@@ -640,6 +644,5 @@ if __name__ == "__main__":
         concentrations=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
         signals=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
     )
-
 
     print(cal)

@@ -5,7 +5,7 @@ prefix: "calipy"
 
 # Calibration Standard Data Model
 
-This data model structures data of standard measurements and spectra of spectroscopic measurements of a molecule.
+This data model structures data of standard measurements of a molecule.
 
 ## Root objects
 
@@ -28,6 +28,9 @@ The Standard describes the calibration data and the calibration model. The calib
 - **temp_unit**
   - Type: UnitDefinition
   - Description: Temperature unit.
+- retention_time
+  - Type: float
+  - Description: Retention time of the molecule in minutes.
 - wavelength
   - Type: float
   - Description: Detection wavelength in nm

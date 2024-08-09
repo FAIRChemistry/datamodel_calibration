@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime
 from enum import Enum
 from typing import Generic, Optional, TypeVar
 from uuid import uuid4
@@ -76,6 +75,7 @@ def validate_prefix(term: str | dict, prefix: str):
 class Standard(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
+        use_enum_values=True,
     )  # type: ignore
 
     molecule_id: str
@@ -83,6 +83,7 @@ class Standard(BaseModel):
     ph: float
     temperature: float
     temp_unit: UnitDefinition
+    retention_time: Optional[float] = Field(default=None)
     wavelength: Optional[float] = Field(default=None)
     molecule_name: Optional[str] = Field(default=None)
     signal_type: Optional[SignalType] = Field(default=None)
@@ -209,6 +210,7 @@ class Standard(BaseModel):
 class Sample(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
+        use_enum_values=True,
     )  # type: ignore
 
     concentration: float
@@ -302,6 +304,7 @@ class Sample(BaseModel):
 class CalibrationModel(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
+        use_enum_values=True,
     )  # type: ignore
 
     name: str
@@ -438,6 +441,7 @@ class CalibrationModel(BaseModel):
 class CalibrationRange(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
+        use_enum_values=True,
     )  # type: ignore
 
     conc_lower: Optional[float] = Field(default=None)
@@ -532,6 +536,7 @@ class CalibrationRange(BaseModel):
 class FitStatistics(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
+        use_enum_values=True,
     )  # type: ignore
 
     aic: Optional[float] = Field(default=None)
@@ -626,6 +631,7 @@ class FitStatistics(BaseModel):
 class Parameter(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
+        use_enum_values=True,
     )  # type: ignore
 
     symbol: Optional[str] = Field(default=None)
@@ -722,6 +728,7 @@ class Parameter(BaseModel):
 class UnitDefinition(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
+        use_enum_values=True,
     )  # type: ignore
 
     id: Optional[str] = Field(default=None)
@@ -849,6 +856,7 @@ class UnitDefinition(BaseModel):
 class BaseUnit(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
+        use_enum_values=True,
     )  # type: ignore
 
     kind: UnitType

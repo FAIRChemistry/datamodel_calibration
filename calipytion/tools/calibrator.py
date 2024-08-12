@@ -19,6 +19,7 @@ from calipytion.model import (
     UnitDefinition,
 )
 from calipytion.tools.fitter import Fitter
+from calipytion.units import C
 
 LOGGER = logging.getLogger(__name__)
 
@@ -569,7 +570,7 @@ class Calibrator(BaseModel):
         model: CalibrationModel,
         ph: float,
         temperature: float,
-        temp_unit: str = "C",
+        temp_unit: str = C,
     ) -> Standard:
         """Creates a standard object with the given model, pH, and temperature.
 

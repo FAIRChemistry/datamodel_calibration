@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, Optional
 
 import numpy as np
 import plotly.express as px
@@ -571,6 +571,7 @@ class Calibrator(BaseModel):
         ph: float,
         temperature: float,
         temp_unit: str = C,
+        retention_time: Optional[float] = None,
     ) -> Standard:
         """Creates a standard object with the given model, pH, and temperature.
 
@@ -592,7 +593,7 @@ class Calibrator(BaseModel):
 
         standard = Standard(
             molecule_id=self.molecule_id,
-            name=self.molecule_name,
+            molecule_name=self.molecule_name,
             wavelength=self.wavelength,
             ph=ph,
             temp_unit=temp_unit,
@@ -600,6 +601,7 @@ class Calibrator(BaseModel):
             signal_type=None,
             samples=[],
             result=model,
+            retention_time=retention_time,
         )
 
         for conc, signal in zip(self.concentrations, self.signals):

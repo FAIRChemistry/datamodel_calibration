@@ -346,7 +346,8 @@ class Calibrator(BaseModel):
                 if not param.stderr:
                     stderr = "n.a."
                 else:
-                    stderr = str(round(param.stderr * 100, 1)) + "%"
+                    stderr = param.stderr / param.value
+                    stderr = str(round(stderr * 100, 1)) + "%"
                 param_string += f"{param.symbol}: {stderr}, "
 
             table.add_row(

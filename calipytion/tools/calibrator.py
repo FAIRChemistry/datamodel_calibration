@@ -97,6 +97,8 @@ class Calibrator(BaseModel):
 
             return v
 
+        return v
+
     def model_post_init(self, __context: Any) -> None:
         self._apply_cutoff()
 

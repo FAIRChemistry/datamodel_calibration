@@ -4,6 +4,7 @@ import logging
 from typing import Any, Optional
 
 import numpy as np
+import pandas as pd
 import plotly.express as px
 import sympy as sp
 from plotly import graph_objects as go
@@ -243,6 +244,59 @@ class Calibrator(BaseModel):
         self.standard.result = model
 
     @classmethod
+    def from_excel(
+        cls,
+        path: str,
+        molecule_id: str,
+        molecule_name: str,
+        conc_unit: UnitDefinition,
+        cutoff: Optional[float] = None,
+        ld_id: Optional[str] = None,
+        wavelength: Optional[float] = None,
+        sheet_name: Optional[str | int] = 0,
+        n_header_rows: Optional[int] = 1,
+    ):
+        """Reads the data from an Excel file and initializes the Calibrator object.
+        The leftmost column is expected to contain the concentrations. All other columns
+        are expected to contain the signals of the respective samples.
+
+        Args:
+            path (str): Path to the Excel file.
+            molecule_id (str): Unique identifier of the molecule.
+            molecule_name (str): Name of the molecule.
+            conc_unit (UnitDefinition): Concentration unit.
+            cutoff (float, optional): Cutoff value for the signals. Defaults to None.
+            ld_id (str, optional): Linked data identifier (URL of the molecule). Defaults to None.
+            wavelength (float, optional): Wavelength of the measurement. Defaults to None.
+            sheet_name (str | int, optional): Name of the sheet in the Excel file. Defaults to 0.
+            n_header_rows (int, optional): Number of header rows prior to data. Defaults to 1.
+
+        Returns:
+            Calibrator: The Calibrator object.
+        """
+
+        df = pd.read_excel(path, sheet_name=sheet_name, header=n_header_rows)
+
+        signals = df.iloc[:, 1:].values
+        n_reps = signals.shape[1]
+        signals = signals.flatten().tolist()
+
+        concs = df.iloc[:, 0].values
+        concs = np.repeat(concs, n_reps)
+        concs = concs.flatten().tolist()
+
+        return cls(
+            ld_id=ld_id,
+            molecule_id=molecule_id,
+            molecule_name=molecule_name,
+            concentrations=concs,
+            signals=signals,
+            conc_unit=conc_unit,
+            cutoff=cutoff,
+            wavelength=wavelength,
+        )
+
+    @classmethod
     def from_standard(
         cls,
         standard: Standard,
@@ -348,7 +402,7 @@ class Calibrator(BaseModel):
                 if not param.stderr:
                     stderr = "n.a."
                 else:
-                    stderr = param.stderr / param.value
+                    stderr = abs(param.stderr / param.value)
                     stderr = str(round(stderr * 100, 1)) + "%"
                 param_string += f"{param.symbol}: {stderr}, "
 
@@ -574,6 +628,7 @@ class Calibrator(BaseModel):
         ph: float,
         temperature: float,
         temp_unit: str = C,
+        ld_id: Optional[str] = None,
         retention_time: Optional[float] = None,
     ) -> Standard:
         """Creates a standard object with the given model, pH, and temperature.
@@ -583,6 +638,8 @@ class Calibrator(BaseModel):
             ph (float): The pH value of the standard.
             temperature (float): The temperature of the standard.
             temp_unit (str): The unit of the temperature. Defaults to "C".
+            ld_id (str, optional): Linked data identifier (URL of the molecule). Defaults to None.
+            retention_time (float, optional): Retention time of the molecule. Defaults to None.
 
         Raises:
             ValueError: If the model has not been fitted yet.
@@ -596,6 +653,7 @@ class Calibrator(BaseModel):
 
         standard = Standard(
             molecule_id=self.molecule_id,
+            ld_id=ld_id,
             molecule_name=self.molecule_name,
             wavelength=self.wavelength,
             ph=ph,
@@ -636,12 +694,42 @@ class Calibrator(BaseModel):
 if __name__ == "__main__":
     from calipytion.units import mM
 
-    cal = Calibrator(
-        molecule_id="s1",
-        molecule_name="Nicotinamide adenine dinucleotide",
+    c = Calibrator.from_excel(
+        path="tests/test_data/cal_test.xlsx",
+        molecule_id="molecule_1",
+        molecule_name="molecule_1",
         conc_unit=mM,
-        concentrations=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-        signals=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
     )
 
-    print(cal)
+    # cal = Calibrator(
+    #     molecule_id="s1",
+    #     molecule_name="Nicotinamide adenine dinucleotide",
+    #     conc_unit=mM,
+    #     concentrations=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+    #     signals=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+    # )
+
+    # print(cal)
+
+    path = "/Users/max/Documents/GitHub/Range-2024/data/abts_kinetic_assay.xlsx"
+    cal = Calibrator.from_excel(
+        path=path,
+        sheet_name="calibration",
+        wavelength=340,
+        molecule_id="s1",
+        molecule_name="ABTS",
+        cutoff=3.6,
+        conc_unit=mM,
+    )
+
+    cal.models = []
+
+    cal.add_model(
+        name="Linear",
+        signal_law="a * s1 + b",
+    )
+
+    cal.fit_models()
+    cal.visualize()
+
+    # pprint(cal)

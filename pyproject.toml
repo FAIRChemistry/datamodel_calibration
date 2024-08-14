@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "calipytion"
-version = "0.2.1"
-description = "Tool for managing and analyzing data from calibration measurements for concentration calculation."
+version = "0.3.0"
+description = "Tool for creating standard curves and concentration calculations."
 authors = ["haeussma <83341109+haeussma@users.noreply.github.com>"]
 license = "MIT License"
 readme = "Readme.md"
@@ -17,7 +17,7 @@ matplotlib = "^3.8.2"
 nbformat = "^5.10.4"
 pydantic = "^2.4"
 rich = "^13"
-pandas = "^2.2.2"
+pandas = { version = "^2.2.2", extras = ["excel"] }
 toml = "^0.10.2"
 pyenzyme = { git = "https://github.com/EnzymeML/PyEnzyme.git", branch = "v2-migration" }
 

@@ -254,7 +254,7 @@ class Calibrator(BaseModel):
         ld_id: Optional[str] = None,
         wavelength: Optional[float] = None,
         sheet_name: Optional[str | int] = 0,
-        n_header_rows: Optional[int] = 1,
+        n_header_rows: Optional[int] = 0,
     ):
         """Reads the data from an Excel file and initializes the Calibrator object.
         The leftmost column is expected to contain the concentrations. All other columns
@@ -269,7 +269,7 @@ class Calibrator(BaseModel):
             ld_id (str, optional): Linked data identifier (URL of the molecule). Defaults to None.
             wavelength (float, optional): Wavelength of the measurement. Defaults to None.
             sheet_name (str | int, optional): Name of the sheet in the Excel file. Defaults to 0.
-            n_header_rows (int, optional): Number of header rows prior to data. Defaults to 1.
+            n_header_rows (int, optional): Number of header rows prior to data. Defaults to 0.
 
         Returns:
             Calibrator: The Calibrator object.
@@ -342,6 +342,7 @@ class Calibrator(BaseModel):
             conc_unit=conc_unit,
             models=[standard.result],
             cutoff=cutoff,
+            standard=standard,
         )
 
     def fit_models(self, silent: bool = False):
@@ -418,6 +419,10 @@ class Calibrator(BaseModel):
         console.print(table)
 
     def visualize(self) -> None:
+        assert any(
+            [model.was_fitted for model in self.models]
+        ), "No model has been fitted yet. Run 'fit_models' first."
+
         """
         Visualizes the calibration curve and the residuals of the models.
         """

@@ -3,7 +3,7 @@ hide:
     - navigation
 ---
 
-# Calibration Standard Data Model
+# Standard Data Model
 
 This page provides comprehensive information about the structure and components of the data model, including detailed descriptions of the types and their properties, information on enumerations, and an overview of the ontologies used and their associated prefixes. Below, you will find a graph that visually represents the overall structure of the data model.
 
@@ -18,10 +18,8 @@ This page provides comprehensive information about the structure and components 
         parameter(Parameter)
         unitdefinition(UnitDefinition)
         baseunit(BaseUnit)
-        signaltype(SignalType)
         unittype(UnitType)
         standard(Standard) --> unitdefinition(UnitDefinition)
-        standard(Standard) --> signaltype(SignalType)
         standard(Standard) --> sample(Sample)
         standard(Standard) --> calibrationmodel(CalibrationModel)
         sample(Sample) --> unitdefinition(UnitDefinition)
@@ -39,7 +37,6 @@ This page provides comprehensive information about the structure and components 
         click parameter "#parameter" "Go to Parameter"
         click unitdefinition "#unitdefinition" "Go to UnitDefinition"
         click baseunit "#baseunit" "Go to BaseUnit"
-        click signaltype "#signaltype" "Go to SignalType"
         click unittype "#unittype" "Go to UnitType"
     ```
 
@@ -48,16 +45,11 @@ This page provides comprehensive information about the structure and components 
 
 
 ### Standard
-The Standard describes the calibration data and the calibration model. The calibration data consists of the measured signal intensities at different concentrations of the molecule. The calibration model describes the relationship between the signal intensity and the concentration of the molecule. Furthermore, the valid concentration range defined by the underlying data is given.
+The  contains information on the molecule for which the calibration was performed, its standard measurements, measurement conditions, as well as the fitted calibration model.
 
 __molecule_id__* `string`
 
 - URI of the molecule (e.g. PubChem or ChEBI).
-
-
-__molecule_symbol__* `string`
-
-- Symbol representing the molecule in the calibration equation.
 
 
 __ph__* `float`
@@ -75,40 +67,35 @@ __temp_unit__* [`UnitDefinition`](#unitdefinition)
 - Temperature unit.
 
 
+__retention_time__ `float`
+
+- Retention time of the molecule in minutes.
+
+
 __wavelength__ `float`
 
-- Detection wavelength in nm
+- Detection wavelength in nm.
 
 
 __molecule_name__ `string`
 
-- Name of the molecule
-
-
-__signal_type__ [`SignalType`](#signaltype)
-
-- Quantity type of the signal intensity measured
+- Name of the molecule.
 
 
 __samples__ [`list[Sample]`](#sample)
 
-- Measured signal, at a given concentration of the molecule
-
-
-__created__ `string`
-
-- Date when this file was created
+- Measured signal, at a given concentration of the molecule.
 
 
 __result__ [`CalibrationModel`](#calibrationmodel)
 
-- The model which was used for concentration determination
+- The model which was used for concentration determination.
 
 
 ------
 
 ### Sample
-The Sample describes one measured signal-concentration pair.
+A  describes individual measured signal-concentration pairs of a molecule.
 
 __concentration__* `float`
 
@@ -117,22 +104,22 @@ __concentration__* `float`
 
 __conc_unit__* [`UnitDefinition`](#unitdefinition)
 
-- Concentration unit
+- Concentration unit.
 
 
 __signal__* `float`
 
-- Measured signals at a given concentration of the molecule
+- Measured signals at a given concentration of the molecule.
 
 
 ------
 
 ### CalibrationModel
-The CalibrationModel describes the calibration model which was fitted to the calibration data. The calibration model consists of the signal law and harbors the parameters of the calibration equation. The calibration range defines the concentration and signal bounds in which the calibration model is valid.
+The  describes the calibration model which was fitted to the calibration data. The calibration model consists of the signal law and parameters of the equation. The calibration range defines the concentration and signal bounds in which the calibration model is valid.
 
 __name__* `string`
 
-- Name of the calibration model
+- Name of the calibration model.
 
 
 __molecule_id__ `string`
@@ -142,22 +129,17 @@ __molecule_id__ `string`
 
 __signal_law__ `string`
 
-- Law describing the signal intensity as a function of the concentration
+- Law describing the signal intensity as a function of the concentration.
 
 
 __parameters__ [`list[Parameter]`](#parameter)
 
-- Parameters of the calibration equation
-
-
-__molecule_symbol__ `string`
-
-- Symbol representing the molecule in the signal law
+- Parameters of the calibration equation.
 
 
 __was_fitted__ `boolean`
 
-- Indicates if the model was fitted to the data
+- Indicates if the model was fitted to the data.
 
 - `Default`: false
 
@@ -168,92 +150,92 @@ __calibration_range__ [`CalibrationRange`](#calibrationrange)
 
 __statistics__ [`FitStatistics`](#fitstatistics)
 
-- Fit statistics of the calibration model
+- Fit statistics of the calibration model.
 
 
 ------
 
 ### CalibrationRange
-Defines the concentration and signal bounds in which the calibration model is valid.
+THe  defines the concentration and signal bounds in which the calibration model is valid.
 
 __conc_lower__ `float`
 
-- Lower concentration bound of the model
+- Lower concentration bound of the model.
 
 
 __conc_upper__ `float`
 
-- Upper concentration bound of the model
+- Upper concentration bound of the model.
 
 
 __signal_lower__ `float`
 
-- Lower signal bound of the model
+- Lower signal bound of the model.
 
 
 __signal_upper__ `float`
 
-- Upper signal bound of the model
+- Upper signal bound of the model.
 
 
 ------
 
 ### FitStatistics
-Contains the fit statistics of the calibration model for the calibration data.
+The  contains statistical parameters of the fitted calibration model.
 
 __aic__ `float`
 
-- Akaike information criterion
+- Akaike information criterion.
 
 
 __bic__ `float`
 
-- Bayesian information criterion
+- Bayesian information criterion.
 
 
 __r2__ `float`
 
-- Coefficient of determination
+- Coefficient of determination.
 
 
 __rmsd__ `float`
 
-- Root mean square deviation
+- Root mean square deviation.
 
 
 ------
 
 ### Parameter
-The Parameter describes the parameters of the calibration equation.
+A  describes the value, standard error, and bounds of a parameter which is part of the signal law.
 
 __symbol__ `string`
 
-- Name of the parameter
+- Name of the parameter.
 
 
 __value__ `float`
 
-- Value of the parameter
+- Value of the parameter.
 
 
 __init_value__ `float`
 
-- Initial value of the parameter
+- Initial value of the parameter.
 
 
 __stderr__ `float`
 
-- 1-sigma standard error of the parameter
+- 1-sigma standard error of the parameter.
 
 
 __lower_bound__ `float`
 
-- Lower bound of the parameter prior to fitting
+- Lower bound of the parameter prior to fitting.
 
 
 __upper_bound__ `float`
 
-- Upper bound of the parameter prior to fitting
+- Upper bound of the parameter prior to fitting.
 
 
 ------
@@ -302,14 +284,6 @@ __scale__ `float`
 
 
 ## Enumerations
-
-### SignalType
-
-| Alias | Value |
-|-------|-------|
-| `ABSORBANCE` | absorbance |
-| `REFLECTANCE` | reflectance |
-| `TRANSMITTANCE` | transmittance |
 
 ### UnitType
 

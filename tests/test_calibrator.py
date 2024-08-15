@@ -220,3 +220,16 @@ def test_from_standard():
     assert cal.standard.samples[0].concentration == 5.0
     assert cal.standard.samples[0].conc_unit.name == "uMole / Litre"
     assert cal.standard.samples[0].signal == 0.1311
+
+
+def test_fit_models(calibrator):
+    for model in calibrator.models:
+        model.was_fitted = False
+        model.calibration_range = None
+    assert calibrator.models[0].was_fitted is False
+    assert calibrator.models[0].calibration_range is None
+
+    calibrator.fit_models()
+
+    assert calibrator.models[0].was_fitted is True
+    assert calibrator.models[0].calibration_range is not None

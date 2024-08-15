@@ -24,9 +24,8 @@ pyenzyme = { git = "https://github.com/EnzymeML/PyEnzyme.git", branch = "v2-migr
 [tool.poetry.group.dev.dependencies]
 mkdocs-material = "^9.5.8"
 pytest = "^8.0.0"
-mkdocs-jupyter = "^0.24.7"
 devtools = "^0.12.2"
-notebook = "^6"
+notebook = "<7"
 
 [build-system]
 requires = ["poetry-core"]

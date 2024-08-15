@@ -696,45 +696,45 @@ class Calibrator(BaseModel):
         return unit
 
 
-if __name__ == "__main__":
-    from calipytion.units import mM
+# if __name__ == "__main__":
+#     from calipytion.units import mM
 
-    c = Calibrator.from_excel(
-        path="tests/test_data/cal_test.xlsx",
-        molecule_id="molecule_1",
-        molecule_name="molecule_1",
-        conc_unit=mM,
-    )
+#     c = Calibrator.from_excel(
+#         path="tests/test_data/cal_test.xlsx",
+#         molecule_id="molecule_1",
+#         molecule_name="molecule_1",
+#         conc_unit=mM,
+#     )
 
-    # cal = Calibrator(
-    #     molecule_id="s1",
-    #     molecule_name="Nicotinamide adenine dinucleotide",
-    #     conc_unit=mM,
-    #     concentrations=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-    #     signals=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-    # )
+#     # cal = Calibrator(
+#     #     molecule_id="s1",
+#     #     molecule_name="Nicotinamide adenine dinucleotide",
+#     #     conc_unit=mM,
+#     #     concentrations=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+#     #     signals=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+#     # )
 
-    # print(cal)
+#     # print(cal)
 
-    path = "/Users/max/Documents/GitHub/Range-2024/data/abts_kinetic_assay.xlsx"
-    cal = Calibrator.from_excel(
-        path=path,
-        sheet_name="calibration",
-        wavelength=340,
-        molecule_id="s1",
-        molecule_name="ABTS",
-        cutoff=3.6,
-        conc_unit=mM,
-    )
+#     path = "/Users/max/Documents/GitHub/Range-2024/data/abts_kinetic_assay.xlsx"
+#     cal = Calibrator.from_excel(
+#         path=path,
+#         sheet_name="calibration",
+#         wavelength=340,
+#         molecule_id="s1",
+#         molecule_name="ABTS",
+#         cutoff=3.6,
+#         conc_unit=mM,
+#     )
 
-    cal.models = []
+#     cal.models = []
 
-    cal.add_model(
-        name="Linear",
-        signal_law="a * s1 + b",
-    )
+#     cal.add_model(
+#         name="Linear",
+#         signal_law="a * s1 + b",
+#     )
 
-    cal.fit_models()
-    cal.visualize()
+#     cal.fit_models()
+#     cal.visualize()
 
-    # pprint(cal)
+#     # pprint(cal)

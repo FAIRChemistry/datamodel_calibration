@@ -5,13 +5,9 @@ site_url: https://fairchemistry.github.io/CaliPytion/
 
 nav:
   - Home: index.md
-  - Getting Started: examples/quickstart.ipynb
+  # - Getting Started: examples/quickstart.ipynb
   - Calibration Data Model: model.md
   - Examples: examples.md
-
-plugins:
-  - mkdocs-jupyter:
-    include_requirejs: true
 
 theme:
   name: material

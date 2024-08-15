@@ -75,7 +75,6 @@ def validate_prefix(term: str | dict, prefix: str):
 class Standard(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
-        use_enum_values=True,
     )  # type: ignore
 
     molecule_id: str
@@ -209,7 +208,6 @@ class Standard(BaseModel):
 class Sample(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
-        use_enum_values=True,
     )  # type: ignore
 
     concentration: float
@@ -303,7 +301,6 @@ class Sample(BaseModel):
 class CalibrationModel(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
-        use_enum_values=True,
     )  # type: ignore
 
     name: str
@@ -439,7 +436,6 @@ class CalibrationModel(BaseModel):
 class CalibrationRange(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
-        use_enum_values=True,
     )  # type: ignore
 
     conc_lower: Optional[float] = Field(default=None)
@@ -534,7 +530,6 @@ class CalibrationRange(BaseModel):
 class FitStatistics(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
-        use_enum_values=True,
     )  # type: ignore
 
     aic: Optional[float] = Field(default=None)
@@ -629,7 +624,6 @@ class FitStatistics(BaseModel):
 class Parameter(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
-        use_enum_values=True,
     )  # type: ignore
 
     symbol: Optional[str] = Field(default=None)
@@ -726,7 +720,6 @@ class Parameter(BaseModel):
 class UnitDefinition(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
-        use_enum_values=True,
     )  # type: ignore
 
     id: Optional[str] = Field(default=None)
@@ -854,7 +847,6 @@ class UnitDefinition(BaseModel):
 class BaseUnit(BaseModel):
     model_config: ConfigDict = ConfigDict(  # type: ignore
         validate_assigment=True,
-        use_enum_values=True,
     )  # type: ignore
 
     kind: UnitType

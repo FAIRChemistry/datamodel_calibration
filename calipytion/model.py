@@ -84,9 +84,7 @@ class Standard(BaseModel):
     retention_time: Optional[float] = Field(default=None)
     wavelength: Optional[float] = Field(default=None)
     molecule_name: Optional[str] = Field(default=None)
-    signal_type: Optional[SignalType] = Field(default=None)
     samples: list[Sample] = Field(default_factory=list)
-    created: Optional[str] = Field(default=None)
     result: Optional[CalibrationModel] = Field(default=None)
 
     # JSON-LD fields
@@ -936,12 +934,6 @@ class BaseUnit(BaseModel):
 
         add_namespace(self, prefix, iri)
         self.ld_type.append(term)
-
-
-class SignalType(Enum):
-    ABSORBANCE = "absorbance"
-    REFLECTANCE = "reflectance"
-    TRANSMITTANCE = "transmittance"
 
 
 class UnitType(Enum):

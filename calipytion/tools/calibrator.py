@@ -251,7 +251,6 @@ class Calibrator(BaseModel):
         molecule_name: str,
         conc_unit: UnitDefinition,
         cutoff: Optional[float] = None,
-        ld_id: Optional[str] = None,
         wavelength: Optional[float] = None,
         sheet_name: Optional[str | int] = 0,
         n_header_rows: Optional[int] = 0,
@@ -266,7 +265,6 @@ class Calibrator(BaseModel):
             molecule_name (str): Name of the molecule.
             conc_unit (UnitDefinition): Concentration unit.
             cutoff (float, optional): Cutoff value for the signals. Defaults to None.
-            ld_id (str, optional): Linked data identifier (URL of the molecule). Defaults to None.
             wavelength (float, optional): Wavelength of the measurement. Defaults to None.
             sheet_name (str | int, optional): Name of the sheet in the Excel file. Defaults to 0.
             n_header_rows (int, optional): Number of header rows prior to data. Defaults to 0.
@@ -286,7 +284,6 @@ class Calibrator(BaseModel):
         concs = concs.flatten().tolist()
 
         return cls(
-            ld_id=ld_id,
             molecule_id=molecule_id,
             molecule_name=molecule_name,
             concentrations=concs,
@@ -295,6 +292,19 @@ class Calibrator(BaseModel):
             cutoff=cutoff,
             wavelength=wavelength,
         )
+
+    @classmethod
+    def from_json(
+        cls,
+        path: str,
+        cutoff: Optional[float] = None,
+    ) -> Calibrator:
+        import json
+
+        with open(path, "r") as file:
+            standard = Standard(**json.load(file))
+
+        return cls.from_standard(standard, cutoff)
 
     @classmethod
     def from_standard(
@@ -429,7 +439,7 @@ class Calibrator(BaseModel):
         fig = make_subplots(
             rows=1,
             cols=2,
-            x_title=f"{self.molecule_name} / {self._format_unit(str(self.conc_unit))}",
+            x_title=f"{self.molecule_name} / {self.conc_unit.name}",
             subplot_titles=[
                 "Standard",
                 "Model Residuals",
@@ -610,15 +620,19 @@ class Calibrator(BaseModel):
 
     def _traces_from_standard(self, fig: go.Figure):
         for sample in self.standard.samples:
+            if not hasattr(sample, "id"):
+                sample_id = f"Sample {self.standard.samples.index(sample) + 1}"
+            else:
+                sample_id = sample.id
             fig.add_trace(
                 go.Scatter(
                     x=[sample.concentration],
                     y=[sample.signal],
-                    name=sample.id,
+                    name=sample_id,
                     mode="markers",
                     marker=dict(color="#000000"),
                     visible=True,
-                    customdata=[f"{self.standard.name} standard"],
+                    customdata=[f"{self.standard.molecule_name} standard"],
                     showlegend=False,
                 ),
                 col=1,

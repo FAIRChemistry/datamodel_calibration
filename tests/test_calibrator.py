@@ -195,6 +195,7 @@ def test_read_excel():
         molecule_name="Methanol",
         conc_unit=mM,
         wavelength=500.0,
+        skip_rows=1,
     )
 
     assert cal.molecule_id == "s1"

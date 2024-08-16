@@ -207,7 +207,7 @@ class Calibrator(BaseModel):
 
             LOGGER.warn(
                 f"⚠️ Extrapolation is enabled. Allowing extrapolation in range between "
-                f"{lower_bond:.2f} and {upper_bond:.2f} {self.conc_unit}."
+                f"{lower_bond:.2f} and {upper_bond:.2f} {self.conc_unit.name}."
             )
 
         cal_model = Fitter.from_calibration_model(model)

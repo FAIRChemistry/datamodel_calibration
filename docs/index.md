@@ -12,7 +12,7 @@ Automatically fits different polynomial models to the data and provides interact
 A model overview is generated after fitting, allowing the user to select the best model based on the desired metric.
 - 🚷 __Avoid Extrapolation__:  
 Prevents the use of models outside the calibrated concentration range. By user choice, the model can be extrapolated to calculate concentrations outside the calibration range.  
-- 🧪 __Concentration Calculation of EnzymeML Documents__:  
+- 🧪 __Compatible with EnzymeML Documents__:  
 CaliPytion can be used to convert the measured signals of an EnzymeML document into concentrations.  
 - 📂 __FAIR Data__:  
 Calibration models are stored together with the standard data. Constituting a complete record of the calibration process, this data can be saved as a JSON or AnIML file. 

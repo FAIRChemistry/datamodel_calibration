@@ -17,7 +17,7 @@ matplotlib = ">=3.7"
 nbformat = "^5.10.4"
 pydantic = "^2.4"
 rich = "^13"
-pandas = { version = ">=2.0", extras = ["excel"] }
+pandas = { version = ">=2.0,<2.2.2", extras = ["excel"] } # Due to Colab
 toml = "^0.10.2"
 pyenzyme = { git = "https://github.com/EnzymeML/PyEnzyme.git", branch = "v2-migration" }
 

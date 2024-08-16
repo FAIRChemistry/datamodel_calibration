@@ -253,7 +253,7 @@ class Calibrator(BaseModel):
         cutoff: Optional[float] = None,
         wavelength: Optional[float] = None,
         sheet_name: Optional[str | int] = 0,
-        n_header_rows: Optional[int] = 0,
+        skip_rows: Optional[int] = 0,
     ):
         """Reads the data from an Excel file and initializes the Calibrator object.
         The leftmost column is expected to contain the concentrations. All other columns
@@ -267,13 +267,13 @@ class Calibrator(BaseModel):
             cutoff (float, optional): Cutoff value for the signals. Defaults to None.
             wavelength (float, optional): Wavelength of the measurement. Defaults to None.
             sheet_name (str | int, optional): Name of the sheet in the Excel file. Defaults to 0.
-            n_header_rows (int, optional): Number of header rows prior to data. Defaults to 0.
+            skip_rows (int, optional): Number of rows to skip at the beginning of the sheet. Defaults to 0.
 
         Returns:
             Calibrator: The Calibrator object.
         """
 
-        df = pd.read_excel(path, sheet_name=sheet_name, header=n_header_rows)
+        df = pd.read_excel(path, sheet_name=sheet_name, header=None, skiprows=skip_rows)
 
         signals = df.iloc[:, 1:].values
         n_reps = signals.shape[1]
@@ -299,6 +299,16 @@ class Calibrator(BaseModel):
         path: str,
         cutoff: Optional[float] = None,
     ) -> Calibrator:
+        """Reads the data from a JSON Standard file and initializes the Calibrator object.
+
+        Args:
+            path (str): Path to the JSON file.
+            cutoff (Optional[float], optional): Cutoff value for the signals.
+                Higher signals will be ignored. Defaults to None.
+
+        Returns:
+            Calibrator: The Calibrator object.
+        """
         import json
 
         with open(path, "r") as file:
@@ -615,6 +625,10 @@ class Calibrator(BaseModel):
                 "scale": 1,  # Multiply title/legend/axis/canvas sizes by this factor
             }
         }
+
+        # save figure as plotly json
+        # from plotly.io import write_json
+        # write_json(fig, "usage_plot.json")
 
         return fig.show(config=config)
 

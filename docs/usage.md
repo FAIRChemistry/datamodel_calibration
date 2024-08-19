@@ -10,7 +10,7 @@ The `Calibrator` contains a `Standard`, which harbors the data structure structu
 
 ### Initialization
 
-The `Calibrator` can be initialized by providing the `concentrations` and respective measured `signals` as lists. Additionally, the `molecule_id` and `molecule_name` and the respective `conc_unit` need to be provided. Optionally, a `wavelength` can be provided if the signal data originates from a spectrophotometric measurement.  Furthermore, a `cutoff` can be provided to exclude signals above a certain value. 
+The `Calibrator` can be initialized by providing the `concentrations` and respective measured `signals` as lists. Additionally, the `molecule_id` and `molecule_name` and the respective `conc_unit` need to be provided. Optionally, a `wavelength` can be provided if the signal data originates from a spectrophotometric measurement. Setting the `cutoff` can be provided to exclude signals above a certain value. Furthermore, a linked data identifier `ld_id` can be provided, uniquely identifying the corresponding database entry of the molecule, e.g., from PubChem.
 Units are handled as predefined objects which can be imported from the `calipytion.units` module.  
 
 ```python
@@ -19,6 +19,7 @@ from calipytion.units import mM
 
 calibrator = Calibrator(
     molecule_id="s0",
+    ld_id="https://pubchem.ncbi.nlm.nih.gov/compound/1_4-Dihydronicotinamide-adenine-dinucleotide"
     molecule_name="NADH",
     conc_unit=mM,
     concentrations=[0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5],

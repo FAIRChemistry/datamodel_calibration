@@ -1,44 +1,58 @@
-from pyenzyme import EnzymeMLDocument, MeasurementData, SmallMolecule
+from pyenzyme import DataTypes, MeasurementData, SmallMolecule
 
-from calipytion.model import CalibrationModel, Standard
-from calipytion.tools.calibrator import Calibrator
+from calipytion.model import CalibrationModel
+
+# from calipytion.tools.calibrator import Calibrator
 
 
-def apply_standard(standard: Standard, enzmldoc: EnzymeMLDocument) -> EnzymeMLDocument:
-    """Converts the measured data in concentration values for a given standard.
+# def apply_to_enzymeml(
+#     calibrators: list[Calibrator] | Calibrator,
+#     enzmldoc: EnzymeMLDocument,
+#     extrapolate: bool = False,
+# ):
+#     """Converts the measured data in concentration values for a given standard.
 
-    Args:
-        standard: The standard of a molecule.
-        enzmldoc: The EnzymeMLDocument to apply the standard to.
+#     Args:
+#         calibrators: The calibrators to use for the conversion.
+#         enzmldoc: The EnzymeMLDocument to apply the standard to.
+#         extrapolate: If True, the calibration models will extrapolate if the signals
+#             are outside the calibration range.
+#     """
 
-    Returns:
-        The EnzymeMLDocument with the standard applied.
-    """
+#     if not isinstance(calibrators, list):
+#         calibrators = [calibrators]
 
-    try:
-        small_molecule_id = get_small_molecule_id_by_ld_id(
-            enzmldoc.small_molecules, standard.molecule_id
-        )
-    except ValueError:
-        try:
-            small_molecule_id = get_small_molecule_id_by_id(
-                enzmldoc.small_molecules, standard.molecule_id
-            )
-        except ValueError:
-            raise ValueError(f"""
-            Could not find a matching small molecule in the EnzymeML document for {standard.molecule_id}
-            Make sure that the molecule_id in the standard is consistent with the ld_id or id field of 
-            the small_molecule in the EnzymeML document.
-            """)
+#     for calibrator in calibrators:
+#         assert calibrator.standard.result is not None, f"""
+#         The calibrator for {calibrator.standard.molecule_id} does not have a result.
+#         Call the `create_standard` method on the calibrator before applying it to the EnzymeML document.
+#         """
 
-    calibrator = Calibrator.from_standard(standard)
+#         try:
+#             small_molecule_id = get_small_molecule_id_by_ld_id(
+#                 enzmldoc.small_molecules, calibrator.ld_id
+#             )
+#         except ValueError:
+#             try:
+#                 small_molecule_id = get_small_molecule_id_by_id(
+#                     enzmldoc.small_molecules, calibrator.molecule_id
+#                 )
+#             except ValueError:
+#                 raise ValueError(f"""
+#                 Could not find a matching small molecule in the EnzymeML document for {calibrator.molecule_id}
+#                 Make sure that the molecule_id in the standard is consistent with the ld_id or id field of
+#                 the small_molecule in the EnzymeML document.
+#                 """)
 
-    for measurement in enzmldoc.measurements:
-        for measured_species in measurement.species:
-            print(measured_species.species_id, small_molecule_id)
-            if measured_species.species_id == small_molecule_id:
-                convert_measurement(calibrator, standard.result, measured_species)
-                print("converted")
+#         for measurement in enzmldoc.measurements:
+#             for measured_species in measurement.species:
+#                 if measured_species.species_id == small_molecule_id:
+#                     convert_measurement(
+#                         calibrator,
+#                         calibrator.standard.result,
+#                         measured_species,
+#                         extrapolate,
+#                     )
 
 
 def get_small_molecule_id_by_ld_id(
@@ -96,7 +110,10 @@ def get_small_molecule_id_by_id(
 
 
 def convert_measurement(
-    calibrator: Calibrator, model: CalibrationModel, measured_species: MeasurementData
+    calibrator: Calibrator,
+    model: CalibrationModel,
+    measured_species: MeasurementData,
+    extrapolate: bool,
 ):
     """Converts the measured data in concentration values for a given standard.
 
@@ -106,6 +123,14 @@ def convert_measurement(
         measured_species: The species to convert.
     """
 
+    # assert units are the same
+    assert measured_species.data_unit.__str__() == calibrator.conc_unit.__str__(), f"""
+    The unit of the measured data ({measured_species.data_unit.name}) is not 
+    the same as the unit of the calibration model ({calibrator.conc_unit.name}).
+    """
+
     signals = measured_species.data
-    measured_species.data = calibrator.calculate_concentrations(model, signals)
-    measured_species.data_unit = calibrator.conc_unit
+    measured_species.data = calibrator.calculate_concentrations(
+        model, signals, extrapolate
+    )
+    measured_species.data_type = DataTypes.CONCENTRATION

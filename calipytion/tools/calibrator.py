@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import logging
 from typing import Any, Optional
 
@@ -9,7 +10,8 @@ import plotly.express as px
 import sympy as sp
 from plotly import graph_objects as go
 from plotly.subplots import make_subplots
-from pydantic import BaseModel, Field, ValidationInfo, field_validator
+from pydantic import BaseModel, Field, model_validator
+from pyenzyme import DataTypes, EnzymeMLDocument
 from rich.console import Console
 from rich.table import Table
 
@@ -33,6 +35,12 @@ class Calibrator(BaseModel):
 
     molecule_id: str = Field(
         description="Unique identifier of the given object.",
+        pattern=r"^[a-zA-Z][a-zA-Z0-9^\+\-\*/=<>^\|&%!~]*$",
+    )
+
+    ld_id: str | None = Field(
+        description="Linked data identifier (URL of the molecule on PubChem)",
+        default=None,
     )
 
     molecule_name: str = Field(
@@ -73,32 +81,33 @@ class Calibrator(BaseModel):
         description="Result oriented object, representing the data and the chosen model.",
     )
 
-    @field_validator("models")
-    @classmethod
-    def initialize_models(cls, v: list[CalibrationModel], info: ValidationInfo):
+    @model_validator(mode="after")
+    def initialize_models(self):
         """
         Loads the default models if no models are provided and initializes the models
         with the according 'molecule_id'.
         """
-        if not v:
-            molecule_id = info.data["molecule_id"]
+        if not self.models:
             from calipytion.tools.equations import (
                 cubic_model,
                 linear_model,
                 quadratic_model,
             )
 
-            for model in [linear_model, quadratic_model, cubic_model]:
+            modified_models = []
+            for m in [linear_model, quadratic_model, cubic_model]:
+                model = copy.deepcopy(m)
                 model.signal_law = model.signal_law.replace(
-                    "concentration", molecule_id
+                    "concentration", self.molecule_id
                 )
-                model.molecule_id = molecule_id
+                model.molecule_id = self.molecule_id
+                modified_models.append(model)
 
-            v = [linear_model, quadratic_model, cubic_model]
+            self.models = modified_models
 
-            return v
+            return self
 
-        return v
+        return self
 
     def model_post_init(self, __context: Any) -> None:
         self._apply_cutoff()
@@ -138,25 +147,6 @@ class Calibrator(BaseModel):
         self.models.append(model)
 
         return model
-
-    def _get_free_symbols(self, equation: str) -> list[str]:
-        """Gets the free symbols from a sympy equation and converts them to strings."""
-
-        sp_eq = sp.sympify(equation)
-        symbols = list(sp_eq.free_symbols)
-
-        return [str(symbol) for symbol in symbols]
-
-    def _apply_cutoff(self):
-        """Applies the cutoff value to the signals and concentrations."""
-
-        if self.cutoff:
-            below_cutoff_idx = [
-                idx for idx, signal in enumerate(self.signals) if signal < self.cutoff
-            ]
-
-            self.concentrations = [self.concentrations[idx] for idx in below_cutoff_idx]
-            self.signals = [self.signals[idx] for idx in below_cutoff_idx]
 
     def get_model(self, model_name: str) -> CalibrationModel:
         """Returns a model by its name."""
@@ -233,6 +223,48 @@ class Calibrator(BaseModel):
 
         return concs.tolist()
 
+    def apply_to_enzymeml(self, enzmldoc: EnzymeMLDocument, extrapolate: bool = False):
+        """Applies the calibrator to an EnzymeML document if the species_id and molecule_id
+        match between the EnzymeML Document and the calibrator.
+
+        Args:
+            enzmldoc (EnzymeMLDocument): The EnzymeML document to apply the calibrator to.
+            extrapolate (bool, optional): Whether to extrapolate the concentration outside the
+                calibration range. Defaults to False.
+        """
+
+        assert self.standard.result is not None, f"""
+        The calibrator for {self.standard.molecule_id} does not have a result yet.
+        Run the `create_standard` method on the calibrator before applying it to the EnzymeML document.
+        """
+
+        converted_count = 0
+        for measurement in enzmldoc.measurements:
+            for measured_species in measurement.species_data:
+                assert measured_species.data_type != DataTypes.CONCENTRATION, """
+                The data seems to be already in concentration values.
+                """
+
+                if measured_species.species_id == self.molecule_id:
+                    # assert units are the same
+                    assert (
+                        measured_species.data_unit.__str__() == self.conc_unit.__str__()
+                    ), f"""
+                    The unit of the measured data ({measured_species.data_unit.name}) is not 
+                    the same as the unit of the calibration model ({self.conc_unit.name}).
+                    """
+
+                    signals = measured_species.data
+                    measured_species.data = self.calculate_concentrations(
+                        self.standard.result, signals, extrapolate
+                    )
+                    measured_species.data_type = DataTypes.CONCENTRATION
+
+                    converted_count += 1
+
+        symbol = "✅" if converted_count > 0 else "❌"
+        print(f"{symbol} Applied calibration to {converted_count} measurements")
+
     def _update_model_of_standard(self, model: CalibrationModel) -> None:
         """Updates the model of the standard object with the given model."""
 
@@ -250,6 +282,7 @@ class Calibrator(BaseModel):
         molecule_id: str,
         molecule_name: str,
         conc_unit: UnitDefinition,
+        ld_id: Optional[str] = None,
         cutoff: Optional[float] = None,
         wavelength: Optional[float] = None,
         sheet_name: Optional[str | int] = 0,
@@ -264,6 +297,7 @@ class Calibrator(BaseModel):
             molecule_id (str): Unique identifier of the molecule.
             molecule_name (str): Name of the molecule.
             conc_unit (UnitDefinition): Concentration unit.
+            ld_id (str, optional): Linked data identifier (URL of the molecule). Defaults to None.
             cutoff (float, optional): Cutoff value for the signals. Defaults to None.
             wavelength (float, optional): Wavelength of the measurement. Defaults to None.
             sheet_name (str | int, optional): Name of the sheet in the Excel file. Defaults to 0.
@@ -285,6 +319,7 @@ class Calibrator(BaseModel):
 
         return cls(
             molecule_id=molecule_id,
+            ld_id=ld_id,
             molecule_name=molecule_name,
             concentrations=concs,
             signals=signals,
@@ -356,6 +391,7 @@ class Calibrator(BaseModel):
 
         return cls(
             molecule_id=standard.molecule_id,
+            ld_id=standard.ld_id,
             molecule_name=standard.molecule_name,
             concentrations=concs,
             signals=signals,
@@ -399,7 +435,7 @@ class Calibrator(BaseModel):
         self.models = sorted(self.models, key=lambda x: x.statistics.aic)
 
         if not silent:
-            print("✅ Models have been fitted successfully.")
+            print("✅ Models have been successfully fitted.")
             self.print_result_table()
 
     def print_result_table(self) -> None:
@@ -684,6 +720,9 @@ class Calibrator(BaseModel):
         if not model.was_fitted:
             raise ValueError("Model has not been fitted yet. Run 'fit_models' first.")
 
+        if ld_id is None:
+            ld_id = self.ld_id
+
         standard = Standard(
             molecule_id=self.molecule_id,
             ld_id=ld_id,
@@ -714,55 +753,76 @@ class Calibrator(BaseModel):
             for fig in fig_data
         ]
 
-    @staticmethod
-    def _format_unit(unit: str) -> str:
-        unit = unit.replace("/l", " L<sup>-1</sup>")
-        unit = unit.replace("1/s", "s<sup>-1</sup>")
-        unit = unit.replace("1/min", "min<sup>-1</sup>")
-        unit = unit.replace("umol", "µmol")
-        unit = unit.replace("ug", "µg")
-        return unit
+    def _get_free_symbols(self, equation: str) -> list[str]:
+        """Gets the free symbols from a sympy equation and converts them to strings."""
+
+        sp_eq = sp.sympify(equation)
+        symbols = list(sp_eq.free_symbols)
+
+        return [str(symbol) for symbol in symbols]
+
+    def _apply_cutoff(self):
+        """Applies the cutoff value to the signals and concentrations."""
+
+        if self.cutoff:
+            below_cutoff_idx = [
+                idx for idx, signal in enumerate(self.signals) if signal < self.cutoff
+            ]
+
+            self.concentrations = [self.concentrations[idx] for idx in below_cutoff_idx]
+            self.signals = [self.signals[idx] for idx in below_cutoff_idx]
 
 
-# if __name__ == "__main__":
-#     from calipytion.units import mM
+if __name__ == "__main__":
+    import pyenzyme as pe
+    from pyenzyme.units import mM, s
 
-#     c = Calibrator.from_excel(
-#         path="tests/test_data/cal_test.xlsx",
-#         molecule_id="molecule_1",
-#         molecule_name="molecule_1",
-#         conc_unit=mM,
-#     )
+    from calipytion import Calibrator
+    from calipytion.units import celsius as cal_celsius
+    from calipytion.units import mM as cal_mM
 
-#     # cal = Calibrator(
-#     #     molecule_id="s1",
-#     #     molecule_name="Nicotinamide adenine dinucleotide",
-#     #     conc_unit=mM,
-#     #     concentrations=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-#     #     signals=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-#     # )
+    # create a mock calibrator
+    cal_data = {
+        "molecule_id": "s0",
+        "molecule_name": "NADH",
+        "ld_id": "www.example.com/qweqwe123123",
+        "signals": [0, 1, 2, 3, 4],
+        "concentrations": [0, 10, 20, 30, 40],
+        "conc_unit": cal_mM,
+    }
 
-#     # print(cal)
+    standard_params = {
+        "ph": 3,
+        "temperature": 25,
+        "temp_unit": cal_celsius,
+    }
 
-#     path = "/Users/max/Documents/GitHub/Range-2024/data/abts_kinetic_assay.xlsx"
-#     cal = Calibrator.from_excel(
-#         path=path,
-#         sheet_name="calibration",
-#         wavelength=340,
-#         molecule_id="s1",
-#         molecule_name="ABTS",
-#         cutoff=3.6,
-#         conc_unit=mM,
-#     )
+    enzmldoc = pe.EnzymeMLDocument(name="Test calipytion conversion")
 
-#     cal.models = []
+    nadh = enzmldoc.add_to_small_molecules(
+        id="s0",
+        ld_id="https://pubchem.ncbi.nlm.nih.gov/compound/1_4-Dihydronicotinamide-adenine-dinucleotide",
+        name="NADH",
+    )
 
-#     cal.add_model(
-#         name="Linear",
-#         signal_law="a * s1 + b",
-#     )
+    measurement = enzmldoc.add_to_measurements(id="m0", name="NADH measurement")
 
-#     cal.fit_models()
-#     cal.visualize()
+    measurement.add_to_species_data(
+        species_id=nadh.id,
+        initial=0.5,
+        prepared=0.5,
+        data=[2.7, 2.45, 1.9999, 1.52, 1, 0.5, 0.23],
+        data_unit=mM,
+        time=[0, 10, 20, 30, 40, 50, 60],
+        time_unit=s,
+        data_type=pe.DataTypes.ABSORBANCE,
+    )
 
-#     # pprint(cal)
+    ccal = Calibrator(**cal_data)
+
+    ccal.fit_models()
+    ccal.create_standard(model=ccal.models[0], **standard_params)
+
+    ccal.apply_to_enzymeml(enzmldoc)
+
+    print(enzmldoc.measurements[0].species_data[0].data)

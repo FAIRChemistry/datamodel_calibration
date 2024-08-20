@@ -195,7 +195,7 @@ class Calibrator(BaseModel):
             lower_bond -= cal_range
             upper_bond += cal_range
 
-            LOGGER.warn(
+            LOGGER.warning(
                 f"⚠️ Extrapolation is enabled. Allowing extrapolation in range between "
                 f"{lower_bond:.2f} and {upper_bond:.2f} {self.conc_unit.name}."
             )
@@ -223,7 +223,12 @@ class Calibrator(BaseModel):
 
         return concs.tolist()
 
-    def apply_to_enzymeml(self, enzmldoc: EnzymeMLDocument, extrapolate: bool = False):
+    def apply_to_enzymeml(
+        self,
+        enzmldoc: EnzymeMLDocument,
+        extrapolate: bool = False,
+        silent: bool = False,
+    ):
         """Applies the calibrator to an EnzymeML document if the species_id and molecule_id
         match between the EnzymeML Document and the calibrator.
 
@@ -231,25 +236,26 @@ class Calibrator(BaseModel):
             enzmldoc (EnzymeMLDocument): The EnzymeML document to apply the calibrator to.
             extrapolate (bool, optional): Whether to extrapolate the concentration outside the
                 calibration range. Defaults to False.
+            silent (bool, optional): Silences the print output. Defaults to False.
+
+        Raises:
+            AssertionError: If no standard with a fitted calibration model is found.
+            AssertionError: If the data is already in concentration values.
+            AssertionError: If the units of the measured data and the calibration model do not match.
         """
 
-        assert self.standard.result is not None, f"""
-        The calibrator for {self.standard.molecule_id} does not have a result yet.
-        Run the `create_standard` method on the calibrator before applying it to the EnzymeML document.
-        """
+        assert self.standard, "No standard object found."
+        assert self.standard.result, "No model found in the standard object."
 
         converted_count = 0
         for measurement in enzmldoc.measurements:
             for measured_species in measurement.species_data:
-                assert measured_species.data_type != DataTypes.CONCENTRATION, """
-                The data seems to be already in concentration values.
-                """
-
                 if measured_species.species_id == self.molecule_id:
+                    assert measured_species.data_type != DataTypes.CONCENTRATION, """
+                        The data seems to be already in concentration values.
+                    """
                     # assert units are the same
-                    assert (
-                        measured_species.data_unit.__str__() == self.conc_unit.__str__()
-                    ), f"""
+                    assert measured_species.data_unit.name == self.conc_unit.name, f"""
                     The unit of the measured data ({measured_species.data_unit.name}) is not 
                     the same as the unit of the calibration model ({self.conc_unit.name}).
                     """
@@ -263,7 +269,8 @@ class Calibrator(BaseModel):
                     converted_count += 1
 
         symbol = "✅" if converted_count > 0 else "❌"
-        print(f"{symbol} Applied calibration to {converted_count} measurements")
+        if not silent:
+            print(f"{symbol} Applied calibration to {converted_count} measurements")
 
     def _update_model_of_standard(self, model: CalibrationModel) -> None:
         """Updates the model of the standard object with the given model."""
@@ -389,6 +396,11 @@ class Calibrator(BaseModel):
             raise ValueError("All samples must have the same concentration unit")
         conc_unit = standard.samples[0].conc_unit
 
+        if standard.result:
+            models = [standard.result]
+        else:
+            models = []
+
         return cls(
             molecule_id=standard.molecule_id,
             ld_id=standard.ld_id,
@@ -396,7 +408,7 @@ class Calibrator(BaseModel):
             concentrations=concs,
             signals=signals,
             conc_unit=conc_unit,
-            models=[standard.result],
+            models=models,
             cutoff=cutoff,
             standard=standard,
         )
@@ -720,22 +732,22 @@ class Calibrator(BaseModel):
         if not model.was_fitted:
             raise ValueError("Model has not been fitted yet. Run 'fit_models' first.")
 
-        if ld_id is None:
-            ld_id = self.ld_id
-
         standard = Standard(
             molecule_id=self.molecule_id,
-            ld_id=ld_id,
             molecule_name=self.molecule_name,
             wavelength=self.wavelength,
             ph=ph,
             temp_unit=temp_unit,
             temperature=temperature,
-            signal_type=None,
             samples=[],
             result=model,
             retention_time=retention_time,
         )
+        if ld_id:
+            standard.ld_id = ld_id
+        else:
+            if self.ld_id:
+                standard.ld_id = self.ld_id
 
         for conc, signal in zip(self.concentrations, self.signals):
             standard.add_to_samples(

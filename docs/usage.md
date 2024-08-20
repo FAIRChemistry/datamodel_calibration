@@ -165,14 +165,17 @@ with open("abts_standard.json", "w") as f:
 
 ### Applying a calibrator to an EnzymeML Document
 
-The `Calibrator` can be applied to an `EnzymeMLDocument` to calculate concentrations of signals. This is done by using the `apply_to_enzymeml` method. The method expects an `EnzymeMLDocument` and a `model_name` to be provided. Optionally, the `extrapolate` parameter can be set to enable extrapolation. 
+The `Calibrator` can be applied to an `EnzymeMLDocument` to calculate concentrations of signals. This is done by using the `apply_to_enzymeml` method. The method expects an `EnzymeMLDocument` as input. Optionally, the `extrapolate` parameter can be set to enable extrapolation. 
 
 !!! note
-    In order to apply a calibrator to an `EnzymeMLDocument`, the measurement data within the `EnzymeMLDocument` must reference the same molecule. Therefore, the `species_id` in the `EnzymeMLDocument` must match the `molecule_id` of the `Calibrator`.
+    In order to apply a calibrator to an `EnzymeMLDocument`, the measurement data within the `EnzymeMLDocument` must reference the same molecule. Therefore, the `species_id` in the `EnzymeMLDocument` must match the `molecule_id` of the `Calibrator`. The `EnzymeMLDocument` must be an instance of `pyenzyme.EnzymeMLDocument`.
 
 ```python
+import json
 from pyenzyme import EnzymeMLDocument
 
-enzmldoc = EnzymeMLDocument.from_file("enzmldoc.json")
-calibrator.apply_to_enzymeml(enzmldoc, model_name="linear")
+with open("data/enzymeml.json", "r") as f:
+    enzmldoc = EnzymeMLDocument(**json.load(f))
+
+calibrator.apply_to_enzymeml(enzmldoc, extrapolate=False)
 ```

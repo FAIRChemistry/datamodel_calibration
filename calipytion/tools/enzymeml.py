@@ -1,6 +1,4 @@
-from pyenzyme import DataTypes, MeasurementData, SmallMolecule
-
-from calipytion.model import CalibrationModel
+from pyenzyme import SmallMolecule
 
 # from calipytion.tools.calibrator import Calibrator
 
@@ -109,28 +107,28 @@ def get_small_molecule_id_by_id(
     )
 
 
-def convert_measurement(
-    calibrator: Calibrator,
-    model: CalibrationModel,
-    measured_species: MeasurementData,
-    extrapolate: bool,
-):
-    """Converts the measured data in concentration values for a given standard.
+# def convert_measurement(
+#     calibrator: Calibrator,
+#     model: CalibrationModel,
+#     measured_species: MeasurementData,
+#     extrapolate: bool,
+# ):
+#     """Converts the measured data in concentration values for a given standard.
 
-    Args:
-        calibrator: The calibrator to use for the conversion.
-        model: The calibration model to use for the conversion.
-        measured_species: The species to convert.
-    """
+#     Args:
+#         calibrator: The calibrator to use for the conversion.
+#         model: The calibration model to use for the conversion.
+#         measured_species: The species to convert.
+#     """
 
-    # assert units are the same
-    assert measured_species.data_unit.__str__() == calibrator.conc_unit.__str__(), f"""
-    The unit of the measured data ({measured_species.data_unit.name}) is not 
-    the same as the unit of the calibration model ({calibrator.conc_unit.name}).
-    """
+#     # assert units are the same
+#     assert measured_species.data_unit.__str__() == calibrator.conc_unit.__str__(), f"""
+#     The unit of the measured data ({measured_species.data_unit.name}) is not
+#     the same as the unit of the calibration model ({calibrator.conc_unit.name}).
+#     """
 
-    signals = measured_species.data
-    measured_species.data = calibrator.calculate_concentrations(
-        model, signals, extrapolate
-    )
-    measured_species.data_type = DataTypes.CONCENTRATION
+#     signals = measured_species.data
+#     measured_species.data = calibrator.calculate_concentrations(
+#         model, signals, extrapolate
+#     )
+#     measured_species.data_type = DataTypes.CONCENTRATION

@@ -16,6 +16,9 @@ The `Standard` contains information on the molecule for which the calibration wa
 - **molecule_id**
   - Type: string
   - Description: Id to reference the molecule. E.g. `s1`.
+- **molecule_name**
+  - Type: string
+  - Description: Name of the molecule.
 - **ph**
   - Type: float
   - Description: pH value of the solution.
@@ -31,9 +34,6 @@ The `Standard` contains information on the molecule for which the calibration wa
 - wavelength
   - Type: float
   - Description: Detection wavelength in nm.
-- molecule_name
-  - Type: string
-  - Description: Name of the molecule.
 - samples
   - Type: Sample[]
   - Description: Measured signal, at a given concentration of the molecule.

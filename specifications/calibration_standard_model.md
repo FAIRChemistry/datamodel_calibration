@@ -15,7 +15,10 @@ The `Standard` contains information on the molecule for which the calibration wa
 
 - **molecule_id**
   - Type: string
-  - Description: Id to reference the molecule. E.g. `s1`.
+  - Description: Short ID how the molecule should be referenced in equations. E.g. `s1`.
+- **pubchem_cid**
+  - Type: integer
+  - Description: PubChem Compound Identifier.
 - **molecule_name**
   - Type: string
   - Description: Name of the molecule.

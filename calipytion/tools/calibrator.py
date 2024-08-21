@@ -4,6 +4,7 @@ import copy
 import logging
 from typing import Any, Optional
 
+import httpx
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -38,9 +39,8 @@ class Calibrator(BaseModel):
         pattern=r"^[a-zA-Z][a-zA-Z0-9^\+\-\*/=<>^\|&%!~]*$",
     )
 
-    ld_id: str | None = Field(
-        description="Linked data identifier (URL of the molecule on PubChem)",
-        default=None,
+    pubchem_cid: int = Field(
+        description="PubChem Compound Identifier",
     )
 
     molecule_name: str = Field(
@@ -80,6 +80,29 @@ class Calibrator(BaseModel):
         default=None,
         description="Result oriented object, representing the data and the chosen model.",
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def get_molecule_name(cls, data: Any) -> Any:
+        if "molecule_name" not in data:
+            cid = data["pubchem_cid"]
+            # API request to get the molecule name
+            url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{cid}/property/MolecularFormula,Title/JSON"
+            response = httpx.get(url)
+
+            if response.status_code == 200:
+                res_dict = (
+                    response.json()
+                )  # Access the title directly from the JSON data
+                data["molecule_name"] = res_dict["PropertyTable"]["Properties"][0][
+                    "Title"
+                ]
+
+                return data
+            else:
+                raise ValueError("Failed to retrieve molecule name from PubChem")
+
+        return data
 
     @model_validator(mode="after")
     def initialize_models(self):
@@ -287,9 +310,9 @@ class Calibrator(BaseModel):
         cls,
         path: str,
         molecule_id: str,
-        molecule_name: str,
         conc_unit: UnitDefinition,
-        ld_id: Optional[str] = None,
+        pubchem_cid: int,
+        molecule_name: str | None = None,
         cutoff: Optional[float] = None,
         wavelength: Optional[float] = None,
         sheet_name: Optional[str | int] = 0,
@@ -304,7 +327,7 @@ class Calibrator(BaseModel):
             molecule_id (str): Unique identifier of the molecule.
             molecule_name (str): Name of the molecule.
             conc_unit (UnitDefinition): Concentration unit.
-            ld_id (str, optional): Linked data identifier (URL of the molecule). Defaults to None.
+            pubchem_cid (int): PubChem Compound Identifier.
             cutoff (float, optional): Cutoff value for the signals. Defaults to None.
             wavelength (float, optional): Wavelength of the measurement. Defaults to None.
             sheet_name (str | int, optional): Name of the sheet in the Excel file. Defaults to 0.
@@ -324,16 +347,21 @@ class Calibrator(BaseModel):
         concs = np.repeat(concs, n_reps)
         concs = concs.flatten().tolist()
 
-        return cls(
-            molecule_id=molecule_id,
-            ld_id=ld_id,
-            molecule_name=molecule_name,
-            concentrations=concs,
-            signals=signals,
-            conc_unit=conc_unit,
-            cutoff=cutoff,
-            wavelength=wavelength,
-        )
+        args = {
+            "molecule_id": molecule_id,
+            "pubchem_cid": pubchem_cid,
+            "concentrations": concs,
+            "signals": signals,
+            "conc_unit": conc_unit,
+            "cutoff": cutoff,
+            "wavelength": wavelength,
+        }
+
+        # Add molecule_name only if it's not None
+        if molecule_name is not None:
+            args["molecule_name"] = molecule_name
+
+        return cls(**args)
 
     @classmethod
     def from_json(
@@ -403,7 +431,7 @@ class Calibrator(BaseModel):
 
         return cls(
             molecule_id=standard.molecule_id,
-            ld_id=standard.ld_id,
+            pubchem_cid=standard.pubchem_cid,
             molecule_name=standard.molecule_name,
             concentrations=concs,
             signals=signals,
@@ -708,8 +736,7 @@ class Calibrator(BaseModel):
         model: CalibrationModel,
         ph: float,
         temperature: float,
-        temp_unit: str = C,
-        ld_id: Optional[str] = None,
+        temp_unit: UnitDefinition = C,
         retention_time: Optional[float] = None,
     ) -> Standard:
         """Creates a standard object with the given model, pH, and temperature.
@@ -719,7 +746,6 @@ class Calibrator(BaseModel):
             ph (float): The pH value of the standard.
             temperature (float): The temperature of the standard.
             temp_unit (str): The unit of the temperature. Defaults to "C".
-            ld_id (str, optional): Linked data identifier (URL of the molecule). Defaults to None.
             retention_time (float, optional): Retention time of the molecule. Defaults to None.
 
         Raises:
@@ -734,6 +760,7 @@ class Calibrator(BaseModel):
 
         standard = Standard(
             molecule_id=self.molecule_id,
+            pubchem_cid=self.pubchem_cid,
             molecule_name=self.molecule_name,
             wavelength=self.wavelength,
             ph=ph,
@@ -742,12 +769,8 @@ class Calibrator(BaseModel):
             samples=[],
             result=model,
             retention_time=retention_time,
+            ld_id=f"https://pubchem.ncbi.nlm.nih.gov/compound/{self.pubchem_cid}",
         )
-        if ld_id:
-            standard.ld_id = ld_id
-        else:
-            if self.ld_id:
-                standard.ld_id = self.ld_id
 
         for conc, signal in zip(self.concentrations, self.signals):
             standard.add_to_samples(
@@ -783,58 +806,3 @@ class Calibrator(BaseModel):
 
             self.concentrations = [self.concentrations[idx] for idx in below_cutoff_idx]
             self.signals = [self.signals[idx] for idx in below_cutoff_idx]
-
-
-if __name__ == "__main__":
-    import pyenzyme as pe
-    from pyenzyme.units import mM, s
-
-    from calipytion import Calibrator
-    from calipytion.units import celsius as cal_celsius
-    from calipytion.units import mM as cal_mM
-
-    # create a mock calibrator
-    cal_data = {
-        "molecule_id": "s0",
-        "molecule_name": "NADH",
-        "ld_id": "www.example.com/qweqwe123123",
-        "signals": [0, 1, 2, 3, 4],
-        "concentrations": [0, 10, 20, 30, 40],
-        "conc_unit": cal_mM,
-    }
-
-    standard_params = {
-        "ph": 3,
-        "temperature": 25,
-        "temp_unit": cal_celsius,
-    }
-
-    enzmldoc = pe.EnzymeMLDocument(name="Test calipytion conversion")
-
-    nadh = enzmldoc.add_to_small_molecules(
-        id="s0",
-        ld_id="https://pubchem.ncbi.nlm.nih.gov/compound/1_4-Dihydronicotinamide-adenine-dinucleotide",
-        name="NADH",
-    )
-
-    measurement = enzmldoc.add_to_measurements(id="m0", name="NADH measurement")
-
-    measurement.add_to_species_data(
-        species_id=nadh.id,
-        initial=0.5,
-        prepared=0.5,
-        data=[2.7, 2.45, 1.9999, 1.52, 1, 0.5, 0.23],
-        data_unit=mM,
-        time=[0, 10, 20, 30, 40, 50, 60],
-        time_unit=s,
-        data_type=pe.DataTypes.ABSORBANCE,
-    )
-
-    ccal = Calibrator(**cal_data)
-
-    ccal.fit_models()
-    ccal.create_standard(model=ccal.models[0], **standard_params)
-
-    ccal.apply_to_enzymeml(enzmldoc)
-
-    print(enzmldoc.measurements[0].species_data[0].data)

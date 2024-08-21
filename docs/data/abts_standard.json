@@ -1,5 +1,6 @@
 {
     "molecule_id": "s0",
+    "pubchem_cid": 439153,
     "molecule_name": "NADH",
     "ph": 7.4,
     "temperature": 25.0,
@@ -12,7 +13,7 @@
                 "exponent": 1,
                 "multiplier": null,
                 "scale": 1.0,
-                "ld_id": "calipy:BaseUnit/a257e7ef-0859-4a8f-8617-70f64061567f",
+                "ld_id": "calipy:BaseUnit/9ff0b62c-a6f9-4d60-a2fc-22c5de710b53",
                 "ld_type": [
                     "calipy:BaseUnit"
                 ],
@@ -21,7 +22,7 @@
                 }
             }
         ],
-        "ld_id": "calipy:UnitDefinition/f631f5f4-abfe-4aad-b52c-96006c6a4787",
+        "ld_id": "calipy:UnitDefinition/0c8fcdf8-6142-461f-9dfa-b26c7bd6e63a",
         "ld_type": [
             "OBO:UO_0000000"
         ],
@@ -43,7 +44,7 @@
                         "exponent": 1,
                         "multiplier": null,
                         "scale": -3.0,
-                        "ld_id": "calipy:BaseUnit/7feb4043-fa25-491b-a7c7-dadf2c3e82db",
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -56,7 +57,7 @@
                         "exponent": -1,
                         "multiplier": null,
                         "scale": 1.0,
-                        "ld_id": "calipy:BaseUnit/4460da3f-337d-4df2-9e4b-9c0036451d49",
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -74,7 +75,7 @@
                 }
             },
             "signal": 0.02,
-            "ld_id": "calipy:Sample/3eb428be-6c7d-4dbb-91d7-6d930ceabc7d",
+            "ld_id": "calipy:Sample/48305556-770c-4774-b896-b9476e95aee8",
             "ld_type": [
                 "calipy:Sample"
             ],
@@ -93,7 +94,7 @@
                         "exponent": 1,
                         "multiplier": null,
                         "scale": -3.0,
-                        "ld_id": "calipy:BaseUnit/7feb4043-fa25-491b-a7c7-dadf2c3e82db",
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -106,7 +107,7 @@
                         "exponent": -1,
                         "multiplier": null,
                         "scale": 1.0,
-                        "ld_id": "calipy:BaseUnit/4460da3f-337d-4df2-9e4b-9c0036451d49",
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -124,7 +125,7 @@
                 }
             },
             "signal": 0.509,
-            "ld_id": "calipy:Sample/cee199e2-cd3f-4c26-84ba-85fec89318db",
+            "ld_id": "calipy:Sample/a9bd5242-2de5-4b58-9288-cc9f52fb5f00",
             "ld_type": [
                 "calipy:Sample"
             ],
@@ -143,7 +144,7 @@
                         "exponent": 1,
                         "multiplier": null,
                         "scale": -3.0,
-                        "ld_id": "calipy:BaseUnit/7feb4043-fa25-491b-a7c7-dadf2c3e82db",
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -156,7 +157,7 @@
                         "exponent": -1,
                         "multiplier": null,
                         "scale": 1.0,
-                        "ld_id": "calipy:BaseUnit/4460da3f-337d-4df2-9e4b-9c0036451d49",
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -174,7 +175,7 @@
                 }
             },
             "signal": 1.076,
-            "ld_id": "calipy:Sample/1c85ced4-8624-413e-ae37-6dd848f9fd5c",
+            "ld_id": "calipy:Sample/d426ea9e-9dda-4770-bec2-3d5f3f7480e8",
             "ld_type": [
                 "calipy:Sample"
             ],
@@ -193,7 +194,7 @@
                         "exponent": 1,
                         "multiplier": null,
                         "scale": -3.0,
-                        "ld_id": "calipy:BaseUnit/7feb4043-fa25-491b-a7c7-dadf2c3e82db",
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -206,7 +207,7 @@
                         "exponent": -1,
                         "multiplier": null,
                         "scale": 1.0,
-                        "ld_id": "calipy:BaseUnit/4460da3f-337d-4df2-9e4b-9c0036451d49",
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -224,7 +225,7 @@
                 }
             },
             "signal": 1.534,
-            "ld_id": "calipy:Sample/095dffbf-5eaa-4ff8-95ea-c1da7b611bfe",
+            "ld_id": "calipy:Sample/fcac2cbc-c31e-4bcb-aeea-ec6f82f076d6",
             "ld_type": [
                 "calipy:Sample"
             ],
@@ -243,7 +244,7 @@
                         "exponent": 1,
                         "multiplier": null,
                         "scale": -3.0,
-                        "ld_id": "calipy:BaseUnit/7feb4043-fa25-491b-a7c7-dadf2c3e82db",
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -256,7 +257,7 @@
                         "exponent": -1,
                         "multiplier": null,
                         "scale": 1.0,
-                        "ld_id": "calipy:BaseUnit/4460da3f-337d-4df2-9e4b-9c0036451d49",
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -274,7 +275,7 @@
                 }
             },
             "signal": 2.008,
-            "ld_id": "calipy:Sample/a7c7d698-1739-4488-a5be-5f7a8972640b",
+            "ld_id": "calipy:Sample/96f88eaf-6147-4620-8214-345effc1641e",
             "ld_type": [
                 "calipy:Sample"
             ],
@@ -293,7 +294,7 @@
                         "exponent": 1,
                         "multiplier": null,
                         "scale": -3.0,
-                        "ld_id": "calipy:BaseUnit/7feb4043-fa25-491b-a7c7-dadf2c3e82db",
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -306,7 +307,7 @@
                         "exponent": -1,
                         "multiplier": null,
                         "scale": 1.0,
-                        "ld_id": "calipy:BaseUnit/4460da3f-337d-4df2-9e4b-9c0036451d49",
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -324,7 +325,7 @@
                 }
             },
             "signal": 2.482,
-            "ld_id": "calipy:Sample/518ce83e-ba64-4613-816e-65c8a9d1d04b",
+            "ld_id": "calipy:Sample/3bdf144b-14ac-4b93-aa9b-3523140ff6eb",
             "ld_type": [
                 "calipy:Sample"
             ],
@@ -343,7 +344,7 @@
                         "exponent": 1,
                         "multiplier": null,
                         "scale": -3.0,
-                        "ld_id": "calipy:BaseUnit/7feb4043-fa25-491b-a7c7-dadf2c3e82db",
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -356,7 +357,7 @@
                         "exponent": -1,
                         "multiplier": null,
                         "scale": 1.0,
-                        "ld_id": "calipy:BaseUnit/4460da3f-337d-4df2-9e4b-9c0036451d49",
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -374,7 +375,7 @@
                 }
             },
             "signal": 2.898,
-            "ld_id": "calipy:Sample/947db4d3-26fd-4527-9add-92037a35c6cd",
+            "ld_id": "calipy:Sample/c7b1c84b-a0b8-48ef-99f5-78db2fb24351",
             "ld_type": [
                 "calipy:Sample"
             ],
@@ -393,7 +394,7 @@
                         "exponent": 1,
                         "multiplier": null,
                         "scale": -3.0,
-                        "ld_id": "calipy:BaseUnit/7feb4043-fa25-491b-a7c7-dadf2c3e82db",
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -406,7 +407,7 @@
                         "exponent": -1,
                         "multiplier": null,
                         "scale": 1.0,
-                        "ld_id": "calipy:BaseUnit/4460da3f-337d-4df2-9e4b-9c0036451d49",
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
                         "ld_type": [
                             "calipy:BaseUnit"
                         ],
@@ -424,7 +425,7 @@
                 }
             },
             "signal": 3.176,
-            "ld_id": "calipy:Sample/42239ba1-4b40-47bf-868a-f59d14df28f4",
+            "ld_id": "calipy:Sample/6cb3508f-bf25-4f6a-b864-d5e472604b80",
             "ld_type": [
                 "calipy:Sample"
             ],
@@ -439,28 +440,13 @@
         "signal_law": "a * s0 ** 3 + b * s0 ** 2 + c * s0 + d",
         "parameters": [
             {
-                "symbol": "b",
-                "value": 0.05644586682319641,
+                "symbol": "c",
+                "value": 0.9840634912252426,
                 "init_value": 1.0,
-                "stderr": 0.04919958508978285,
+                "stderr": 0.07286944288841404,
                 "lower_bound": -100000000.0,
                 "upper_bound": 100000000.0,
-                "ld_id": "calipy:Parameter/793839e3-27f0-4d6c-8b39-2c0354e85e23",
-                "ld_type": [
-                    "calipy:Parameter"
-                ],
-                "ld_context": {
-                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
-                }
-            },
-            {
-                "symbol": "d",
-                "value": 0.020242556929588318,
-                "init_value": 1.0,
-                "stderr": 0.02654451691749067,
-                "lower_bound": -100000000.0,
-                "upper_bound": 100000000.0,
-                "ld_id": "calipy:Parameter/f8c457b6-a5d7-4979-a68e-7551cfe2c927",
+                "ld_id": "calipy:Parameter/88c9486a-fc91-44f7-b236-d28253e00e6a",
                 "ld_type": [
                     "calipy:Parameter"
                 ],
@@ -475,7 +461,7 @@
                 "stderr": 0.009588191936673271,
                 "lower_bound": -100000000.0,
                 "upper_bound": 100000000.0,
-                "ld_id": "calipy:Parameter/b182dfdd-eac6-4377-80db-0e7060a7fe1a",
+                "ld_id": "calipy:Parameter/85908afa-56a9-402b-8198-4c952c66d776",
                 "ld_type": [
                     "calipy:Parameter"
                 ],
@@ -484,13 +470,28 @@
                 }
             },
             {
-                "symbol": "c",
-                "value": 0.9840634912252426,
+                "symbol": "b",
+                "value": 0.05644586682319641,
                 "init_value": 1.0,
-                "stderr": 0.07286944288841404,
+                "stderr": 0.04919958508978285,
                 "lower_bound": -100000000.0,
                 "upper_bound": 100000000.0,
-                "ld_id": "calipy:Parameter/73672271-bc27-4a17-98d4-2b2bc3856b3c",
+                "ld_id": "calipy:Parameter/992ac9b0-7ade-4088-855f-4fae2550e130",
+                "ld_type": [
+                    "calipy:Parameter"
+                ],
+                "ld_context": {
+                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                }
+            },
+            {
+                "symbol": "d",
+                "value": 0.020242556929588318,
+                "init_value": 1.0,
+                "stderr": 0.02654451691749067,
+                "lower_bound": -100000000.0,
+                "upper_bound": 100000000.0,
+                "ld_id": "calipy:Parameter/85257273-e37b-4c95-a54c-833877dc3f15",
                 "ld_type": [
                     "calipy:Parameter"
                 ],
@@ -505,7 +506,7 @@
             "conc_upper": 3.5,
             "signal_lower": 0.02,
             "signal_upper": 3.176,
-            "ld_id": "calipy:CalibrationRange/e773fca7-42e6-4d4d-b3eb-a8133d21b3fe",
+            "ld_id": "calipy:CalibrationRange/f970760b-59a1-44fd-807e-a790892b8d3f",
             "ld_type": [
                 "calipy:CalibrationRange"
             ],
@@ -518,7 +519,7 @@
             "bic": -53.91140859462498,
             "r2": 0.9996269628733623,
             "rmsd": 0.020459183577884475,
-            "ld_id": "calipy:FitStatistics/ef2822cd-4b3a-4817-8673-b54dd856655b",
+            "ld_id": "calipy:FitStatistics/110d0d48-be9f-4114-9569-04a574583bf2",
             "ld_type": [
                 "calipy:FitStatistics"
             ],
@@ -526,7 +527,7 @@
                 "calipy": "https://github.com/FAIRChemistry/CaliPytion"
             }
         },
-        "ld_id": "calipy:CalibrationModel/8ce9d0ea-16c1-4e7c-a4c6-1fcfe2b0639e",
+        "ld_id": "calipy:CalibrationModel/ca6bada1-4c03-416e-8f5f-438e8ce8a18c",
         "ld_type": [
             "calipy:CalibrationModel"
         ],
@@ -534,7 +535,7 @@
             "calipy": "https://github.com/FAIRChemistry/CaliPytion"
         }
     },
-    "ld_id": "https://pubchem.ncbi.nlm.nih.gov/compound/1_4-Dihydronicotinamide-adenine-dinucleotide",
+    "ld_id": "https://pubchem.ncbi.nlm.nih.gov/compound/439153",
     "ld_type": [
         "calipy:Standard"
     ],

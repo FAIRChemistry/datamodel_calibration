@@ -1,15 +1,17 @@
 ## This is a generated file. Do not modify it manually!
 
 from __future__ import annotations
-from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional, Generic, TypeVar
+
 from enum import Enum
+from typing import Generic, Optional, TypeVar
 from uuid import uuid4
-from datetime import date, datetime
+
+from pydantic import BaseModel, ConfigDict, Field
 
 # Filter Wrapper definition used to filter a list of objects
 # based on their attributes
 Cls = TypeVar("Cls")
+
 
 class FilterWrapper(Generic[Cls]):
     """Wrapper class to filter a list of objects based on their attributes"""
@@ -47,7 +49,8 @@ def add_namespace(obj, prefix: str | None, iri: str | None):
     elif iri and prefix is None:
         raise ValueError("If iri is provided, prefix must also be provided")
 
-    obj.ld_context[prefix] = iri # type: ignore
+    obj.ld_context[prefix] = iri  # type: ignore
+
 
 def validate_prefix(term: str | dict, prefix: str):
     """Validates that a term is prefixed with a given prefix
@@ -65,15 +68,17 @@ def validate_prefix(term: str | dict, prefix: str):
     elif isinstance(term, str) and not term.startswith(prefix + ":"):
         raise ValueError(f"Term {term} is not prefixed with {prefix}")
 
+
 # Model Definitions
 
-class Standard(BaseModel):
 
-    model_config: ConfigDict = ConfigDict( # type: ignore
-        validate_assigment = True,
-    ) # type: ignore
+class Standard(BaseModel):
+    model_config: ConfigDict = ConfigDict(  # type: ignore
+        validate_assigment=True,
+    )  # type: ignore
 
     molecule_id: str
+    pubchem_cid: int
     molecule_name: str
     ph: float
     temperature: float
@@ -86,19 +91,19 @@ class Standard(BaseModel):
     # JSON-LD fields
     ld_id: str = Field(
         serialization_alias="@id",
-        default_factory=lambda: "calipy:Standard/" + str(uuid4())
+        default_factory=lambda: "calipy:Standard/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
         serialization_alias="@type",
-        default_factory = lambda: [
+        default_factory=lambda: [
             "calipy:Standard",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
         serialization_alias="@context",
-        default_factory = lambda: {
+        default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
-        }
+        },
     )
 
     def filter_samples(self, **kwargs) -> list[Sample]:
@@ -113,13 +118,12 @@ class Standard(BaseModel):
 
         return FilterWrapper[Sample](self.samples, **kwargs).filter()
 
-
     def set_attr_term(
         self,
         attr: str,
         term: str | dict,
         prefix: str | None = None,
-        iri: str | None = None
+        iri: str | None = None,
     ):
         """Sets the term for a given attribute in the JSON-LD object
 
@@ -141,7 +145,9 @@ class Standard(BaseModel):
             AssertionError: If the attribute is not found in the model
         """
 
-        assert attr in self.model_fields, f"Attribute {attr} not found in {self.__class__.__name__}"
+        assert (
+            attr in self.model_fields
+        ), f"Attribute {attr} not found in {self.__class__.__name__}"
 
         if prefix:
             validate_prefix(term, prefix)
@@ -150,10 +156,7 @@ class Standard(BaseModel):
         self.ld_context[attr] = term
 
     def add_type_term(
-        self,
-        term: str,
-        prefix: str | None = None,
-        iri: str | None = None
+        self, term: str, prefix: str | None = None, iri: str | None = None
     ):
         """Adds a term to the @type field of the JSON-LD object
 
@@ -180,7 +183,6 @@ class Standard(BaseModel):
         add_namespace(self, prefix, iri)
         self.ld_type.append(term)
 
-
     def add_to_samples(
         self,
         concentration: float,
@@ -191,24 +193,21 @@ class Standard(BaseModel):
         params = {
             "concentration": concentration,
             "conc_unit": conc_unit,
-            "signal": signal
+            "signal": signal,
         }
 
         if "id" in kwargs:
             params["id"] = kwargs["id"]
 
-        self.samples.append(
-            Sample(**params)
-        )
+        self.samples.append(Sample(**params))
 
         return self.samples[-1]
 
 
 class Sample(BaseModel):
-
-    model_config: ConfigDict = ConfigDict( # type: ignore
-        validate_assigment = True,
-    ) # type: ignore
+    model_config: ConfigDict = ConfigDict(  # type: ignore
+        validate_assigment=True,
+    )  # type: ignore
 
     concentration: float
     conc_unit: UnitDefinition
@@ -217,28 +216,27 @@ class Sample(BaseModel):
     # JSON-LD fields
     ld_id: str = Field(
         serialization_alias="@id",
-        default_factory=lambda: "calipy:Sample/" + str(uuid4())
+        default_factory=lambda: "calipy:Sample/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
         serialization_alias="@type",
-        default_factory = lambda: [
+        default_factory=lambda: [
             "calipy:Sample",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
         serialization_alias="@context",
-        default_factory = lambda: {
+        default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
-        }
+        },
     )
-
 
     def set_attr_term(
         self,
         attr: str,
         term: str | dict,
         prefix: str | None = None,
-        iri: str | None = None
+        iri: str | None = None,
     ):
         """Sets the term for a given attribute in the JSON-LD object
 
@@ -260,7 +258,9 @@ class Sample(BaseModel):
             AssertionError: If the attribute is not found in the model
         """
 
-        assert attr in self.model_fields, f"Attribute {attr} not found in {self.__class__.__name__}"
+        assert (
+            attr in self.model_fields
+        ), f"Attribute {attr} not found in {self.__class__.__name__}"
 
         if prefix:
             validate_prefix(term, prefix)
@@ -269,10 +269,7 @@ class Sample(BaseModel):
         self.ld_context[attr] = term
 
     def add_type_term(
-        self,
-        term: str,
-        prefix: str | None = None,
-        iri: str | None = None
+        self, term: str, prefix: str | None = None, iri: str | None = None
     ):
         """Adds a term to the @type field of the JSON-LD object
 
@@ -301,10 +298,9 @@ class Sample(BaseModel):
 
 
 class CalibrationModel(BaseModel):
-
-    model_config: ConfigDict = ConfigDict( # type: ignore
-        validate_assigment = True,
-    ) # type: ignore
+    model_config: ConfigDict = ConfigDict(  # type: ignore
+        validate_assigment=True,
+    )  # type: ignore
 
     name: str
     molecule_id: Optional[str] = Field(default=None)
@@ -317,19 +313,19 @@ class CalibrationModel(BaseModel):
     # JSON-LD fields
     ld_id: str = Field(
         serialization_alias="@id",
-        default_factory=lambda: "calipy:CalibrationModel/" + str(uuid4())
+        default_factory=lambda: "calipy:CalibrationModel/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
         serialization_alias="@type",
-        default_factory = lambda: [
+        default_factory=lambda: [
             "calipy:CalibrationModel",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
         serialization_alias="@context",
-        default_factory = lambda: {
+        default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
-        }
+        },
     )
 
     def filter_parameters(self, **kwargs) -> list[Parameter]:
@@ -344,13 +340,12 @@ class CalibrationModel(BaseModel):
 
         return FilterWrapper[Parameter](self.parameters, **kwargs).filter()
 
-
     def set_attr_term(
         self,
         attr: str,
         term: str | dict,
         prefix: str | None = None,
-        iri: str | None = None
+        iri: str | None = None,
     ):
         """Sets the term for a given attribute in the JSON-LD object
 
@@ -372,7 +367,9 @@ class CalibrationModel(BaseModel):
             AssertionError: If the attribute is not found in the model
         """
 
-        assert attr in self.model_fields, f"Attribute {attr} not found in {self.__class__.__name__}"
+        assert (
+            attr in self.model_fields
+        ), f"Attribute {attr} not found in {self.__class__.__name__}"
 
         if prefix:
             validate_prefix(term, prefix)
@@ -381,10 +378,7 @@ class CalibrationModel(BaseModel):
         self.ld_context[attr] = term
 
     def add_type_term(
-        self,
-        term: str,
-        prefix: str | None = None,
-        iri: str | None = None
+        self, term: str, prefix: str | None = None, iri: str | None = None
     ):
         """Adds a term to the @type field of the JSON-LD object
 
@@ -411,15 +405,14 @@ class CalibrationModel(BaseModel):
         add_namespace(self, prefix, iri)
         self.ld_type.append(term)
 
-
     def add_to_parameters(
         self,
-        symbol: Optional[str]= None,
-        value: Optional[float]= None,
-        init_value: Optional[float]= None,
-        stderr: Optional[float]= None,
-        lower_bound: Optional[float]= None,
-        upper_bound: Optional[float]= None,
+        symbol: Optional[str] = None,
+        value: Optional[float] = None,
+        init_value: Optional[float] = None,
+        stderr: Optional[float] = None,
+        lower_bound: Optional[float] = None,
+        upper_bound: Optional[float] = None,
         **kwargs,
     ):
         params = {
@@ -428,24 +421,21 @@ class CalibrationModel(BaseModel):
             "init_value": init_value,
             "stderr": stderr,
             "lower_bound": lower_bound,
-            "upper_bound": upper_bound
+            "upper_bound": upper_bound,
         }
 
         if "id" in kwargs:
             params["id"] = kwargs["id"]
 
-        self.parameters.append(
-            Parameter(**params)
-        )
+        self.parameters.append(Parameter(**params))
 
         return self.parameters[-1]
 
 
 class CalibrationRange(BaseModel):
-
-    model_config: ConfigDict = ConfigDict( # type: ignore
-        validate_assigment = True,
-    ) # type: ignore
+    model_config: ConfigDict = ConfigDict(  # type: ignore
+        validate_assigment=True,
+    )  # type: ignore
 
     conc_lower: Optional[float] = Field(default=None)
     conc_upper: Optional[float] = Field(default=None)
@@ -455,28 +445,27 @@ class CalibrationRange(BaseModel):
     # JSON-LD fields
     ld_id: str = Field(
         serialization_alias="@id",
-        default_factory=lambda: "calipy:CalibrationRange/" + str(uuid4())
+        default_factory=lambda: "calipy:CalibrationRange/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
         serialization_alias="@type",
-        default_factory = lambda: [
+        default_factory=lambda: [
             "calipy:CalibrationRange",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
         serialization_alias="@context",
-        default_factory = lambda: {
+        default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
-        }
+        },
     )
-
 
     def set_attr_term(
         self,
         attr: str,
         term: str | dict,
         prefix: str | None = None,
-        iri: str | None = None
+        iri: str | None = None,
     ):
         """Sets the term for a given attribute in the JSON-LD object
 
@@ -498,7 +487,9 @@ class CalibrationRange(BaseModel):
             AssertionError: If the attribute is not found in the model
         """
 
-        assert attr in self.model_fields, f"Attribute {attr} not found in {self.__class__.__name__}"
+        assert (
+            attr in self.model_fields
+        ), f"Attribute {attr} not found in {self.__class__.__name__}"
 
         if prefix:
             validate_prefix(term, prefix)
@@ -507,10 +498,7 @@ class CalibrationRange(BaseModel):
         self.ld_context[attr] = term
 
     def add_type_term(
-        self,
-        term: str,
-        prefix: str | None = None,
-        iri: str | None = None
+        self, term: str, prefix: str | None = None, iri: str | None = None
     ):
         """Adds a term to the @type field of the JSON-LD object
 
@@ -539,10 +527,9 @@ class CalibrationRange(BaseModel):
 
 
 class FitStatistics(BaseModel):
-
-    model_config: ConfigDict = ConfigDict( # type: ignore
-        validate_assigment = True,
-    ) # type: ignore
+    model_config: ConfigDict = ConfigDict(  # type: ignore
+        validate_assigment=True,
+    )  # type: ignore
 
     aic: Optional[float] = Field(default=None)
     bic: Optional[float] = Field(default=None)
@@ -552,28 +539,27 @@ class FitStatistics(BaseModel):
     # JSON-LD fields
     ld_id: str = Field(
         serialization_alias="@id",
-        default_factory=lambda: "calipy:FitStatistics/" + str(uuid4())
+        default_factory=lambda: "calipy:FitStatistics/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
         serialization_alias="@type",
-        default_factory = lambda: [
+        default_factory=lambda: [
             "calipy:FitStatistics",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
         serialization_alias="@context",
-        default_factory = lambda: {
+        default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
-        }
+        },
     )
-
 
     def set_attr_term(
         self,
         attr: str,
         term: str | dict,
         prefix: str | None = None,
-        iri: str | None = None
+        iri: str | None = None,
     ):
         """Sets the term for a given attribute in the JSON-LD object
 
@@ -595,7 +581,9 @@ class FitStatistics(BaseModel):
             AssertionError: If the attribute is not found in the model
         """
 
-        assert attr in self.model_fields, f"Attribute {attr} not found in {self.__class__.__name__}"
+        assert (
+            attr in self.model_fields
+        ), f"Attribute {attr} not found in {self.__class__.__name__}"
 
         if prefix:
             validate_prefix(term, prefix)
@@ -604,10 +592,7 @@ class FitStatistics(BaseModel):
         self.ld_context[attr] = term
 
     def add_type_term(
-        self,
-        term: str,
-        prefix: str | None = None,
-        iri: str | None = None
+        self, term: str, prefix: str | None = None, iri: str | None = None
     ):
         """Adds a term to the @type field of the JSON-LD object
 
@@ -636,10 +621,9 @@ class FitStatistics(BaseModel):
 
 
 class Parameter(BaseModel):
-
-    model_config: ConfigDict = ConfigDict( # type: ignore
-        validate_assigment = True,
-    ) # type: ignore
+    model_config: ConfigDict = ConfigDict(  # type: ignore
+        validate_assigment=True,
+    )  # type: ignore
 
     symbol: Optional[str] = Field(default=None)
     value: Optional[float] = Field(default=None)
@@ -651,28 +635,27 @@ class Parameter(BaseModel):
     # JSON-LD fields
     ld_id: str = Field(
         serialization_alias="@id",
-        default_factory=lambda: "calipy:Parameter/" + str(uuid4())
+        default_factory=lambda: "calipy:Parameter/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
         serialization_alias="@type",
-        default_factory = lambda: [
+        default_factory=lambda: [
             "calipy:Parameter",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
         serialization_alias="@context",
-        default_factory = lambda: {
+        default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
-        }
+        },
     )
-
 
     def set_attr_term(
         self,
         attr: str,
         term: str | dict,
         prefix: str | None = None,
-        iri: str | None = None
+        iri: str | None = None,
     ):
         """Sets the term for a given attribute in the JSON-LD object
 
@@ -694,7 +677,9 @@ class Parameter(BaseModel):
             AssertionError: If the attribute is not found in the model
         """
 
-        assert attr in self.model_fields, f"Attribute {attr} not found in {self.__class__.__name__}"
+        assert (
+            attr in self.model_fields
+        ), f"Attribute {attr} not found in {self.__class__.__name__}"
 
         if prefix:
             validate_prefix(term, prefix)
@@ -703,10 +688,7 @@ class Parameter(BaseModel):
         self.ld_context[attr] = term
 
     def add_type_term(
-        self,
-        term: str,
-        prefix: str | None = None,
-        iri: str | None = None
+        self, term: str, prefix: str | None = None, iri: str | None = None
     ):
         """Adds a term to the @type field of the JSON-LD object
 
@@ -735,10 +717,9 @@ class Parameter(BaseModel):
 
 
 class UnitDefinition(BaseModel):
-
-    model_config: ConfigDict = ConfigDict( # type: ignore
-        validate_assigment = True,
-    ) # type: ignore
+    model_config: ConfigDict = ConfigDict(  # type: ignore
+        validate_assigment=True,
+    )  # type: ignore
 
     id: Optional[str] = Field(default=None)
     name: Optional[str] = Field(default=None)
@@ -747,19 +728,19 @@ class UnitDefinition(BaseModel):
     # JSON-LD fields
     ld_id: str = Field(
         serialization_alias="@id",
-        default_factory=lambda: "calipy:UnitDefinition/" + str(uuid4())
+        default_factory=lambda: "calipy:UnitDefinition/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
         serialization_alias="@type",
-        default_factory = lambda: [
+        default_factory=lambda: [
             "calipy:UnitDefinition",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
         serialization_alias="@context",
-        default_factory = lambda: {
+        default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
-        }
+        },
     )
 
     def filter_base_units(self, **kwargs) -> list[BaseUnit]:
@@ -774,13 +755,12 @@ class UnitDefinition(BaseModel):
 
         return FilterWrapper[BaseUnit](self.base_units, **kwargs).filter()
 
-
     def set_attr_term(
         self,
         attr: str,
         term: str | dict,
         prefix: str | None = None,
-        iri: str | None = None
+        iri: str | None = None,
     ):
         """Sets the term for a given attribute in the JSON-LD object
 
@@ -802,7 +782,9 @@ class UnitDefinition(BaseModel):
             AssertionError: If the attribute is not found in the model
         """
 
-        assert attr in self.model_fields, f"Attribute {attr} not found in {self.__class__.__name__}"
+        assert (
+            attr in self.model_fields
+        ), f"Attribute {attr} not found in {self.__class__.__name__}"
 
         if prefix:
             validate_prefix(term, prefix)
@@ -811,10 +793,7 @@ class UnitDefinition(BaseModel):
         self.ld_context[attr] = term
 
     def add_type_term(
-        self,
-        term: str,
-        prefix: str | None = None,
-        iri: str | None = None
+        self, term: str, prefix: str | None = None, iri: str | None = None
     ):
         """Adds a term to the @type field of the JSON-LD object
 
@@ -841,36 +820,33 @@ class UnitDefinition(BaseModel):
         add_namespace(self, prefix, iri)
         self.ld_type.append(term)
 
-
     def add_to_base_units(
         self,
         kind: UnitType,
         exponent: int,
-        multiplier: Optional[float]= None,
-        scale: Optional[float]= None,
+        multiplier: Optional[float] = None,
+        scale: Optional[float] = None,
         **kwargs,
     ):
         params = {
             "kind": kind,
             "exponent": exponent,
             "multiplier": multiplier,
-            "scale": scale
+            "scale": scale,
         }
 
         if "id" in kwargs:
             params["id"] = kwargs["id"]
 
-        self.base_units.append(
-            BaseUnit(**params)
-        )
+        self.base_units.append(BaseUnit(**params))
 
         return self.base_units[-1]
 
-class BaseUnit(BaseModel):
 
-    model_config: ConfigDict = ConfigDict( # type: ignore
-        validate_assigment = True,
-    ) # type: ignore
+class BaseUnit(BaseModel):
+    model_config: ConfigDict = ConfigDict(  # type: ignore
+        validate_assigment=True,
+    )  # type: ignore
 
     kind: UnitType
     exponent: int
@@ -880,28 +856,27 @@ class BaseUnit(BaseModel):
     # JSON-LD fields
     ld_id: str = Field(
         serialization_alias="@id",
-        default_factory=lambda: "calipy:BaseUnit/" + str(uuid4())
+        default_factory=lambda: "calipy:BaseUnit/" + str(uuid4()),
     )
     ld_type: list[str] = Field(
         serialization_alias="@type",
-        default_factory = lambda: [
+        default_factory=lambda: [
             "calipy:BaseUnit",
         ],
     )
     ld_context: dict[str, str | dict] = Field(
         serialization_alias="@context",
-        default_factory = lambda: {
+        default_factory=lambda: {
             "calipy": "https://github.com/FAIRChemistry/CaliPytion",
-        }
+        },
     )
-
 
     def set_attr_term(
         self,
         attr: str,
         term: str | dict,
         prefix: str | None = None,
-        iri: str | None = None
+        iri: str | None = None,
     ):
         """Sets the term for a given attribute in the JSON-LD object
 
@@ -923,7 +898,9 @@ class BaseUnit(BaseModel):
             AssertionError: If the attribute is not found in the model
         """
 
-        assert attr in self.model_fields, f"Attribute {attr} not found in {self.__class__.__name__}"
+        assert (
+            attr in self.model_fields
+        ), f"Attribute {attr} not found in {self.__class__.__name__}"
 
         if prefix:
             validate_prefix(term, prefix)
@@ -932,10 +909,7 @@ class BaseUnit(BaseModel):
         self.ld_context[attr] = term
 
     def add_type_term(
-        self,
-        term: str,
-        prefix: str | None = None,
-        iri: str | None = None
+        self, term: str, prefix: str | None = None, iri: str | None = None
     ):
         """Adds a term to the @type field of the JSON-LD object
 

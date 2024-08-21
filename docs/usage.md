@@ -10,7 +10,7 @@ The `Calibrator` contains a `Standard`, which harbors the data structure structu
 
 ### Initialization
 
-The `Calibrator` can be initialized by providing the `concentrations` and respective measured `signals` as lists. Additionally, the `molecule_id` and `molecule_name` and the respective `conc_unit` need to be provided. Optionally, a `wavelength` can be provided if the signal data originates from a spectrophotometric measurement. Setting the `cutoff` can be provided to exclude signals above a certain value. Furthermore, a linked data identifier `ld_id` can be provided, uniquely identifying the corresponding database entry of the molecule, e.g., from PubChem.
+The `Calibrator` can be initialized by providing the `concentrations` and respective measured `signals` as lists. Additionally, the `molecule_id` and `pubchem_cid` and the respective `conc_unit` need to be provided. The `molecule_id` serves as an internal id to reference the molecule in equations (E.g. 's1'). The `pubchem_cid` serves as a global identifier, to uniquely reference a molecule in the PubChem database. Optionally, a `molecule_name` and a `wavelength` can be provided if the signal data originates from a spectrophotometric measurement. Setting the `cutoff` can be provided to exclude signals above a certain value.
 Units are handled as predefined objects which can be imported from the `calipytion.units` module.  
 
 ```python
@@ -19,12 +19,13 @@ from calipytion.units import mM
 
 calibrator = Calibrator(
     molecule_id="s0",
-    ld_id="https://pubchem.ncbi.nlm.nih.gov/compound/1_4-Dihydronicotinamide-adenine-dinucleotide"
+    pubchem_cid=439153,
     molecule_name="NADH",
     conc_unit=mM,
     concentrations=[0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5],
     signals=[0.02, 0.509, 1.076, 1.534, 2.008, 2.482, 2.898, 3.176],
-    wavelength=420
+    wavelength=420,
+)
 )
 ```
 
@@ -142,16 +143,12 @@ print(concentrations)
 
 ### Serialization
 
-Finally, the data of the calibrator can be enriched with additional information on the calibrated molecule and the measurement conditions to form a valid `Standard`. This is done by using the `create_standard` method. This method expects a `ph`, `temperature`, `temp_unit`, as well as the chosen `model`. Optionally, the `ld_id` should be provided in the form of a PubChem ID to uniquely identify the molecule. Furthermore, the `retention_time` can be provided to further characterize the context of the calibration. 
-
-!!! question "What is a `ld_id`?"
-    The linked data ID `ld_id` is a unique identifier for the molecule. Therefore, it is recommended to use the PubChem URL, referencing the molecule. This allows later linking of experimental data from different experimentators and laboratories to the same molecule.
+Finally, the data of the calibrator can be enriched with additional information on the calibrated molecule and the measurement conditions to form a valid `Standard`. This is done by using the `create_standard` method. This method expects a `ph`, `temperature`, `temp_unit`, as well as the chosen `model`. Furthermore, the `retention_time` can be provided to further characterize the context of the calibration. 
 
 ```python
 from calipytion.units import C
 
 standard = calibrator.create_standard(
-    ld_id="https://pubchem.ncbi.nlm.nih.gov/compound/1_4-Dihydronicotinamide-adenine-dinucleotide",
     ph=7.4,
     temperature=25,
     temp_unit=C,

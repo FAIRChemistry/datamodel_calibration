@@ -9,7 +9,7 @@ from calipytion.model import CalibrationModel, Parameter, Sample, Standard
 from calipytion.units import C, mM
 
 dummy_calibration = {
-    "ld_id": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:17790",
+    "pubchem_cid": 887,
     "molecule_id": "s1",
     "molecule_name": "Methanol",
     "concentrations": [0.2, 0.4, 0.6, 0.8, 1.0],
@@ -139,7 +139,6 @@ def test_calculate_concentrations(calibrator):
 
 def test_create_standard(calibrator):
     ph = 3.3
-    ld_id = "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:17790"
     temperature_unit = C
     temperature = 25.1
     retention_time = 3.4
@@ -150,13 +149,11 @@ def test_create_standard(calibrator):
     standard = calibrator.create_standard(
         model=model,
         ph=ph,
-        ld_id=ld_id,
         temperature=temperature,
         temp_unit=temperature_unit,
         retention_time=retention_time,
     )
 
-    assert standard.ld_id == ld_id
     assert standard.molecule_id == calibrator.molecule_id
     assert standard.molecule_name == calibrator.molecule_name
     assert standard.samples[0].concentration == 0.2
@@ -194,6 +191,7 @@ def test_read_excel():
         molecule_id="s1",
         molecule_name="Methanol",
         conc_unit=mM,
+        pubchem_cid=887,
         wavelength=500.0,
         skip_rows=1,
     )
@@ -212,15 +210,15 @@ def test_from_standard():
 
     cal = Calibrator.from_standard(standard)
 
-    assert cal.molecule_id == "s0"
-    assert cal.molecule_name == "ABTS"
-    assert cal.conc_unit.name == "uMole / Litre"
-    assert cal.standard.temperature == 45.0
+    assert cal.molecule_id == "s22"
+    assert cal.molecule_name == "sgfsdfsdf"
+    assert cal.conc_unit.name == "mmol / l"
+    assert cal.standard.temperature == 25
     assert cal.standard.temp_unit.name == "Celsius"
-    assert cal.standard.ph == 3.5
-    assert cal.standard.samples[0].concentration == 5.0
-    assert cal.standard.samples[0].conc_unit.name == "uMole / Litre"
-    assert cal.standard.samples[0].signal == 0.1311
+    assert cal.standard.ph == 7.4
+    assert cal.standard.samples[0].concentration == 1
+    assert cal.standard.samples[0].conc_unit.name == "mmol / l"
+    assert cal.standard.samples[0].signal == 22
 
 
 def test_fit_models(calibrator):

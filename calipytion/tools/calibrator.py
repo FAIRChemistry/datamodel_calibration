@@ -4,7 +4,6 @@ import copy
 import logging
 from typing import Any, Optional
 
-import httpx
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -23,6 +22,7 @@ from calipytion.model import (
     UnitDefinition,
 )
 from calipytion.tools.fitter import Fitter
+from calipytion.tools.utility import pubchem_request_molecule_name
 from calipytion.units import C
 
 LOGGER = logging.getLogger(__name__)
@@ -84,24 +84,10 @@ class Calibrator(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def get_molecule_name(cls, data: Any) -> Any:
+        """Retrieves the molecule name from the PubChem database based on the PubChem CID."""
+
         if "molecule_name" not in data:
-            cid = data["pubchem_cid"]
-            # API request to get the molecule name
-            url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{cid}/property/MolecularFormula,Title/JSON"
-            response = httpx.get(url)
-
-            if response.status_code == 200:
-                res_dict = (
-                    response.json()
-                )  # Access the title directly from the JSON data
-                data["molecule_name"] = res_dict["PropertyTable"]["Properties"][0][
-                    "Title"
-                ]
-
-                return data
-            else:
-                raise ValueError("Failed to retrieve molecule name from PubChem")
-
+            data["molecule_name"] = pubchem_request_molecule_name(data["pubchem_cid"])
         return data
 
     @model_validator(mode="after")

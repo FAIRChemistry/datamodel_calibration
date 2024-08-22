@@ -325,12 +325,12 @@ class Calibrator(BaseModel):
 
         df = pd.read_excel(path, sheet_name=sheet_name, header=None, skiprows=skip_rows)
 
-        signals = df.iloc[:, 1:].values
+        signals = df.iloc[:, 1:].values  # type: ignore
         n_reps = signals.shape[1]
         signals = signals.flatten().tolist()
 
-        concs = df.iloc[:, 0].values
-        concs = np.repeat(concs, n_reps)
+        concs = df.iloc[:, 0].values  # type: ignore
+        concs = np.repeat(concs, n_reps)  # type: ignore
         concs = concs.flatten().tolist()
 
         args = {
@@ -542,7 +542,7 @@ class Calibrator(BaseModel):
             fitter = Fitter.from_calibration_model(model)
             smooth_x = np.linspace(
                 min(self.concentrations), max(self.concentrations), 100
-            )
+            ).tolist()
 
             params = {param.symbol: param.value for param in model.parameters}
             params[model.molecule_id] = smooth_x

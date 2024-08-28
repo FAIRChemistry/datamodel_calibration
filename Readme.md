@@ -1,4 +1,4 @@
-# CaliPytion - Tool to create, apply and document calibration models
+# CaliPytion - Tool to create, apply and document calibration models for concentration calculation
 
 [![Documentation](https://img.shields.io/badge/Documentation-Online-blue.svg)](https://fairchemistry.github.io/CaliPytion/)
 [![Tests](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/tests.yaml/badge.svg)](https://github.com/FAIRChemistry/CaliPytion/actions/workflows/tests.yaml)

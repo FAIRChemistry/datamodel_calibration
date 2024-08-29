@@ -545,7 +545,7 @@ class Calibrator(BaseModel):
             ).tolist()
 
             params = {param.symbol: param.value for param in model.parameters}
-            params[model.molecule_id] = smooth_x
+            params[model.molecule_id] = np.array(smooth_x)  # type: ignore
 
             model_pred = fitter.lmfit_model.eval(**params)
 

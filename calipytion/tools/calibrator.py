@@ -196,8 +196,10 @@ class Calibrator(BaseModel):
 
         np_signals = np.array(signals)
 
-        lower_bond = min(self.concentrations)
-        upper_bond = max(self.concentrations)
+        assert model.calibration_range, "Calibration range not set."
+
+        lower_bond = model.calibration_range.conc_lower
+        upper_bond = model.calibration_range.conc_upper
 
         if extrapolate:
             cal_range = upper_bond - lower_bond
@@ -210,6 +212,9 @@ class Calibrator(BaseModel):
             )
 
         cal_model = Fitter.from_calibration_model(model)
+        print(f"""
+              {model.molecule_id}, {model.signal_law}, {lower_bond}, {upper_bond}, {extrapolate}, signals: {np_signals}
+              """)
         concs = cal_model.calculate_roots(
             y=np_signals,
             lower_bond=lower_bond,
@@ -540,8 +545,13 @@ class Calibrator(BaseModel):
 
         for model, color in zip(self.models, colors):
             fitter = Fitter.from_calibration_model(model)
+
+            assert model.calibration_range, "Calibration range not set."
+
             smooth_x = np.linspace(
-                min(self.concentrations), max(self.concentrations), 100
+                model.calibration_range.conc_lower,
+                model.calibration_range.conc_upper,
+                100,
             ).tolist()
 
             params = {param.symbol: param.value for param in model.parameters}

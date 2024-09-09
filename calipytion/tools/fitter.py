@@ -91,6 +91,7 @@ class Fitter:
         for param in params:
             try:
                 root = root_scalar(root_eq, bracket=bracket, args=tuple(param.values()))
+                print(f"Root: {root.root}")
                 roots.append(root.root)
             except ValueError:
                 roots.append(np.nan)

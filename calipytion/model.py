@@ -437,10 +437,10 @@ class CalibrationRange(BaseModel):
         validate_assigment=True,
     )  # type: ignore
 
-    conc_lower: Optional[float] = Field(default=None)
-    conc_upper: Optional[float] = Field(default=None)
-    signal_lower: Optional[float] = Field(default=None)
-    signal_upper: Optional[float] = Field(default=None)
+    conc_lower: float
+    conc_upper: float
+    signal_lower: float
+    signal_upper: float
 
     # JSON-LD fields
     ld_id: str = Field(

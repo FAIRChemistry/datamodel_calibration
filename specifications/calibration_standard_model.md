@@ -89,16 +89,16 @@ The `CalibrationModel` describes the calibration model which was fitted to the c
 
 THe `CalibrationRange` defines the concentration and signal bounds in which the calibration model is valid.
 
-- conc_lower
+- **conc_lower**
   - Type: float
   - Description: Lower concentration bound of the model.
-- conc_upper
+- **conc_upper**
   - Type: float
   - Description: Upper concentration bound of the model.
-- signal_lower
+- **signal_lower**
   - Type: float
   - Description: Lower signal bound of the model.
-- signal_upper
+- **signal_upper**
   - Type: float
   - Description: Upper signal bound of the model.
 

@@ -1,21 +1,29 @@
 from __future__ import annotations
 
+import copy
 import logging
+from typing import Any, Optional
 
 import numpy as np
+import pandas as pd
 import plotly.express as px
 import sympy as sp
 from plotly import graph_objects as go
 from plotly.subplots import make_subplots
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, model_validator
+from pyenzyme import DataTypes, EnzymeMLDocument
 from rich.console import Console
 from rich.table import Table
 
-from calipytion.core.calibrationrange import CalibrationRange
-
-from ..core.calibrationmodel import CalibrationModel
-from ..core.standard import Standard
-from ..tools.fit_model import CalModel
+from calipytion.model import (
+    CalibrationModel,
+    CalibrationRange,
+    Standard,
+    UnitDefinition,
+)
+from calipytion.tools.fitter import Fitter
+from calipytion.tools.utility import pubchem_request_molecule_name
+from calipytion.units import C
 
 LOGGER = logging.getLogger(__name__)
 
@@ -28,20 +36,19 @@ class Calibrator(BaseModel):
 
     molecule_id: str = Field(
         description="Unique identifier of the given object.",
+        pattern=r"^[a-zA-Z][a-zA-Z0-9^\+\-\*/=<>^\|&%!~]*$",
+    )
+
+    pubchem_cid: int = Field(
+        description="PubChem Compound Identifier",
     )
 
     molecule_name: str = Field(
         description="Name of the molecule",
     )
 
-    molecule_symbol: str = Field(
-        description="Symbol of the molecule representing the molecule in the signal law",
-        pattern=r"^[a-zA-Z_]+$",
-    )
-
     concentrations: list[float] = Field(
         description="Concentrations of the standard",
-        multiple=True,
     )
 
     wavelength: float | None = Field(
@@ -49,19 +56,16 @@ class Calibrator(BaseModel):
         default=None,
     )
 
-    conc_unit: str = Field(
+    conc_unit: UnitDefinition = Field(
         description="Concentration unit",
     )
 
     signals: list[float] = Field(
         description="Measured signals, corresponding to the concentrations",
-        multiple=True,
     )
 
     models: list[CalibrationModel] = Field(
-        description="Models used for fitting",
-        multiple=True,
-        default=None,
+        description="Models used for fitting", default=[], validate_default=True
     )
 
     cutoff: float | None = Field(
@@ -77,59 +81,69 @@ class Calibrator(BaseModel):
         description="Result oriented object, representing the data and the chosen model.",
     )
 
-    @validator("models", pre=True, always=True)
-    def initialize_models(cls, models, values):
+    @model_validator(mode="before")
+    @classmethod
+    def get_molecule_name(cls, data: Any) -> Any:
+        """Retrieves the molecule name from the PubChem database based on the PubChem CID."""
+
+        if "molecule_name" not in data:
+            data["molecule_name"] = pubchem_request_molecule_name(data["pubchem_cid"])
+        return data
+
+    @model_validator(mode="after")
+    def initialize_models(self):
         """
         Loads the default models if no models are provided and initializes the models
-        with the according 'molecule_symbol' and 'molecule_id'.
+        with the according 'molecule_id'.
         """
-        if not models:
-            molecule_symbol = values.get("molecule_symbol")
-            molecule_id = values.get("molecule_id")
+        if not self.models:
             from calipytion.tools.equations import (
                 cubic_model,
                 linear_model,
                 quadratic_model,
             )
 
-            for model in [linear_model, quadratic_model, cubic_model]:
+            modified_models = []
+            for m in [linear_model, quadratic_model, cubic_model]:
+                model = copy.deepcopy(m)
                 model.signal_law = model.signal_law.replace(
-                    "concentration", molecule_symbol
+                    "concentration", self.molecule_id
                 )
-                model.molecule_symbol = molecule_symbol
-                model.molecule_id = molecule_id
+                model.molecule_id = self.molecule_id
+                modified_models.append(model)
 
-            models = [linear_model, quadratic_model, cubic_model]
+            self.models = modified_models
 
-            return models
+            return self
 
-    def __init__(self, **data):
-        super().__init__(**data)
+        return self
+
+    def model_post_init(self, __context: Any) -> None:
         self._apply_cutoff()
 
     def add_model(
         self,
         name: str,
-        equation: str,
+        signal_law: str,
         init_value: float = 1,
-        lower_bound: float = 1e-9,
+        lower_bound: float = -1e-6,
         upper_bound: float = 1e6,
     ) -> CalibrationModel:
         """Add a model to the list of models used for calibration."""
 
         assert (
-            self.molecule_symbol in equation
-        ), f"Equation must contain the symbol of the molecule to be calibrated ('{self.molecule_symbol}')"
+            self.molecule_id in signal_law
+        ), f"Equation must contain the symbol of the molecule to be calibrated ('{self.molecule_id}')"
 
         model = CalibrationModel(
             molecule_id=self.molecule_id,
             name=name,
-            signal_law=equation,
+            signal_law=signal_law,
         )
 
-        for symbol in self._get_free_symbols(equation):
-            if symbol == self.molecule_symbol:
-                model.molecule_symbol = symbol
+        for symbol in self._get_free_symbols(signal_law):
+            if symbol == self.molecule_id:
+                model.molecule_id = symbol
                 continue
 
             model.add_to_parameters(
@@ -143,38 +157,8 @@ class Calibrator(BaseModel):
 
         return model
 
-    def _get_free_symbols(self, equation: str) -> list[str]:
-        """Gets the free symbols from a sympy equation and converts them to strings."""
-
-        sp_eq = sp.sympify(equation)
-        symbols = list(sp_eq.free_symbols)
-
-        return [str(symbol) for symbol in symbols]
-
-    def _apply_cutoff(self):
-        """Applies the cutoff value to the signals and concentrations."""
-
-        if self.cutoff:
-            below_cutoff_idx = [
-                idx for idx, signal in enumerate(self.signals) if signal < self.cutoff
-            ]
-
-            self.concentrations = [self.concentrations[idx] for idx in below_cutoff_idx]
-            self.signals = [self.signals[idx] for idx in below_cutoff_idx]
-
     def get_model(self, model_name: str) -> CalibrationModel:
-        """
-        Returns a model by its name.
-
-        Args:
-            model_name (str): Name of the model to be returned
-
-        Returns:
-            CalibrationModel: The model with the given name
-
-        Raises:
-            ValueError: If the model with the given name is not found
-        """
+        """Returns a model by its name."""
 
         for model in self.models:
             if model.name == model_name:
@@ -205,30 +189,32 @@ class Calibrator(BaseModel):
                 calibration range. Defaults to False.
 
         Returns:
-            list[float]: _description_
+            list[float]: The calculated concentrations.
         """
         if not isinstance(model, CalibrationModel):
             model = self.get_model(model)
 
-        if not isinstance(signals, np.ndarray):
-            signals = np.array(signals)
+        np_signals = np.array(signals)
 
-        lower_bond = min(self.concentrations)
-        upper_bond = max(self.concentrations)
+        assert model.calibration_range, "Calibration range not set."
+
+        lower_bond = model.calibration_range.conc_lower
+        upper_bond = model.calibration_range.conc_upper
 
         if extrapolate:
             cal_range = upper_bond - lower_bond
             lower_bond -= cal_range
             upper_bond += cal_range
 
-            LOGGER.warn(
+            LOGGER.warning(
                 f"⚠️ Extrapolation is enabled. Allowing extrapolation in range between "
-                f"{lower_bond} and {upper_bond} {self.conc_unit}."
+                f"{lower_bond:.2f} and {upper_bond:.2f} {self.conc_unit.name}."
             )
 
-        cal_model = CalModel.from_calibration_model(model)
+        cal_model = Fitter.from_calibration_model(model)
+
         concs = cal_model.calculate_roots(
-            y=signals,
+            y=np_signals,
             lower_bond=lower_bond,
             upper_bond=upper_bond,
             extrapolate=extrapolate,
@@ -247,16 +233,147 @@ class Calibrator(BaseModel):
         if self.standard:
             self._update_model_of_standard(model)
 
-        return concs
+        return concs.tolist()
+
+    def apply_to_enzymeml(
+        self,
+        enzmldoc: EnzymeMLDocument,
+        extrapolate: bool = False,
+        silent: bool = False,
+    ):
+        """Applies the calibrator to an EnzymeML document if the species_id and molecule_id
+        match between the EnzymeML Document and the calibrator.
+
+        Args:
+            enzmldoc (EnzymeMLDocument): The EnzymeML document to apply the calibrator to.
+            extrapolate (bool, optional): Whether to extrapolate the concentration outside the
+                calibration range. Defaults to False.
+            silent (bool, optional): Silences the print output. Defaults to False.
+
+        Raises:
+            AssertionError: If no standard with a fitted calibration model is found.
+            AssertionError: If the data is already in concentration values.
+            AssertionError: If the units of the measured data and the calibration model do not match.
+        """
+
+        assert self.standard, "No standard object found."
+        assert self.standard.result, "No model found in the standard object."
+
+        converted_count = 0
+        for measurement in enzmldoc.measurements:
+            for measured_species in measurement.species_data:
+                if measured_species.species_id == self.molecule_id:
+                    assert measured_species.data_type != DataTypes.CONCENTRATION, """
+                        The data seems to be already in concentration values.
+                    """
+                    # assert units are the same
+                    assert measured_species.data_unit.name == self.conc_unit.name, f"""
+                    The unit of the measured data ({measured_species.data_unit.name}) is not 
+                    the same as the unit of the calibration model ({self.conc_unit.name}).
+                    """
+
+                    signals = measured_species.data
+                    measured_species.data = self.calculate_concentrations(
+                        self.standard.result, signals, extrapolate
+                    )
+                    measured_species.data_type = DataTypes.CONCENTRATION
+
+                    converted_count += 1
+
+        symbol = "✅" if converted_count > 0 else "❌"
+        if not silent:
+            print(f"{symbol} Applied calibration to {converted_count} measurements")
 
     def _update_model_of_standard(self, model: CalibrationModel) -> None:
         """Updates the model of the standard object with the given model."""
 
+        assert self.standard, "No standard object found."
         assert (
             self.molecule_id == self.standard.molecule_id
         ), "The molecule id of the Calibrator and the Standard object must be the same."
 
         self.standard.result = model
+
+    @classmethod
+    def from_excel(
+        cls,
+        path: str,
+        molecule_id: str,
+        conc_unit: UnitDefinition,
+        pubchem_cid: int,
+        molecule_name: str | None = None,
+        cutoff: Optional[float] = None,
+        wavelength: Optional[float] = None,
+        sheet_name: Optional[str | int] = 0,
+        skip_rows: Optional[int] = 0,
+    ):
+        """Reads the data from an Excel file and initializes the Calibrator object.
+        The leftmost column is expected to contain the concentrations. All other columns
+        are expected to contain the signals of the respective samples.
+
+        Args:
+            path (str): Path to the Excel file.
+            molecule_id (str): Unique identifier of the molecule.
+            molecule_name (str): Name of the molecule.
+            conc_unit (UnitDefinition): Concentration unit.
+            pubchem_cid (int): PubChem Compound Identifier.
+            cutoff (float, optional): Cutoff value for the signals. Defaults to None.
+            wavelength (float, optional): Wavelength of the measurement. Defaults to None.
+            sheet_name (str | int, optional): Name of the sheet in the Excel file. Defaults to 0.
+            skip_rows (int, optional): Number of rows to skip at the beginning of the sheet. Defaults to 0.
+
+        Returns:
+            Calibrator: The Calibrator object.
+        """
+
+        df = pd.read_excel(path, sheet_name=sheet_name, header=None, skiprows=skip_rows)
+
+        signals = df.iloc[:, 1:].values  # type: ignore
+        n_reps = signals.shape[1]
+        signals = signals.flatten().tolist()
+
+        concs = df.iloc[:, 0].values  # type: ignore
+        concs = np.repeat(concs, n_reps)  # type: ignore
+        concs = concs.flatten().tolist()
+
+        args = {
+            "molecule_id": molecule_id,
+            "pubchem_cid": pubchem_cid,
+            "concentrations": concs,
+            "signals": signals,
+            "conc_unit": conc_unit,
+            "cutoff": cutoff,
+            "wavelength": wavelength,
+        }
+
+        # Add molecule_name only if it's not None
+        if molecule_name is not None:
+            args["molecule_name"] = molecule_name
+
+        return cls(**args)
+
+    @classmethod
+    def from_json(
+        cls,
+        path: str,
+        cutoff: Optional[float] = None,
+    ) -> Calibrator:
+        """Reads the data from a JSON Standard file and initializes the Calibrator object.
+
+        Args:
+            path (str): Path to the JSON file.
+            cutoff (Optional[float], optional): Cutoff value for the signals.
+                Higher signals will be ignored. Defaults to None.
+
+        Returns:
+            Calibrator: The Calibrator object.
+        """
+        import json
+
+        with open(path, "r") as file:
+            standard = Standard(**json.load(file))
+
+        return cls.from_standard(standard, cutoff)
 
     @classmethod
     def from_standard(
@@ -296,15 +413,21 @@ class Calibrator(BaseModel):
             raise ValueError("All samples must have the same concentration unit")
         conc_unit = standard.samples[0].conc_unit
 
+        if standard.result:
+            models = [standard.result]
+        else:
+            models = []
+
         return cls(
             molecule_id=standard.molecule_id,
-            molecule_name=standard.name,
-            molecule_symbol=standard.result.molecule_symbol,
+            pubchem_cid=standard.pubchem_cid,
+            molecule_name=standard.molecule_name,
             concentrations=concs,
             signals=signals,
             conc_unit=conc_unit,
-            models=[standard.result],
+            models=models,
             cutoff=cutoff,
+            standard=standard,
         )
 
     def fit_models(self, silent: bool = False):
@@ -324,10 +447,13 @@ class Calibrator(BaseModel):
                 signal_upper=max(self.signals),
             )
 
+            y_data = np.array(self.signals)
+            x_data = np.array(self.concentrations)
+
             # Fit model
-            fitter = CalModel.from_calibration_model(model)
+            fitter = Fitter.from_calibration_model(model)
             statisctics = fitter.fit(
-                self.signals, self.concentrations, model.molecule_symbol
+                y=y_data, x=x_data, indep_var_symbol=self.molecule_id
             )
 
             # Set the fit statistics
@@ -338,7 +464,7 @@ class Calibrator(BaseModel):
         self.models = sorted(self.models, key=lambda x: x.statistics.aic)
 
         if not silent:
-            print("✅ Models have been fitted successfully.")
+            print("✅ Models have been successfully fitted.")
             self.print_result_table()
 
     def print_result_table(self) -> None:
@@ -362,7 +488,8 @@ class Calibrator(BaseModel):
                 if not param.stderr:
                     stderr = "n.a."
                 else:
-                    stderr = str(round(param.stderr * 100, 1)) + "%"
+                    stderr = abs(param.stderr / param.value)
+                    stderr = str(round(stderr * 100, 1)) + "%"
                 param_string += f"{param.symbol}: {stderr}, "
 
             table.add_row(
@@ -377,13 +504,17 @@ class Calibrator(BaseModel):
         console.print(table)
 
     def visualize(self) -> None:
+        assert any(
+            [model.was_fitted for model in self.models]
+        ), "No model has been fitted yet. Run 'fit_models' first."
+
         """
         Visualizes the calibration curve and the residuals of the models.
         """
         fig = make_subplots(
             rows=1,
             cols=2,
-            x_title=f"{self.molecule_name} / {self._format_unit(str(self.conc_unit))}",
+            x_title=f"{self.molecule_name} / {self.conc_unit.name}",
             subplot_titles=[
                 "Standard",
                 "Model Residuals",
@@ -411,17 +542,22 @@ class Calibrator(BaseModel):
             )
 
         for model, color in zip(self.models, colors):
-            fitter = CalModel.from_calibration_model(model)
+            fitter = Fitter.from_calibration_model(model)
+
+            assert model.calibration_range, "Calibration range not set."
+
             smooth_x = np.linspace(
-                min(self.concentrations), max(self.concentrations), 100
-            )
+                model.calibration_range.conc_lower,
+                model.calibration_range.conc_upper,
+                100,
+            ).tolist()
 
             params = {param.symbol: param.value for param in model.parameters}
-            params[model.molecule_symbol] = smooth_x
+            params[model.molecule_id] = np.array(smooth_x)  # type: ignore
 
             model_pred = fitter.lmfit_model.eval(**params)
 
-            fitter.fit(self.signals, self.concentrations, model.molecule_symbol)
+            fitter.fit(self.signals, self.concentrations, model.molecule_id)
             residuals = fitter.lmfit_result.residual
 
             # Add model traces
@@ -560,19 +696,27 @@ class Calibrator(BaseModel):
             }
         }
 
+        # save figure as plotly json
+        # from plotly.io import write_json
+        # write_json(fig, "usage_plot.json")
+
         return fig.show(config=config)
 
     def _traces_from_standard(self, fig: go.Figure):
         for sample in self.standard.samples:
+            if not hasattr(sample, "id"):
+                sample_id = f"Sample {self.standard.samples.index(sample) + 1}"
+            else:
+                sample_id = sample.id
             fig.add_trace(
                 go.Scatter(
                     x=[sample.concentration],
                     y=[sample.signal],
-                    name=sample.id,
+                    name=sample_id,
                     mode="markers",
                     marker=dict(color="#000000"),
                     visible=True,
-                    customdata=[f"{self.standard.name} standard"],
+                    customdata=[f"{self.standard.molecule_name} standard"],
                     showlegend=False,
                 ),
                 col=1,
@@ -586,7 +730,8 @@ class Calibrator(BaseModel):
         model: CalibrationModel,
         ph: float,
         temperature: float,
-        temp_unit: str = "C",
+        temp_unit: UnitDefinition = C,
+        retention_time: Optional[float] = None,
     ) -> Standard:
         """Creates a standard object with the given model, pH, and temperature.
 
@@ -595,6 +740,7 @@ class Calibrator(BaseModel):
             ph (float): The pH value of the standard.
             temperature (float): The temperature of the standard.
             temp_unit (str): The unit of the temperature. Defaults to "C".
+            retention_time (float, optional): Retention time of the molecule. Defaults to None.
 
         Raises:
             ValueError: If the model has not been fitted yet.
@@ -608,15 +754,16 @@ class Calibrator(BaseModel):
 
         standard = Standard(
             molecule_id=self.molecule_id,
-            molecule_symbol=self.molecule_symbol,
-            name=self.molecule_name,
+            pubchem_cid=self.pubchem_cid,
+            molecule_name=self.molecule_name,
             wavelength=self.wavelength,
             ph=ph,
             temp_unit=temp_unit,
             temperature=temperature,
-            signal_type=None,
             samples=[],
             result=model,
+            retention_time=retention_time,
+            ld_id=f"https://pubchem.ncbi.nlm.nih.gov/compound/{self.pubchem_cid}",
         )
 
         for conc, signal in zip(self.concentrations, self.signals):
@@ -635,11 +782,21 @@ class Calibrator(BaseModel):
             for fig in fig_data
         ]
 
-    @staticmethod
-    def _format_unit(unit: str) -> str:
-        unit = unit.replace("/l", " L<sup>-1</sup>")
-        unit = unit.replace("1/s", "s<sup>-1</sup>")
-        unit = unit.replace("1/min", "min<sup>-1</sup>")
-        unit = unit.replace("umol", "µmol")
-        unit = unit.replace("ug", "µg")
-        return unit
+    def _get_free_symbols(self, equation: str) -> list[str]:
+        """Gets the free symbols from a sympy equation and converts them to strings."""
+
+        sp_eq = sp.sympify(equation)
+        symbols = list(sp_eq.free_symbols)
+
+        return [str(symbol) for symbol in symbols]
+
+    def _apply_cutoff(self):
+        """Applies the cutoff value to the signals and concentrations."""
+
+        if self.cutoff:
+            below_cutoff_idx = [
+                idx for idx, signal in enumerate(self.signals) if signal < self.cutoff
+            ]
+
+            self.concentrations = [self.concentrations[idx] for idx in below_cutoff_idx]
+            self.signals = [self.signals[idx] for idx in below_cutoff_idx]

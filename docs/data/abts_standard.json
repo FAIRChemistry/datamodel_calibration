@@ -1,0 +1,545 @@
+{
+    "molecule_id": "s0",
+    "pubchem_cid": 439153,
+    "molecule_name": "NADH",
+    "ph": 7.4,
+    "temperature": 25.0,
+    "temp_unit": {
+        "id": null,
+        "name": "Celsius",
+        "base_units": [
+            {
+                "kind": "celsius",
+                "exponent": 1,
+                "multiplier": null,
+                "scale": 1.0,
+                "ld_id": "calipy:BaseUnit/b7d43335-8e52-458b-a015-3908ea8d73ab",
+                "ld_type": [
+                    "calipy:BaseUnit"
+                ],
+                "ld_context": {
+                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                }
+            }
+        ],
+        "ld_id": "calipy:UnitDefinition/89e37854-b829-43db-8bb1-090645af90df",
+        "ld_type": [
+            "OBO:UO_0000000"
+        ],
+        "ld_context": {
+            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+        }
+    },
+    "retention_time": 7.53,
+    "wavelength": null,
+    "samples": [
+        {
+            "concentration": 0.0,
+            "conc_unit": {
+                "id": null,
+                "name": "mmol / l",
+                "base_units": [
+                    {
+                        "kind": "mole",
+                        "exponent": 1,
+                        "multiplier": null,
+                        "scale": -3.0,
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    },
+                    {
+                        "kind": "litre",
+                        "exponent": -1,
+                        "multiplier": null,
+                        "scale": 1.0,
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    }
+                ],
+                "ld_id": "OBO:UO_0000063",
+                "ld_type": [
+                    "OBO:UO_0000000"
+                ],
+                "ld_context": {
+                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                }
+            },
+            "signal": 0.02,
+            "ld_id": "calipy:Sample/8c7193b3-42e7-47c3-8f77-885f4ac4ad07",
+            "ld_type": [
+                "calipy:Sample"
+            ],
+            "ld_context": {
+                "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+            }
+        },
+        {
+            "concentration": 0.5,
+            "conc_unit": {
+                "id": null,
+                "name": "mmol / l",
+                "base_units": [
+                    {
+                        "kind": "mole",
+                        "exponent": 1,
+                        "multiplier": null,
+                        "scale": -3.0,
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    },
+                    {
+                        "kind": "litre",
+                        "exponent": -1,
+                        "multiplier": null,
+                        "scale": 1.0,
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    }
+                ],
+                "ld_id": "OBO:UO_0000063",
+                "ld_type": [
+                    "OBO:UO_0000000"
+                ],
+                "ld_context": {
+                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                }
+            },
+            "signal": 0.509,
+            "ld_id": "calipy:Sample/57d76a42-80c6-4057-bbc7-b81691992cac",
+            "ld_type": [
+                "calipy:Sample"
+            ],
+            "ld_context": {
+                "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+            }
+        },
+        {
+            "concentration": 1.0,
+            "conc_unit": {
+                "id": null,
+                "name": "mmol / l",
+                "base_units": [
+                    {
+                        "kind": "mole",
+                        "exponent": 1,
+                        "multiplier": null,
+                        "scale": -3.0,
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    },
+                    {
+                        "kind": "litre",
+                        "exponent": -1,
+                        "multiplier": null,
+                        "scale": 1.0,
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    }
+                ],
+                "ld_id": "OBO:UO_0000063",
+                "ld_type": [
+                    "OBO:UO_0000000"
+                ],
+                "ld_context": {
+                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                }
+            },
+            "signal": 1.076,
+            "ld_id": "calipy:Sample/3e00aa95-f106-455a-b01d-96767ee1f069",
+            "ld_type": [
+                "calipy:Sample"
+            ],
+            "ld_context": {
+                "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+            }
+        },
+        {
+            "concentration": 1.5,
+            "conc_unit": {
+                "id": null,
+                "name": "mmol / l",
+                "base_units": [
+                    {
+                        "kind": "mole",
+                        "exponent": 1,
+                        "multiplier": null,
+                        "scale": -3.0,
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    },
+                    {
+                        "kind": "litre",
+                        "exponent": -1,
+                        "multiplier": null,
+                        "scale": 1.0,
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    }
+                ],
+                "ld_id": "OBO:UO_0000063",
+                "ld_type": [
+                    "OBO:UO_0000000"
+                ],
+                "ld_context": {
+                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                }
+            },
+            "signal": 1.534,
+            "ld_id": "calipy:Sample/3d90b4c0-2914-463a-bc19-1a4a9ab4f9dd",
+            "ld_type": [
+                "calipy:Sample"
+            ],
+            "ld_context": {
+                "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+            }
+        },
+        {
+            "concentration": 2.0,
+            "conc_unit": {
+                "id": null,
+                "name": "mmol / l",
+                "base_units": [
+                    {
+                        "kind": "mole",
+                        "exponent": 1,
+                        "multiplier": null,
+                        "scale": -3.0,
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    },
+                    {
+                        "kind": "litre",
+                        "exponent": -1,
+                        "multiplier": null,
+                        "scale": 1.0,
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    }
+                ],
+                "ld_id": "OBO:UO_0000063",
+                "ld_type": [
+                    "OBO:UO_0000000"
+                ],
+                "ld_context": {
+                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                }
+            },
+            "signal": 2.008,
+            "ld_id": "calipy:Sample/119284a3-4596-4b8d-a9f6-5d041010e39f",
+            "ld_type": [
+                "calipy:Sample"
+            ],
+            "ld_context": {
+                "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+            }
+        },
+        {
+            "concentration": 2.5,
+            "conc_unit": {
+                "id": null,
+                "name": "mmol / l",
+                "base_units": [
+                    {
+                        "kind": "mole",
+                        "exponent": 1,
+                        "multiplier": null,
+                        "scale": -3.0,
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    },
+                    {
+                        "kind": "litre",
+                        "exponent": -1,
+                        "multiplier": null,
+                        "scale": 1.0,
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    }
+                ],
+                "ld_id": "OBO:UO_0000063",
+                "ld_type": [
+                    "OBO:UO_0000000"
+                ],
+                "ld_context": {
+                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                }
+            },
+            "signal": 2.482,
+            "ld_id": "calipy:Sample/b727496b-3b66-42bb-bd50-6280413e4563",
+            "ld_type": [
+                "calipy:Sample"
+            ],
+            "ld_context": {
+                "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+            }
+        },
+        {
+            "concentration": 3.0,
+            "conc_unit": {
+                "id": null,
+                "name": "mmol / l",
+                "base_units": [
+                    {
+                        "kind": "mole",
+                        "exponent": 1,
+                        "multiplier": null,
+                        "scale": -3.0,
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    },
+                    {
+                        "kind": "litre",
+                        "exponent": -1,
+                        "multiplier": null,
+                        "scale": 1.0,
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    }
+                ],
+                "ld_id": "OBO:UO_0000063",
+                "ld_type": [
+                    "OBO:UO_0000000"
+                ],
+                "ld_context": {
+                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                }
+            },
+            "signal": 2.898,
+            "ld_id": "calipy:Sample/228694d9-d9d9-48b8-afd0-547ede36f048",
+            "ld_type": [
+                "calipy:Sample"
+            ],
+            "ld_context": {
+                "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+            }
+        },
+        {
+            "concentration": 3.5,
+            "conc_unit": {
+                "id": null,
+                "name": "mmol / l",
+                "base_units": [
+                    {
+                        "kind": "mole",
+                        "exponent": 1,
+                        "multiplier": null,
+                        "scale": -3.0,
+                        "ld_id": "calipy:BaseUnit/dc3a3957-26c9-468a-ae0c-35a307d36b57",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    },
+                    {
+                        "kind": "litre",
+                        "exponent": -1,
+                        "multiplier": null,
+                        "scale": 1.0,
+                        "ld_id": "calipy:BaseUnit/bfe62c37-1acc-470f-b744-eca893f81001",
+                        "ld_type": [
+                            "calipy:BaseUnit"
+                        ],
+                        "ld_context": {
+                            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                        }
+                    }
+                ],
+                "ld_id": "OBO:UO_0000063",
+                "ld_type": [
+                    "OBO:UO_0000000"
+                ],
+                "ld_context": {
+                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                }
+            },
+            "signal": 3.176,
+            "ld_id": "calipy:Sample/4cd26655-17e5-45d2-85e6-1aab7824a795",
+            "ld_type": [
+                "calipy:Sample"
+            ],
+            "ld_context": {
+                "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+            }
+        }
+    ],
+    "result": {
+        "name": "cubic",
+        "molecule_id": "s0",
+        "signal_law": "a * s0 ** 3 + b * s0 ** 2 + c * s0 + d",
+        "parameters": [
+            {
+                "symbol": "d",
+                "value": 0.020242556929588318,
+                "init_value": 1.0,
+                "stderr": 0.02654451691749067,
+                "lower_bound": -100000000.0,
+                "upper_bound": 100000000.0,
+                "ld_id": "calipy:Parameter/e7e7f9fc-4bc7-425d-86e6-b993957aa7f6",
+                "ld_type": [
+                    "calipy:Parameter"
+                ],
+                "ld_context": {
+                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                }
+            },
+            {
+                "symbol": "a",
+                "value": -0.02256566286087036,
+                "init_value": 1.0,
+                "stderr": 0.009588191936673271,
+                "lower_bound": -100000000.0,
+                "upper_bound": 100000000.0,
+                "ld_id": "calipy:Parameter/3974b135-6a77-4411-86cd-dbed409044c7",
+                "ld_type": [
+                    "calipy:Parameter"
+                ],
+                "ld_context": {
+                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                }
+            },
+            {
+                "symbol": "b",
+                "value": 0.05644586682319641,
+                "init_value": 1.0,
+                "stderr": 0.04919958508978285,
+                "lower_bound": -100000000.0,
+                "upper_bound": 100000000.0,
+                "ld_id": "calipy:Parameter/37715f7e-2596-4318-ab47-fbaa2fe422f2",
+                "ld_type": [
+                    "calipy:Parameter"
+                ],
+                "ld_context": {
+                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                }
+            },
+            {
+                "symbol": "c",
+                "value": 0.9840634912252426,
+                "init_value": 1.0,
+                "stderr": 0.07286944288841404,
+                "lower_bound": -100000000.0,
+                "upper_bound": 100000000.0,
+                "ld_id": "calipy:Parameter/847114a1-ea03-4a04-86b0-5914d1f2afe8",
+                "ld_type": [
+                    "calipy:Parameter"
+                ],
+                "ld_context": {
+                    "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+                }
+            }
+        ],
+        "was_fitted": true,
+        "calibration_range": {
+            "conc_lower": 0.0,
+            "conc_upper": 3.5,
+            "signal_lower": 0.02,
+            "signal_upper": 3.176,
+            "ld_id": "calipy:CalibrationRange/9b3fc398-124a-466c-a800-89b7955abc43",
+            "ld_type": [
+                "calipy:CalibrationRange"
+            ],
+            "ld_context": {
+                "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+            }
+        },
+        "statistics": {
+            "aic": -54.229174761344325,
+            "bic": -53.91140859462498,
+            "r2": 0.9996269628733623,
+            "rmsd": 0.020459183577884475,
+            "ld_id": "calipy:FitStatistics/ee7889f9-6484-4306-a430-961e37be8d11",
+            "ld_type": [
+                "calipy:FitStatistics"
+            ],
+            "ld_context": {
+                "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+            }
+        },
+        "ld_id": "calipy:CalibrationModel/e4f8564a-1333-46c1-bc34-0cf73a8955ee",
+        "ld_type": [
+            "calipy:CalibrationModel"
+        ],
+        "ld_context": {
+            "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+        }
+    },
+    "ld_id": "https://pubchem.ncbi.nlm.nih.gov/compound/439153",
+    "ld_type": [
+        "calipy:Standard"
+    ],
+    "ld_context": {
+        "calipy": "https://github.com/FAIRChemistry/CaliPytion"
+    }
+}

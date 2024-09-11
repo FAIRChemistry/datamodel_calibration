@@ -3,13 +3,13 @@ repo_url: https://github.com/FAIRChemistry/CaliPytion/
 repo_name: FAIRChemistry/CaliPytion
 site_url: https://fairchemistry.github.io/CaliPytion/
 
-plugins:
-  - mkdocs-jupyter
-
 nav:
   - Home: index.md
-  - Getting Started: examples/quickstart.ipynb
-  - Examples: examples.md
+  - Usage: usage.md
+  - Standard Data Model: data_model.md
+
+plugins:
+  - plotly
 
 theme:
   name: material
@@ -25,11 +25,11 @@ theme:
     - content.code.select
     - content.code.copy
     - content.code.annotation
-  palette: 
+  palette:
     # Palette toggle for light mode
     - scheme: default
       toggle:
-        icon: material/brightness-7 
+        icon: material/brightness-7
         name: Switch to dark mode
 
     # Palette toggle for dark mode
@@ -38,8 +38,23 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
 
-
 markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - toc:
+      permalink: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -56,3 +71,8 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
   - md_in_html
+  - pymdownx.superfences:
+      custom_fences:
+        - name: plotly
+          class: mkdocs-plotly
+          format: !!python/name:mkdocs_plotly_plugin.fences.fence_plotly

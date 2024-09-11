@@ -1,8 +1,6 @@
 """Module containing functions for mapping CaliPytion to AnIML"""
 
-
 from sdRDM import DataModel
-
 
 try:
     animl_lib = DataModel.from_git(
@@ -11,9 +9,9 @@ try:
     )
 except Exception as e:
     print(
-        f"The following unexpected error has occured while retrieving the "
+        "The following unexpected error has occured while retrieving the "
         + f"data model from GitHub: {type(e).__name__} - Is there a working "
-        + f"network connection?"
+        + "network connection?"
     )
 
 

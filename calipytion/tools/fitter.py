@@ -91,7 +91,6 @@ class Fitter:
         for param in params:
             try:
                 root = root_scalar(root_eq, bracket=bracket, args=tuple(param.values()))
-                print(f"Root: {root.root}")
                 roots.append(root.root)
             except ValueError:
                 roots.append(np.nan)
@@ -135,7 +134,6 @@ class Fitter:
 
     def _get_param_dict(self, indep_var_values: np.ndarray):
         values_dict = self.lmfit_params.valuesdict()
-        print(self.lmfit_params["a"])
         values_dict[self.indep_var] = indep_var_values
 
         return values_dict

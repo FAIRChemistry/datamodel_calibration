@@ -212,9 +212,7 @@ class Calibrator(BaseModel):
             )
 
         cal_model = Fitter.from_calibration_model(model)
-        print(f"""
-              {model.molecule_id}, {model.signal_law}, {lower_bond}, {upper_bond}, {extrapolate}, signals: {np_signals}
-              """)
+
         concs = cal_model.calculate_roots(
             y=np_signals,
             lower_bond=lower_bond,

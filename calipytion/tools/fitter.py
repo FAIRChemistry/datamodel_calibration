@@ -199,7 +199,7 @@ if __name__ == "__main__":
         Parameter(
             symbol="a",
             init_value=1.0,
-            lower_bound=-1e6,
+            lower_bound=-1,
             upper_bound=1e6,
         )
     )
@@ -207,7 +207,7 @@ if __name__ == "__main__":
         Parameter(
             symbol="b",
             init_value=1.0,
-            lower_bound=-1e6,
+            lower_bound=-1,
             upper_bound=1e6,
         )
     )

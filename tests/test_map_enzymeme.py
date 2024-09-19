@@ -46,9 +46,10 @@ def test_conversion_of_enzymeml_doc():
 
     ccal = Calibrator(**cal_data)
     ccal.fit_models()
-    ccal.create_standard(model=ccal.models[0], **standard_params)
+    ccal.create_standard(model=ccal.models[1], **standard_params)
 
     ccal.apply_to_enzymeml(doc)
+    print(doc.measurements[0].species_data[0].data)
     assert doc.measurements[0].species_data[0].data_type == pe.DataTypes.CONCENTRATION
     assert doc.measurements[0].species_data[1].data_type == pe.DataTypes.CONCENTRATION
     assert approx(doc.measurements[0].species_data[0].data, abs=0.1) == [30, 20, 10, 0]

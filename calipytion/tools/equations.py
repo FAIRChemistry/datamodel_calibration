@@ -1,7 +1,7 @@
 from calipytion.model import CalibrationModel
 
-lower_bound = -1e4
-upper_bound = 1e4
+lower_bound = -1
+upper_bound = 1e6
 
 
 linear_model = CalibrationModel(

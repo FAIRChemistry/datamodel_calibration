@@ -352,6 +352,30 @@ class Calibrator(BaseModel):
 
         return cls(**args)
 
+    def add_model_to_standard(self, model: CalibrationModel | str) -> None:
+        """Adds a model to the result object of the standard.
+
+        Args:
+            model (CalibrationModel | str): The model object or name which should be added to the standard.
+
+        Raises:
+            ValueError: If the model has not been fitted yet.
+            ValueError: If no standard object is found.
+        """
+
+        if isinstance(model, str):
+            model = self.get_model(model)
+
+        if not model.was_fitted:
+            raise ValueError("Model has not been fitted yet. Run 'fit_models' first.")
+
+        if self.standard is None:
+            raise ValueError(
+                "No standard object found. Create a standard first by calling 'create_standard'."
+            )
+
+        self.standard.result = model
+
     @classmethod
     def from_json(
         cls,

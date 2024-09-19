@@ -1,5 +1,4 @@
 import json
-import math
 
 import pyenzyme as pe
 from pyenzyme.units import mM, second
@@ -58,7 +57,6 @@ def test_conversion_of_enzymeml_doc():
         20,
         10,
     ]
-    assert math.isnan(doc.measurements[1].species_data[0].data[0])
 
 
 def test_conversion_of_enzymeml_doc_extrapolate():

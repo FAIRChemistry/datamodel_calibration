@@ -201,19 +201,9 @@ class Calibrator(BaseModel):
         lower_bond = model.calibration_range.conc_lower
         upper_bond = model.calibration_range.conc_upper
 
-        if extrapolate:
-            cal_range = upper_bond - lower_bond
-            lower_bond -= cal_range
-            upper_bond += cal_range
-
-            LOGGER.warning(
-                f"⚠️ Extrapolation is enabled. Allowing extrapolation in range between "
-                f"{lower_bond:.2f} and {upper_bond:.2f} {self.conc_unit.name}."
-            )
-
         cal_model = Fitter.from_calibration_model(model)
 
-        concs = cal_model.calculate_roots(
+        concs, bracket = cal_model.calculate_roots(
             y=np_signals,
             lower_bond=lower_bond,
             upper_bond=upper_bond,
@@ -224,7 +214,7 @@ class Calibrator(BaseModel):
         if np.isnan(concs).any() and not extrapolate:
             LOGGER.warning(
                 "⚠️ Some concentrations could not be calculated and were replaced with nan "
-                "values, since the provided signal is outside the calibration range. "
+                f"values, since the provided signal is outside the calibration range {bracket}. "
                 "To calculate the concentration outside the calibration range, set "
                 "'extrapolate=True'."
             )

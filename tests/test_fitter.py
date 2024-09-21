@@ -35,7 +35,10 @@ def test_calculate_roots(fitter):
     y = np.array([2, 4, 6, 8, 10])
     lower_bound = 0
     upper_bound = 10
-    roots = fitter.calculate_roots(y, lower_bound, upper_bound, extrapolate=False)
+    roots, interval = fitter.calculate_roots(
+        y, lower_bound, upper_bound, extrapolate=False
+    )
+    assert interval == [0, 10]
     assert isinstance(roots, np.ndarray)
     assert len(roots) == len(y)
 

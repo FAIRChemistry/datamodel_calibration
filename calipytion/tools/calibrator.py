@@ -766,6 +766,8 @@ class Calibrator(BaseModel):
         if not model.was_fitted:
             raise ValueError("Model has not been fitted yet. Run 'fit_models' first.")
 
+        print(f"the wavelength is {self.wavelength}")
+
         standard = Standard(
             molecule_id=self.molecule_id,
             pubchem_cid=self.pubchem_cid,

@@ -1,11 +1,12 @@
-"""Module containing functions for mapping CaliPytion to AnIML"""
+"""Methods for mapping CaliPytion to AnIML"""
 
-from sdRDM import DataModel
+from mdmodels import DataModel
 
 try:
-    animl_lib = DataModel.from_git(
-        url="https://github.com/FAIRChemistry/animl-specifications",
-        commit="0c51f12",
+    animl_lib = DataModel.from_github(
+        repo="FAIRChemistry/animl-specification",
+        branch="main",
+        spec_path="specifications/animl.md",
     )
 except Exception as e:
     print(
@@ -13,6 +14,15 @@ except Exception as e:
         + f"data model from GitHub: {type(e).__name__} - Is there a working "
         + "network connection?"
     )
+
+
+def get_animl_document() -> "AnIML":
+    """Create an AnIML document object.
+
+    Returns:
+        AnIML: An AnIML document object.
+    """
+    return animl_lib.AnIML()
 
 
 def map_standard_to_animl(standard: "Standard", animl_document: "AnIML") -> None:
@@ -25,6 +35,8 @@ def map_standard_to_animl(standard: "Standard", animl_document: "AnIML") -> None
     """
     # Create the SampleSet and Sample elements and set the Sample's name
     # according to the UV/Vis Technique definition document
+    sample_set = animl_lib.SampleSet()
+    animl_document.sample_set = sample_set
     animl_sample = animl_document.sample_set.add_to_sample(
         name="Test Sample", sample_id="sample0000"
     )
@@ -35,7 +47,8 @@ def map_standard_to_animl(standard: "Standard", animl_document: "AnIML") -> None
     # Create the ExperimentStepSet object and variables to keep track of
     # the current ExperimentStep and Series and iterate over the various
     # CaliPytion Sample objects (corresponding to ExperimentSteps)
-    experiment_step_set = animl_document.experiment_step_set
+    experiment_step_set = animl_lib.ExperimentStepSet()
+    experiment_step_set.experiment_step = []
 
     current_experiment_step_id = -1
     current_series_id = 0
@@ -52,7 +65,6 @@ def map_standard_to_animl(standard: "Standard", animl_document: "AnIML") -> None
         current_series_id = _map_sample_to_result(
             sample=calipytion_sample,
             wavelength=standard.wavelength,
-            signal_type=standard.signal_type,
             experiment_step=new_experiment_step,
             current_series_id=current_series_id,
         )
@@ -76,11 +88,13 @@ def map_standard_to_animl(standard: "Standard", animl_document: "AnIML") -> None
     # Map the CalibrationModel to the Result element of the final
     # ExperimentStep
     _map_calibration_model_to_result(
-        calibration_model=standard.model_result, experiment_step=final_experiment_step
+        calibration_model=standard.result, experiment_step=final_experiment_step
     )
 
     # Add the final ExperimentStep to the ExperimentStepSet
     experiment_step_set.experiment_step.append(final_experiment_step)
+
+    return animl_document
 
 
 def _map_to_sample(standard: "Standard", sample: "Sample") -> None:
@@ -96,7 +110,7 @@ def _map_to_sample(standard: "Standard", sample: "Sample") -> None:
 
     description_category.add_to_parameter(
         name="Descriptive Name",
-        value=standard.name,
+        value=standard.molecule_id,
         parameter_type="string",
     )
 
@@ -104,7 +118,7 @@ def _map_to_sample(standard: "Standard", sample: "Sample") -> None:
         name="Temperature",
         value=standard.temperature,
         parameter_type="float",
-        unit=animl_lib.Unit(label=str(standard.temperature_unit)),
+        unit=animl_lib.Unit(label=str(standard.temp_unit)),
     )
 
     description_category.add_to_parameter(
@@ -114,19 +128,12 @@ def _map_to_sample(standard: "Standard", sample: "Sample") -> None:
         unit=animl_lib.Unit(label="quantity of dimension one"),
     )
 
-    description_category.add_to_parameter(
-        name="Measurement Date",
-        value=str(standard.created),
-        parameter_type="datetime",
-    )
-
     sample.category.append(description_category)
 
 
 def _map_sample_to_result(
     sample: "Sample",
     wavelength: float,
-    signal_type: "SignalType",
     experiment_step: "ExperimentStep",
     current_series_id: int,
 ) -> int:
@@ -147,6 +154,7 @@ def _map_sample_to_result(
 
     # Create the Spectrum SeriesSet according to the UV/Vis ATDD
     new_series_set = animl_lib.SeriesSet(name="Spectrum", length="1")
+    new_series_set.series = []
 
     # Create the custom Concentration Series, as well as the
     # Wavelength and the Intensity Series according to the UV/Vis ATDD
@@ -157,6 +165,7 @@ def _map_sample_to_result(
     # Create the IndividualValueSet element and append the concentration
     # value
     concentration_value_set = animl_lib.IndividualValueSet()
+    concentration_value_set.values = []
     concentration_value_set.values.append(float(sample.concentration))
 
     # Create the Unit element
@@ -185,7 +194,7 @@ def _map_sample_to_result(
     # Create the IndividualValueSet element and append the wavelength
     # value
     wavelength_value_set = animl_lib.IndividualValueSet()
-    wavelength_value_set.values.append(float(wavelength))
+    wavelength_value_set.values = [float(wavelength)]
 
     # Create the Unit element
     wavelength_unit = animl_lib.Unit(
@@ -213,12 +222,13 @@ def _map_sample_to_result(
     # Create the IndividualValueSet element and append the wavelength
     # value
     intensity_value_set = animl_lib.IndividualValueSet()
+    intensity_value_set.values = []
     intensity_value_set.values.append(float(sample.signal))
 
     # Create the Unit element
     intensity_unit = animl_lib.Unit(
         label="AU",
-        quantity=signal_type,
+        quantity="intensity",
     )
 
     # Create the Series element and add both IndividualValueSet and Unit
@@ -334,7 +344,7 @@ def _map_calibration_model_to_result(
     # Add the Model Equation as a Parameter
     model_category.add_to_parameter(
         name="Model Equation",
-        value=calibration_model.equation,
+        value=calibration_model.signal_law,
         parameter_type="string",
     )
 
@@ -343,7 +353,7 @@ def _map_calibration_model_to_result(
 
     for parameter in calibration_model.parameters:
         parameter_category.add_to_parameter(
-            name=parameter.name,
+            name=parameter.symbol,
             value=float(parameter.value),
             parameter_type="float",
         )
@@ -354,7 +364,7 @@ def _map_calibration_model_to_result(
         )
         parameter_category.add_to_parameter(
             name="Standard error",
-            value=float(parameter.standard_error),
+            value=float(parameter.stderr),
             parameter_type="float",
         )
         parameter_category.add_to_parameter(

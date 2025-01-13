@@ -57,7 +57,7 @@ def map_standard_to_animl(standard: "Standard", animl_document: "AnIML") -> None
         # Create the ExperimentStep for the current CaliPytion Sample
         current_experiment_step_id += 1
         new_experiment_step = animl_lib.ExperimentStep(
-            name=f"Standard of c = {calipytion_sample.concentration} {calipytion_sample.conc_unit} measured at {standard.wavelength} nm",
+            name=f"Standard of c = {calipytion_sample.concentration} {calipytion_sample.conc_unit.name} measured at {standard.wavelength} nm",
             experiment_step_id=f"step{str(current_experiment_step_id).zfill(4)}",
         )
 
@@ -94,6 +94,9 @@ def map_standard_to_animl(standard: "Standard", animl_document: "AnIML") -> None
     # Add the final ExperimentStep to the ExperimentStepSet
     experiment_step_set.experiment_step.append(final_experiment_step)
 
+    # Add the ExperimentStepSet to the AnIML document object
+    animl_document.experiment_step_set = experiment_step_set
+
     return animl_document
 
 
@@ -118,7 +121,7 @@ def _map_to_sample(standard: "Standard", sample: "Sample") -> None:
         name="Temperature",
         value=standard.temperature,
         parameter_type="float",
-        unit=animl_lib.Unit(label=str(standard.temp_unit)),
+        unit=animl_lib.Unit(label=str(standard.temp_unit.name)),
     )
 
     description_category.add_to_parameter(
@@ -170,7 +173,7 @@ def _map_sample_to_result(
 
     # Create the Unit element
     concentration_unit = animl_lib.Unit(
-        label=str(sample.conc_unit),
+        label=str(sample.conc_unit.name),
     )
 
     # Create the Series element and add both IndividualValueSet and Unit
@@ -425,13 +428,3 @@ def _map_calibration_model_to_result(
         value=float(calibration_model.statistics.rmsd),
         parameter_type="float",
     )
-
-
-def id_cleanup(xml_element) -> None:
-    # Check if the 'id' attribute exists and remove it
-    if "id" in xml_element.attrib:
-        del xml_element.attrib["id"]
-
-    # Recursively apply to all children
-    for child in xml_element:
-        id_cleanup(child)

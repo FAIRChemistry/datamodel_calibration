@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import logging
+import warnings
 from typing import Any, Optional
 
 import numpy as np
@@ -15,6 +16,7 @@ from pyenzyme import DataTypes, EnzymeMLDocument
 from rich.console import Console
 from rich.table import Table
 
+from calipytion.ioutils.animlio import get_animl_document, map_standard_to_animl
 from calipytion.model import (
     CalibrationModel,
     CalibrationRange,
@@ -26,6 +28,13 @@ from calipytion.tools.utility import pubchem_request_molecule_name
 from calipytion.units import C
 
 LOGGER = logging.getLogger(__name__)
+
+# Ignore Pydantic serializer warnings for now due to required workaround
+# for AnIML <F>, <I>, <S>, and <Boolean> tags raising a warning about
+# type mismatches like `FloatType` vs `float`.
+warnings.filterwarnings(
+    "ignore", category=UserWarning, message="^Pydantic serializer warnings:"
+)
 
 
 class Calibrator(BaseModel):
@@ -253,11 +262,15 @@ class Calibrator(BaseModel):
         for measurement in enzmldoc.measurements:
             for measured_species in measurement.species_data:
                 if measured_species.species_id == self.molecule_id:
-                    assert measured_species.data_type != DataTypes.CONCENTRATION, """
+                    assert (
+                        measured_species.data_type != DataTypes.CONCENTRATION
+                    ), """
                         The data seems to be already in concentration values.
                     """
                     # assert units are the same
-                    assert measured_species.data_unit.name == self.conc_unit.name, f"""
+                    assert (
+                        measured_species.data_unit.name == self.conc_unit.name
+                    ), f"""
                     The unit of the measured data ({measured_species.data_unit.name}) is not 
                     the same as the unit of the calibration model ({self.conc_unit.name}).
                     """
@@ -273,6 +286,36 @@ class Calibrator(BaseModel):
         symbol = "✅" if converted_count > 0 else "❌"
         if not silent:
             print(f"{symbol} Applied calibration to {converted_count} measurements")
+
+    def export_to_animl(
+        self, wavelength_nm: float = 420, silent: bool = False
+    ) -> "AnIML":
+        """Exports measurements and models to an AnIML document.
+
+        Args:
+            wavelength_nm (float, optional): The wavelength of the measurement in nm.
+                Defaults to 420 nm.
+
+        Raises:
+            AssertionError: If no standard object is found.
+            AssertionError: If no model is found in the standard object.
+
+        Returns:
+            animl_document: The AnIML document.
+        """
+
+        assert self.standard, "No standard object found."
+        assert self.standard.result, "No model found in the standard object."
+
+        self.standard.wavelength = wavelength_nm
+
+        animl_document = get_animl_document()
+        animl_document = map_standard_to_animl(self.standard, animl_document)
+
+        if not silent:
+            print(f"✅ Applied data to AnIML document")
+
+        return animl_document
 
     def _update_model_of_standard(self, model: CalibrationModel) -> None:
         """Updates the model of the standard object with the given model."""
@@ -816,3 +859,15 @@ class Calibrator(BaseModel):
 
             self.concentrations = [self.concentrations[idx] for idx in below_cutoff_idx]
             self.signals = [self.signals[idx] for idx in below_cutoff_idx]
+
+
+def show_warning(message, category, filename, lineno, file=None, line=None):
+    print(f"Warning details:")
+    print(f"Message: {message}")
+    print(f"Category: {category}")
+    print(f"File: {filename}")
+    print(f"Line: {lineno}")
+    print(f"Line content: {line}")
+
+
+warnings.showwarning = show_warning
